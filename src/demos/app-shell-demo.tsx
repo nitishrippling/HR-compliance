@@ -11,12 +11,12 @@ import RipplingLogoWhite from '../assets/rippling-logo-white.svg';
 
 /**
  * App Shell Demo
- * 
+ *
  * Recreates Rippling's main application shell with:
  * - Top navigation bar
  * - Left sidebar navigation
  * - Main content area
- * 
+ *
  * Based on the actual Rippling product UI structure.
  */
 
@@ -66,11 +66,11 @@ const Logo = styled.img`
   margin: -${({ theme }) => (theme as any).space200};
   border-radius: ${({ theme }) => (theme as any).shapeCornerM};
   transition: background-color 150ms ease;
-  
+
   &:hover {
     background-color: ${({ theme }) => (theme as any).colorSurfaceDim};
   }
-  
+
   &:active {
     background-color: ${({ theme }) => (theme as any).colorSurfaceContainerHighest};
   }
@@ -102,11 +102,11 @@ const SearchBar = styled.div`
   align-items: center;
   gap: ${({ theme }) => (theme as any).space200};
   transition: opacity 0.15s ease;
-  
+
   &:focus-within {
     opacity: 1;
   }
-  
+
   input {
     flex: 1;
     background: transparent;
@@ -114,11 +114,11 @@ const SearchBar = styled.div`
     ${({ theme }) => (theme as any).typestyleV2BodyMedium};
     color: ${({ theme }) => (theme as any).colorOnSurface};
     padding: 0;
-    
+
     &::placeholder {
       color: ${({ theme }) => (theme as any).colorOnSurface};
     }
-    
+
     &:focus {
       outline: none;
     }
@@ -134,7 +134,7 @@ const ActionsContainer = styled.div`
 const TopNavActions = styled.div`
   display: flex;
   align-items: center;
-  
+
   button {
     position: relative;
   }
@@ -170,11 +170,11 @@ const ProfileSection = styled.div`
   border-radius: ${({ theme }) => (theme as any).shapeCornerL};
   cursor: pointer;
   transition: background-color 150ms ease;
-  
+
   &:hover {
     background-color: ${({ theme }) => (theme as any).colorSurfaceDim};
   }
-  
+
   &:active {
     background-color: ${({ theme }) => (theme as any).colorSurfaceContainerHighest};
   }
@@ -374,7 +374,7 @@ const PageHeaderContainer = styled.div`
 
 const PageHeaderWrapper = styled.div`
   padding: ${({ theme }) => (theme as any).space400} ${({ theme }) => (theme as any).space1400} 0;
-  
+
   /* Remove bottom margin from Page.Header */
   & > div {
     margin-bottom: 0 !important;
@@ -417,13 +417,13 @@ const SlotText = styled.div`
   justify-content: center;
   color: #cd4a35;
   text-align: center;
-  
+
   & > p:first-of-type {
     ${({ theme }) => (theme as any).typestyleV2BodyMedium};
     font-weight: 535;
     margin: 0;
   }
-  
+
   & > p:last-of-type {
     ${({ theme }) => (theme as any).typestyleV2BodyMedium};
     font-weight: 430;
@@ -439,8 +439,10 @@ interface NavItemData {
 }
 
 const AppShellDemo: React.FC = () => {
-  const { theme, mode: currentMode } = useTheme();
-  const { changeTheme } = useThemeSettings();
+  const { theme: rawTheme, mode: currentMode, name: currentThemeName } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const theme = rawTheme as any;
+  const { changeTheme, changeMode } = useThemeSettings();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState(3); // Default to "Settings" tab
   const [adminMode, setAdminMode] = useState(false);
@@ -455,12 +457,22 @@ const AppShellDemo: React.FC = () => {
     { id: 'talent', label: 'Talent', icon: Icon.TYPES.TALENT_OUTLINE, hasSubmenu: true },
     { id: 'it', label: 'IT', icon: Icon.TYPES.LAPTOP_OUTLINE, hasSubmenu: true },
     { id: 'data', label: 'Data', icon: Icon.TYPES.BAR_CHART_OUTLINE, hasSubmenu: true },
-    { id: 'custom-apps', label: 'Custom Apps', icon: Icon.TYPES.CUSTOM_APPS_OUTLINE, hasSubmenu: true },
+    {
+      id: 'custom-apps',
+      label: 'Custom Apps',
+      icon: Icon.TYPES.CUSTOM_APPS_OUTLINE,
+      hasSubmenu: true,
+    },
   ];
 
   const platformNavItems: NavItemData[] = [
     { id: 'tools', label: 'Tools', icon: Icon.TYPES.WRENCH_OUTLINE, hasSubmenu: true },
-    { id: 'company-settings', label: 'Company settings', icon: Icon.TYPES.SETTINGS_OUTLINE, hasSubmenu: true },
+    {
+      id: 'company-settings',
+      label: 'Company settings',
+      icon: Icon.TYPES.SETTINGS_OUTLINE,
+      hasSubmenu: true,
+    },
     { id: 'app-shop', label: 'App Shop', icon: Icon.TYPES.INTEGRATED_APPS_OUTLINE },
     { id: 'help', label: 'Help', icon: Icon.TYPES.QUESTION_CIRCLE_OUTLINE },
   ];
@@ -471,7 +483,10 @@ const AppShellDemo: React.FC = () => {
       <TopNav theme={theme}>
         <LeftSection theme={theme}>
           <LogoContainer theme={theme}>
-            <Logo src={currentMode === 'dark' ? RipplingLogoWhite : RipplingLogoBlack} alt="Rippling" />
+            <Logo
+              src={currentMode === 'dark' ? RipplingLogoWhite : RipplingLogoBlack}
+              alt="Rippling"
+            />
           </LogoContainer>
           <VerticalDivider theme={theme} />
         </LeftSection>
@@ -479,11 +494,7 @@ const AppShellDemo: React.FC = () => {
         <RightSection theme={theme}>
           <SearchBar theme={theme}>
             <Icon type={Icon.TYPES.SEARCH_OUTLINE} size={20} color={theme.colorOnSurface} />
-            <input
-              id="global-search"
-              type="text"
-              placeholder="Search or jump to..."
-            />
+            <input id="global-search" type="text" placeholder="Search or jump to..." />
           </SearchBar>
 
           <ActionsContainer theme={theme}>
@@ -539,36 +550,51 @@ const AppShellDemo: React.FC = () => {
               <VerticalDivider theme={theme} />
             </ProfileDivider>
 
-                   <Dropdown
-                    list={[
-                      { 
-                        label: adminMode ? 'Turn off Admin mode' : 'Turn on Admin mode',
-                        leftIconType: Icon.TYPES.LOCK_OUTLINE,
-                        value: 'admin' 
-                      },
-                      { 
-                        label: currentMode === 'dark' ? 'Turn off Dark mode' : 'Turn on Dark mode',
-                        leftIconType: currentMode === 'dark' ? Icon.TYPES.SUN_OUTLINE : Icon.TYPES.OVERNIGHT_OUTLINE,
-                        value: 'dark' 
-                      },
-                    ]}
-                    onChange={(value) => {
-                      if (value === 'admin') {
-                        setAdminMode(!adminMode);
-                      } else if (value === 'dark') {
-                        changeTheme(currentMode === 'dark' ? 'berry-light' : 'berry-dark');
-                      }
-                    }}
-                    placement="bottom-end"
-                  >
+            <Dropdown
+              list={[
+                {
+                  label: currentThemeName === 'berry' ? '✓ Berry Theme' : 'Berry Theme',
+                  value: 'berry',
+                },
+                {
+                  label:
+                    currentThemeName === 'plum' ? '✓ Plum Theme (Legacy)' : 'Plum Theme (Legacy)',
+                  value: 'plum',
+                },
+                {
+                  label: currentMode === 'light' ? '✓ Light Mode' : 'Light Mode',
+                  leftIconType: Icon.TYPES.SUN_OUTLINE,
+                  value: 'light',
+                },
+                {
+                  label: currentMode === 'dark' ? '✓ Dark Mode' : 'Dark Mode',
+                  leftIconType: Icon.TYPES.OVERNIGHT_OUTLINE,
+                  value: 'dark',
+                },
+                {
+                  label: adminMode ? 'Turn off Admin Mode' : 'Turn on Admin Mode',
+                  leftIconType: Icon.TYPES.LOCK_OUTLINE,
+                  value: 'admin',
+                },
+              ]}
+              onChange={value => {
+                if (value === 'admin') {
+                  setAdminMode(!adminMode);
+                } else if (value === 'light' || value === 'dark') {
+                  // Change mode (light/dark)
+                  changeMode(value);
+                } else if (value === 'berry' || value === 'plum') {
+                  // Change theme family (mode is preserved automatically)
+                  changeTheme(value);
+                }
+              }}
+              placement="bottom-end"
+              shouldAutoClose
+            >
               <ProfileSection theme={theme} style={{ cursor: 'pointer' }}>
                 <CompanyName theme={theme}>Acme, Inc.</CompanyName>
                 <UserAvatar theme={theme}>A</UserAvatar>
-                <Icon 
-                  type={Icon.TYPES.CHEVRON_DOWN} 
-                  size={16} 
-                  color={theme.colorOnSurface} 
-                />
+                <Icon type={Icon.TYPES.CHEVRON_DOWN} size={16} color={theme.colorOnSurface} />
               </ProfileSection>
             </Dropdown>
           </ActionsContainer>
@@ -585,7 +611,9 @@ const AppShellDemo: React.FC = () => {
               <NavItemIcon theme={theme}>
                 <Icon type={mainNavItems[0].icon} size={20} color={theme.colorOnSurface} />
               </NavItemIcon>
-              <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>{mainNavItems[0].label}</NavItemText>
+              <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>
+                {mainNavItems[0].label}
+              </NavItemText>
             </NavItem>
 
             {/* Divider inside the nav section */}
@@ -594,22 +622,17 @@ const AppShellDemo: React.FC = () => {
             </NavDivider>
 
             {/* Rest of apps */}
-            {mainNavItems.slice(1).map((item) => (
-              <NavItem
-                key={item.id}
-                theme={theme}
-              >
+            {mainNavItems.slice(1).map(item => (
+              <NavItem key={item.id} theme={theme}>
                 <NavItemIcon theme={theme}>
                   <Icon type={item.icon} size={20} color={theme.colorOnSurface} />
                 </NavItemIcon>
-                <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>{item.label}</NavItemText>
+                <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>
+                  {item.label}
+                </NavItemText>
                 {item.hasSubmenu && !sidebarCollapsed && (
                   <div style={{ marginLeft: 'auto' }}>
-                    <Icon
-                      type={Icon.TYPES.CHEVRON_RIGHT}
-                      size={16}
-                      color={theme.colorOnSurface}
-                    />
+                    <Icon type={Icon.TYPES.CHEVRON_RIGHT} size={16} color={theme.colorOnSurface} />
                   </div>
                 )}
               </NavItem>
@@ -618,23 +641,20 @@ const AppShellDemo: React.FC = () => {
 
           {/* Platform Section */}
           <NavSection theme={theme}>
-            <NavSectionLabel theme={theme} isCollapsed={sidebarCollapsed}>Platform</NavSectionLabel>
-            {platformNavItems.map((item) => (
-              <NavItem
-                key={item.id}
-                theme={theme}
-              >
+            <NavSectionLabel theme={theme} isCollapsed={sidebarCollapsed}>
+              Platform
+            </NavSectionLabel>
+            {platformNavItems.map(item => (
+              <NavItem key={item.id} theme={theme}>
                 <NavItemIcon theme={theme}>
                   <Icon type={item.icon} size={20} color={theme.colorOnSurface} />
                 </NavItemIcon>
-                <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>{item.label}</NavItemText>
+                <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>
+                  {item.label}
+                </NavItemText>
                 {item.hasSubmenu && !sidebarCollapsed && (
                   <div style={{ marginLeft: 'auto' }}>
-                    <Icon
-                      type={Icon.TYPES.CHEVRON_RIGHT}
-                      size={16}
-                      color={theme.colorOnSurface}
-                    />
+                    <Icon type={Icon.TYPES.CHEVRON_RIGHT} size={16} color={theme.colorOnSurface} />
                   </div>
                 )}
               </NavItem>
@@ -643,15 +663,17 @@ const AppShellDemo: React.FC = () => {
         </div>
 
         <PlatformFooter theme={theme}>
-          <CollapseButton 
-            theme={theme} 
+          <CollapseButton
+            theme={theme}
             isCollapsed={sidebarCollapsed}
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
             <NavItemIcon theme={theme}>
               <Icon type={Icon.TYPES.THUMBTACK_OUTLINE} size={20} color={theme.colorOnSurface} />
             </NavItemIcon>
-            <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>Collapse panel</NavItemText>
+            <NavItemText theme={theme} isCollapsed={sidebarCollapsed}>
+              Collapse panel
+            </NavItemText>
           </CollapseButton>
         </PlatformFooter>
       </Sidebar>
@@ -668,20 +690,17 @@ const AppShellDemo: React.FC = () => {
                 size={Page.Header.SIZES.FLUID}
                 actions={
                   <PageHeaderActions theme={theme}>
-                    <Button
-                      appearance={Button.APPEARANCES.PRIMARY}
-                      size={Button.SIZES.M}
-                    >
+                    <Button appearance={Button.APPEARANCES.PRIMARY} size={Button.SIZES.M}>
                       Button
                     </Button>
                   </PageHeaderActions>
                 }
               />
             </PageHeaderWrapper>
-            
+
             {/* Tabs integrated in header */}
             <TabsWrapper theme={theme}>
-              <Tabs.LINK activeIndex={activeTab} onChange={setActiveTab}>
+              <Tabs.LINK activeIndex={activeTab} onChange={index => setActiveTab(Number(index))}>
                 <Tabs.Tab title="Pay" />
                 <Tabs.Tab title="Bank Accounts" />
                 <Tabs.Tab title="Taxes" />
@@ -722,4 +741,3 @@ const AppShellDemo: React.FC = () => {
 };
 
 export default AppShellDemo;
-

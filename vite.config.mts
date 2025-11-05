@@ -5,9 +5,6 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const PEBBLE_MONOREPO = path.resolve(__dirname, '../pebble');
-const PEBBLE_SOURCE = path.resolve(PEBBLE_MONOREPO, 'packages/rippling-ui/source');
 const OVERRIDE_DIR = path.resolve(__dirname, 'src/overrides');
 
 export default defineConfig({
@@ -30,14 +27,20 @@ export default defineConfig({
         replacement: path.resolve(__dirname, 'src'),
       },
       
-      // Override system: Check src/overrides first, then Pebble source
+      // Smart override system: Only intercepts when override exists in src/overrides
+      // Otherwise falls back to node_modules (no monorepo required)
       {
         find: /^@rippling\/pebble\/(.+)$/,
-        replacement: (match, componentPath) => {
-          // Check if override exists as a file (with various extensions)
+        customResolver(source, importer, options) {
+          // Only handle imports that match our pattern
+          const match = source.match(/^@rippling\/pebble\/(.+)$/);
+          if (!match) return null;
+          
+          const componentPath = match[1];
           const overrideBase = path.resolve(OVERRIDE_DIR, componentPath);
           const extensions = ['', '.ts', '.tsx', '.js', '.jsx'];
           
+          // Check if override exists as a file
           for (const ext of extensions) {
             const overridePath = overrideBase + ext;
             if (fs.existsSync(overridePath) && fs.statSync(overridePath).isFile()) {
@@ -57,41 +60,10 @@ export default defineConfig({
             }
           }
           
-          // Fall back to Pebble source
-          return path.resolve(PEBBLE_SOURCE, componentPath);
+          // No override found - let Vite use normal resolution (node_modules)
+          return null;
         },
       },
-      
-      // Catch-all for @rippling/pebble (no subpath)
-      {
-        find: '@rippling/pebble',
-        replacement: PEBBLE_SOURCE,
-      },
-      
-      // Other Rippling monorepo packages (required by Pebble source)
-      // Note: More specific patterns must come FIRST (with subpaths)
-      {
-        find: /^@rippling\/ui-utils\/(.+)$/,
-        replacement: (match, subpath) => {
-          return path.resolve(PEBBLE_MONOREPO, `packages/rippling-ui-utils/source/${subpath}`);
-        },
-      },
-      {
-        find: /^@rippling\/lib-i18n\/(.+)$/,
-        replacement: (match, subpath) => {
-          return path.resolve(PEBBLE_MONOREPO, `packages/rippling-lib-i18n/source/${subpath}`);
-        },
-      },
-      // Catch-all for base packages (no subpath)
-      {
-        find: '@rippling/ui-utils',
-        replacement: path.resolve(PEBBLE_MONOREPO, 'packages/rippling-ui-utils/source'),
-      },
-      {
-        find: '@rippling/lib-i18n',
-        replacement: path.resolve(PEBBLE_MONOREPO, 'packages/rippling-lib-i18n/source'),
-      },
-      // Note: @rippling/pebble-tokens is NOT aliased - it uses the published npm package
     ],
   },
   define: {
