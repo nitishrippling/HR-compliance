@@ -5,12 +5,7 @@ import Dropdown from '@rippling/pebble/Dropdown';
 import ListItem from '@rippling/pebble/ListItem';
 import oneUiService, { getCurrentTheme } from '@rippling/pebble/services';
 import SnackBar from '@rippling/pebble/SnackBar';
-import {
-  ThemeProvider,
-  useTheme,
-  useThemeSettings,
-  THEME_CONFIGS,
-} from '@rippling/pebble/theme';
+import { ThemeProvider, useTheme, useThemeSettings, THEME_CONFIGS } from '@rippling/pebble/theme';
 import resources from '@rippling/pebble/translations/locales/en-US/one-ui.json';
 import React, { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
@@ -91,14 +86,14 @@ const PATH_TO_DEMO: Record<string, EditorType> = Object.entries(DEMO_ROUTES).red
     acc[path] = type as EditorType;
     return acc;
   },
-  {} as Record<string, EditorType>
+  {} as Record<string, EditorType>,
 );
 
 const Playground = (props: { className?: string }) => {
   const { className } = props;
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const storedData = React.useMemo(() => {
     try {
       return getStoredStates();
@@ -110,14 +105,14 @@ const Playground = (props: { className?: string }) => {
 
   const { changeTheme, changeMode } = useThemeSettings() as any;
   const { name: currentThemeName, theme, mode: currentMode } = useTheme();
-  
+
   // Get current demo type from URL path
   const getCurrentDemoFromPath = React.useCallback(() => {
     return PATH_TO_DEMO[location.pathname] ?? EditorType.DESIGN_TOKENS;
   }, [location.pathname]);
-  
+
   const [editorType, setEditorType] = React.useState(() => getCurrentDemoFromPath());
-  
+
   // Sync URL when demo changes
   React.useEffect(() => {
     const path = DEMO_ROUTES[editorType];
@@ -125,7 +120,7 @@ const Playground = (props: { className?: string }) => {
       navigate(path, { replace: false });
     }
   }, [editorType, navigate, location.pathname]);
-  
+
   // Sync demo when URL changes
   React.useEffect(() => {
     const demoFromPath = getCurrentDemoFromPath();
@@ -262,9 +257,7 @@ const Playground = (props: { className?: string }) => {
     <Button.Icon
       key="Theme"
       aria-label="toggle-theme"
-      icon={
-        currentMode === 'dark' ? Icon.TYPES.SUN_OUTLINE : Icon.TYPES.OVERNIGHT_OUTLINE
-      }
+      icon={currentMode === 'dark' ? Icon.TYPES.SUN_OUTLINE : Icon.TYPES.OVERNIGHT_OUTLINE}
       size={Button.SIZES.S}
       appearance={Button.APPEARANCES.OUTLINE}
       onClick={() => changeMode(currentMode === 'dark' ? 'light' : 'dark')}
@@ -376,8 +369,8 @@ const Playground = (props: { className?: string }) => {
         className={className}
       >
         {demoSwitcherDrawer}
-      {/* EDITORS DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
-      {/* {editorType === EditorType.RICH_TEXT && (
+        {/* EDITORS DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
+        {/* {editorType === EditorType.RICH_TEXT && (
         <>
           {isTopBarVisible && buttons}
           <div style={{ maxWidth: '900px', margin: '20px auto 0' }}>
@@ -430,18 +423,18 @@ const Playground = (props: { className?: string }) => {
         </>
       )} */}
 
-      {editorType === EditorType.APP_SHELL && <AppShellDemo />}
+        {editorType === EditorType.APP_SHELL && <AppShellDemo />}
 
-      {editorType === EditorType.DESIGN_TOKENS && <DesignTokensDemo />}
+        {editorType === EditorType.DESIGN_TOKENS && <DesignTokensDemo />}
 
-      {editorType === EditorType.MODAL_DEMO && <ModalDemo />}
+        {editorType === EditorType.MODAL_DEMO && <ModalDemo />}
 
-      {editorType === EditorType.ANIMATIONS && <AnimationsDemo />}
+        {editorType === EditorType.ANIMATIONS && <AnimationsDemo />}
 
-      {editorType === EditorType.FORKED_SELECT_TEST && <ForkedSelectTest />}
+        {editorType === EditorType.FORKED_SELECT_TEST && <ForkedSelectTest />}
 
-      {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
-      {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
+        {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
+        {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
         {!logTypingPerf && showEditorBasedPreview && (
           <>
             <p style={{ textDecoration: 'underline' }}>Editor Preview</p>
@@ -495,7 +488,7 @@ init().then(() => {
   root.render(
     <StrictMode>
       <BrowserRouter>
-        <ThemeProvider themeConfigs={THEME_CONFIGS} defaultTheme="berry-light">
+        <ThemeProvider themeConfigs={THEME_CONFIGS} defaultTheme="berry" defaultColorMode="light">
           <GlobalStyle />
           <Routes>
             <Route path="/" element={<IndexPage />} />
