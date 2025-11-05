@@ -90,17 +90,19 @@
 - `onChange`: `(value: any) => void` - Callback when item selected (required)
 - `shouldAutoClose`: `boolean` - Close menu after selection
 - `placement`: `'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'` - Menu position
+- `maxHeight`: `number` - Maximum height of dropdown menu in pixels
 - `children`: `ReactNode` - Trigger element (usually a Button)
 
 **ListItem Props:**
-- `label`: `string` - Display text (required)
-- `value`: `any` - Item value (required)
+- `label`: `string` - Display text (required for regular items)
+- `value`: `any` - Item value (required for regular items)
 - `leftIconType`: `Icon.TYPES.*` - ✅ **Icon displayed on left side**
 - `avatarProps`: `object` - Avatar displayed on left side
 - `avatarImage`: `string` - Avatar image URL
 - `flag`: `string` - Country flag code (displays flag on left)
 - `isDisabled`: `boolean` - Disable this menu item
-- `isSelected`: `boolean` - Show selected state
+- `isSelected`: `boolean` - Show selected state (checkmark on right)
+- `isSeparator`: `boolean` - ✅ **Renders a horizontal divider line** (omit label/value when true)
 
 **Example:**
 ```typescript
@@ -124,6 +126,30 @@
   <Button appearance={Button.APPEARANCES.GHOST}>
     Actions
   </Button>
+</Dropdown>
+
+// ✅ With separators and selected state
+<Dropdown
+  list={[
+    { label: 'Berry Theme', value: 'berry', isSelected: true },
+    { label: 'Plum Theme', value: 'plum' },
+    { isSeparator: true },  // Renders divider line
+    { 
+      label: 'Light Mode', 
+      leftIconType: Icon.TYPES.SUN_OUTLINE, 
+      value: 'light' 
+    },
+    { 
+      label: 'Dark Mode', 
+      leftIconType: Icon.TYPES.OVERNIGHT_OUTLINE, 
+      value: 'dark',
+      isSelected: true  // Shows checkmark on right
+    },
+  ]}
+  onChange={(value) => handleChange(value)}
+  maxHeight={400}
+>
+  <Button>Settings</Button>
 </Dropdown>
 
 // ❌ Wrong: Don't create custom React elements
