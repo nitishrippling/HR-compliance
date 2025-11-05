@@ -32,7 +32,11 @@ export default defineConfig({
       {
         find: /^@rippling\/pebble\/(.+)$/,
         customResolver(source, importer, options) {
-          const componentPath = source.match(/^@rippling\/pebble\/(.+)$/)[1];
+          // Only handle imports that match our pattern
+          const match = source.match(/^@rippling\/pebble\/(.+)$/);
+          if (!match) return null;
+          
+          const componentPath = match[1];
           const overrideBase = path.resolve(OVERRIDE_DIR, componentPath);
           const extensions = ['', '.ts', '.tsx', '.js', '.jsx'];
           
