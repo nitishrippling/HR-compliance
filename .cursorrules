@@ -231,12 +231,15 @@ theme.typestyleV2CodeSmall      // 12px, monospace - Inline code
 
 ### Shape (Border Radius)
 ```typescript
-theme.shapeCornerS      // 4px  - Small radius (buttons, small chips)
-theme.shapeCornerM      // 8px  - Medium radius (cards, inputs, code)
-theme.shapeCornerL      // 12px - Large radius (large cards)
-theme.shapeCornerXl     // 16px - Extra large radius (major containers)
-theme.shapeCorner3xl    // 28px - Huge radius (special cards, tables)
-theme.shapeCornerFull   // 999px - Fully rounded (pills, avatars, icons)
+theme.shapeCornerXs     // 2px   - Extra small radius
+theme.shapeCornerSm     // 4px   - Small radius (badges, small chips)
+theme.shapeCornerMd     // 6px   - Medium-small radius
+theme.shapeCornerLg     // 8px   - Standard radius (buttons, inputs, code)
+theme.shapeCornerXl     // 10px  - Large radius
+theme.shapeCorner2xl    // 12px  - Extra large radius (cards)
+theme.shapeCorner3xl    // 16px  - 3XL radius (modals, large panels)
+theme.shapeCorner4xl    // 24px  - 4XL radius (special cards, tables)
+theme.shapeCornerFull   // 9999px - Fully rounded (pills, avatars, icons)
 ```
 
 ### Token Usage Rules
@@ -263,15 +266,15 @@ theme.shapeCornerFull   // 999px - Fully rounded (pills, avatars, icons)
    ```typescript
    // Inline code
    background: theme.colorSurfaceContainerLow
-   borderRadius: theme.shapeCornerM
+   borderRadius: theme.shapeCornerLg
    
    // Code blocks
    background: theme.colorSurfaceContainerHighest
-   borderRadius: theme.shapeCornerM
+   borderRadius: theme.shapeCornerLg
    
    // Cards/Panels
    background: theme.colorSurfaceBright
-   borderRadius: theme.shapeCornerXl
+   borderRadius: theme.shapeCorner2xl
    border: 1px solid theme.colorOutlineVariant
    
    // Standard spacing between elements

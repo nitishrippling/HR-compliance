@@ -258,10 +258,15 @@ theme.space600    // 24px
 
 #### Border Radius
 ```typescript
-theme.shapeCornerXs    // 4px
-theme.shapeCornerS     // 8px
-theme.shapeCornerM     // 12px
-theme.shapeCornerL     // 16px
+theme.shapeCornerXs     // 2px   - Extra small radius
+theme.shapeCornerSm     // 4px   - Small radius (badges)
+theme.shapeCornerMd     // 6px   - Medium-small radius
+theme.shapeCornerLg     // 8px   - Standard radius (buttons, inputs)
+theme.shapeCornerXl     // 10px  - Large radius
+theme.shapeCorner2xl    // 12px  - Extra large radius (cards)
+theme.shapeCorner3xl    // 16px  - 3XL radius (modals, large panels)
+theme.shapeCorner4xl    // 24px  - 4XL radius (special cards)
+theme.shapeCornerFull   // 9999px - Fully rounded (pills, avatars)
 ```
 
 ## Animation Constants

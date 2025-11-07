@@ -70,6 +70,13 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     icon: Icon.TYPES.STAR_OUTLINE,
     folder: '@paul',
   },
+  {
+    title: 'Composition Manager',
+    description: 'Prototype for managing and organizing app compositions in App Studio.',
+    path: '/app-studio/composition-manager',
+    icon: Icon.TYPES.CUSTOM_APPS_OUTLINE,
+    folder: '@dvora',
+  },
 ];
 
 // Get demos that user has access to based on VITE_SHOW_DEMOS environment variable

@@ -85,12 +85,16 @@ export interface PebbleTheme {
   typestyleV2CodeSmall: string;
   
   // Shape (Border Radius)
-  shapeCornerS: string;
-  shapeCornerM: string;
-  shapeCornerL: string;
-  shapeCornerXl: string;
-  shapeCorner3xl: string;
-  shapeCornerFull: string;
+  shapeCornerXs: string;    // 2px
+  shapeCornerSm: string;    // 4px
+  shapeCornerMd: string;    // 6px
+  shapeCornerLg: string;    // 8px
+  shapeCornerXl: string;    // 10px
+  shapeCorner2xl: string;   // 12px
+  shapeCorner3xl: string;   // 16px
+  shapeCorner4xl: string;   // 24px
+  shapeCornerFull: string;  // 9999px
+  shapeCornerNone: string;  // 0px
   
   // Add other theme properties as needed
   [key: string]: any;

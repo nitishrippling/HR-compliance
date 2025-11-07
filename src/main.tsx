@@ -17,6 +17,8 @@ import DesignTokensDemo from './demos/@paul/design-tokens-demo';
 import ForkedSelectTest from './demos/@paul/forked-select-test';
 import MyFeatureDemo from './demos/@paul/my-feature-demo';
 import AppShellDemo from './demos/official/app-shell-demo';
+import CompositionManagerDemo from './demos/@dvora/CompositionManager/composition-manager-demo';
+import { CompositionDetail } from './demos/@dvora/CompositionManager/compositions/CompositionDetail';
 import IndexPage from './demos/index-page';
 import GettingStartedPage from './demos/getting-started-page';
 import DocViewerPage from './demos/doc-viewer-page';
@@ -72,6 +74,7 @@ enum EditorType {
   FORKED_SELECT_TEST = 'forked-select-test',
   MY_FEATURE = 'my-feature',
   APP_SHELL = 'app-shell',
+  COMPOSITION_MANAGER = 'composition-manager',
 }
 
 // Map demo types to URL paths
@@ -82,6 +85,7 @@ const DEMO_ROUTES: Record<EditorType, string> = {
   [EditorType.MODAL_DEMO]: '/drawer-demo',
   [EditorType.FORKED_SELECT_TEST]: '/forked-select-test',
   [EditorType.MY_FEATURE]: '/my-feature-demo',
+  [EditorType.COMPOSITION_MANAGER]: '/app-studio/composition-manager',
 };
 
 // Reverse map for path to demo type
@@ -205,6 +209,7 @@ const Playground = (props: { className?: string }) => {
     { type: EditorType.MODAL_DEMO, label: 'Drawer Demo' },
     { type: EditorType.FORKED_SELECT_TEST, label: 'Forked Select Test' },
     { type: EditorType.MY_FEATURE, label: 'My Feature' },
+    { type: EditorType.COMPOSITION_MANAGER, label: 'Composition Manager' },
   ];
 
   const SETTINGS_OPTIONS = [
@@ -359,13 +364,13 @@ const Playground = (props: { className?: string }) => {
 
   return (
     <>
-      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && buttons}
+      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && buttons}
       <div
         role="main"
         style={{
           backgroundColor: theme.colorSurface,
           minHeight: '100vh',
-          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE ? '60px' : '0',
+          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER ? '60px' : '0',
           transition: 'padding-top 0.2s ease',
         }}
         className={className}
@@ -437,6 +442,8 @@ const Playground = (props: { className?: string }) => {
 
         {editorType === EditorType.MY_FEATURE && <MyFeatureDemo />}
 
+        {editorType === EditorType.COMPOSITION_MANAGER && <CompositionManagerDemo />}
+
         {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
         {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
         {!logTypingPerf && showEditorBasedPreview && (
@@ -504,6 +511,8 @@ init().then(() => {
             <Route path="/drawer-demo" element={<Playground />} />
             <Route path="/forked-select-test" element={<Playground />} />
             <Route path="/my-feature-demo" element={<Playground />} />
+            <Route path="/app-studio/composition-manager" element={<Playground />} />
+            <Route path="/app-studio/composition-manager/compositions/:id" element={<CompositionDetail />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ThemeProvider>
