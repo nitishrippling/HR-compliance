@@ -41,3 +41,5 @@ lerna-debug.log*
 src/demos/private/
 
 
+.npmrc
+yarn.lock

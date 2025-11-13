@@ -36,6 +36,13 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     folder: 'official',
   },
   {
+    title: 'Company Theme',
+    description: 'Company Settings theme management interface with empty state and theme creation workflow.',
+    path: '/company-theme-demo',
+    icon: Icon.TYPES.CUP_DROPLET_OUTLINE,
+    folder: 'official',
+  },
+  {
     title: 'Design Tokens',
     description: 'Browse and explore Pebble design tokens including colors, spacing, and typography.',
     path: '/design-tokens-demo',
