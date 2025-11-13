@@ -5,6 +5,7 @@ import { useTheme } from '@rippling/pebble/theme';
 import Icon from '@rippling/pebble/Icon';
 import Button from '@rippling/pebble/Button';
 import Card from '@rippling/pebble/Card';
+import Chip from '@rippling/pebble/Chip';
 import Select from '@rippling/pebble/Inputs/Select';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
@@ -22,9 +23,19 @@ import { RealTimePreview } from './components/RealTimePreview';
  * - Real-time preview panel
  */
 
+interface Theme {
+  id: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  tertiaryColor: string;
+}
+
 interface ThemeEditorPageProps {
   themeName: string;
+  initialTheme?: Theme | null;
   onBack?: () => void;
+  onSave?: (theme: Theme) => void;
 }
 
 // Main container with single scroll
@@ -211,7 +222,62 @@ const FooterEnd = styled.div`
   gap: ${({ theme }) => (theme as StyledTheme).space300};
 `;
 
-const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) => {
+// Supergroup components for assignments
+const SupergroupCard = styled.div`
+  background: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
+  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => (theme as StyledTheme).space350};
+  padding: ${({ theme }) => (theme as StyledTheme).space400};
+  padding-bottom: 0;
+`;
+
+const SupergroupRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SupergroupContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  flex: 1;
+`;
+
+const SupergroupLabel = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+`;
+
+const SupergroupActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const SupergroupFooter = styled.div`
+  border-top: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  height: 54px;
+  padding-right: ${({ theme }) => (theme as StyledTheme).space400};
+`;
+
+const FooterLabel = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+`;
+
+const FooterPlaceholder = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+`;
+
+const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialTheme, onBack, onSave }) => {
   const { theme } = usePebbleTheme();
   const { name: currentThemeName, mode: colorMode } = useTheme();
   
@@ -219,27 +285,18 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) 
   const isDarkMode = colorMode === 'dark' || currentThemeName?.toLowerCase().includes('dark') || false;
   const previewMode: 'light' | 'dark' = isDarkMode ? 'dark' : 'light';
 
-  // State for theme configuration
+  // State for theme configuration - initialize from initialTheme if provided
   const [selectedTheme, setSelectedTheme] = useState(themeName);
-  const [primaryColor, setPrimaryColor] = useState('#6B2C91');
-  const [secondaryColor, setSecondaryColor] = useState('#007991');
-  const [tertiaryColor, setTertiaryColor] = useState('#FF8C00');
+  const [primaryColor, setPrimaryColor] = useState(initialTheme?.primaryColor || '#6B2C91');
+  const [secondaryColor, setSecondaryColor] = useState(initialTheme?.secondaryColor || '#007991');
+  const [tertiaryColor, setTertiaryColor] = useState(initialTheme?.tertiaryColor || '#FF8C00');
   const [darkPrimaryColor, setDarkPrimaryColor] = useState('#B39DDB');
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
-  const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>(undefined);
 
   // Mock theme options
   const themeOptions = [
     { label: themeName, value: themeName },
-  ];
-
-  const departmentOptions = [
-    { label: 'Engineering', value: 'engineering' },
-    { label: 'Marketing', value: 'marketing' },
-    { label: 'Sales', value: 'sales' },
-    { label: 'HR', value: 'hr' },
-    { label: 'Finance', value: 'finance' },
   ];
 
   const handleBack = () => {
@@ -259,15 +316,23 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) 
   };
 
   const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log('Saving theme configuration:', {
-      themeName: selectedTheme,
-      lightMode: { primaryColor, secondaryColor, tertiaryColor },
-      darkMode: { darkPrimaryColor, darkSecondaryColor, darkTertiaryColor },
-      department: selectedDepartment,
-    });
-    // Show success message or navigate back
-    alert('Theme saved successfully!');
+    const savedTheme: Theme = {
+      id: initialTheme?.id || `theme-${Date.now()}`,
+      name: selectedTheme,
+      primaryColor,
+      secondaryColor,
+      tertiaryColor,
+    };
+    
+    console.log('Saving theme configuration:', savedTheme);
+    
+    // Call the onSave callback if provided
+    if (onSave) {
+      onSave(savedTheme);
+    } else {
+      // If no onSave callback, just go back
+      handleBack();
+    }
   };
 
   return (
@@ -427,14 +492,47 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) 
             <VStack gap="1rem">
               <SectionTitle theme={theme}>Theme Assignments</SectionTitle>
               <SectionSubtitle theme={theme}>{themeName}</SectionSubtitle>
-              <Select
-                id="department-select"
-                placeholder="Select a department or entity to assign this theme"
-                list={departmentOptions}
-                value={selectedDepartment}
-                onChange={(value) => setSelectedDepartment(value as string)}
-                size={Select.SIZES.M}
-              />
+              <SupergroupCard theme={theme}>
+                <SupergroupRow>
+                  <SupergroupContent theme={theme}>
+                    <SupergroupLabel theme={theme}>Include:</SupergroupLabel>
+                    <Chip.Group>
+                      <Chip 
+                        size={Chip.SIZES.L}
+                        icon={Icon.TYPES.USER_OUTLINE}
+                      >
+                        Emerson Culhane
+                      </Chip>
+                      <Chip 
+                        size={Chip.SIZES.L}
+                        icon={Icon.TYPES.USERS_OUTLINE}
+                      >
+                        All admins
+                      </Chip>
+                    </Chip.Group>
+                  </SupergroupContent>
+                  <SupergroupActions theme={theme}>
+                    <Button.Icon
+                      icon={Icon.TYPES.USERS_OUTLINE}
+                      size={Button.Icon.SIZES.XS}
+                      appearance={Button.Icon.APPEARANCES.OUTLINE}
+                      aria-label="Add user or group"
+                      onClick={() => console.log('Add user/group')}
+                    />
+                    <Button.Icon
+                      icon={Icon.TYPES.SETTINGS_OUTLINE}
+                      size={Button.Icon.SIZES.XS}
+                      appearance={Button.Icon.APPEARANCES.OUTLINE}
+                      aria-label="Settings"
+                      onClick={() => console.log('Settings')}
+                    />
+                  </SupergroupActions>
+                </SupergroupRow>
+                <SupergroupFooter theme={theme}>
+                  <FooterLabel theme={theme}>Except:</FooterLabel>
+                  <FooterPlaceholder theme={theme}>Click to add exceptions</FooterPlaceholder>
+                </SupergroupFooter>
+              </SupergroupCard>
             </VStack>
           </Card.Layout>
         </LeftColumn>

@@ -6,9 +6,18 @@ import Button from '@rippling/pebble/Button';
 import Card from '@rippling/pebble/Card';
 import Modal from '@rippling/pebble/Modal';
 import Input from '@rippling/pebble/Inputs';
+import Chip from '@rippling/pebble/Chip';
 import { AppShellLayout, NavSectionData } from '@/components/app-shell';
-import { VStack } from '@rippling/pebble/Layout/Stack';
+import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import ThemeEditorPage from './theme-editor-page';
+
+interface Theme {
+  id: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  tertiaryColor: string;
+}
 
 /**
  * Company Theme Demo
@@ -111,11 +120,130 @@ const Label = styled.label`
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
 `;
 
+const SectionTitle = styled.h3`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2TitleSmall};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  margin: 0;
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
+  font-weight: 535;
+`;
+
+const ThemeLibraryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: ${({ theme }) => (theme as StyledTheme).space400};
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space800};
+`;
+
+const ThemeCard = styled.button`
+  background: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
+  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCorner2xl};
+  padding: ${({ theme }) => (theme as StyledTheme).space400};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  
+  &:hover {
+    border-color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+const ThemeCardName = styled.div`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyLarge};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  font-weight: 535;
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const ColorChipsContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const ColorChip = styled.div<{ color: string }>`
+  width: 20px;
+  height: 20px;
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerSm};
+  background-color: ${({ color }) => color};
+  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+`;
+
+const AssignmentSection = styled.div`
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
+`;
+
+const AssignmentThemeTitle = styled.div`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelLarge};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space200};
+  font-weight: 535;
+`;
+
+const SupergroupCard = styled.div`
+  background: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
+  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => (theme as StyledTheme).space350};
+  padding: ${({ theme }) => (theme as StyledTheme).space400};
+  padding-bottom: 0;
+`;
+
+const SupergroupRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SupergroupContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  flex: 1;
+`;
+
+const SupergroupLabel = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+`;
+
+const SupergroupActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const SupergroupFooter = styled.div`
+  border-top: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  height: 54px;
+  padding-right: ${({ theme }) => (theme as StyledTheme).space400};
+`;
+
+const FooterLabel = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+`;
+
+const FooterPlaceholder = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+`;
+
 const CompanyThemeDemo: React.FC = () => {
   const { theme } = usePebbleTheme();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [themeName, setThemeName] = useState('Acme Theme');
+  const [themeName, setThemeName] = useState('');
   const [showEditor, setShowEditor] = useState(false);
+  const [editingThemeId, setEditingThemeId] = useState<string | null>(null);
+  
+  // Store list of themes
+  const [themes, setThemes] = useState<Theme[]>([]);
 
   // Sidebar navigation - Company Settings section
   const companySettingsSection: NavSectionData = {
@@ -145,7 +273,18 @@ const CompanyThemeDemo: React.FC = () => {
   const tabs = ['Flow Configuration', 'Notifications', 'Billing', 'Branding', 'Security'];
 
   const handleCreateTheme = () => {
+    setThemeName('');
+    setEditingThemeId(null);
     setShowCreateModal(true);
+  };
+
+  const handleEditTheme = (themeId: string) => {
+    const themeToEdit = themes.find(t => t.id === themeId);
+    if (themeToEdit) {
+      setThemeName(themeToEdit.name);
+      setEditingThemeId(themeId);
+      setShowEditor(true);
+    }
   };
 
   const handleSaveTheme = () => {
@@ -156,10 +295,23 @@ const CompanyThemeDemo: React.FC = () => {
     setShowEditor(true);
   };
 
+  const handleSaveThemeFromEditor = (savedTheme: Theme) => {
+    if (editingThemeId) {
+      // Update existing theme
+      setThemes(themes.map(t => t.id === editingThemeId ? savedTheme : t));
+    } else {
+      // Add new theme
+      setThemes([...themes, savedTheme]);
+    }
+    setShowEditor(false);
+    setEditingThemeId(null);
+  };
+
   const handleCancelModal = () => {
     setShowCreateModal(false);
     // Reset form
-    setThemeName('Acme Theme');
+    setThemeName('');
+    setEditingThemeId(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -181,7 +333,18 @@ const CompanyThemeDemo: React.FC = () => {
 
   // If editor is open, show theme editor page
   if (showEditor) {
-    return <ThemeEditorPage themeName={themeName} onBack={() => setShowEditor(false)} />;
+    const editingTheme = editingThemeId ? themes.find(t => t.id === editingThemeId) : null;
+    return (
+      <ThemeEditorPage 
+        themeName={themeName} 
+        initialTheme={editingTheme}
+        onBack={() => {
+          setShowEditor(false);
+          setEditingThemeId(null);
+        }}
+        onSave={handleSaveThemeFromEditor}
+      />
+    );
   }
 
   return (
@@ -200,36 +363,108 @@ const CompanyThemeDemo: React.FC = () => {
           <CardTitle>Theme Settings</CardTitle>
         </CardHeader>
 
-        <EmptyStateContainer>
-          <IllustrationWrapper>
-            <IllustrationBackground />
-            <IllustrationIcon>
-              <Icon 
-                type={Icon.TYPES.CUP_DROPLET_OUTLINE} 
-                size={64}
-              />
-            </IllustrationIcon>
-          </IllustrationWrapper>
+        {themes.length === 0 ? (
+          // Empty state
+          <EmptyStateContainer>
+            <IllustrationWrapper>
+              <IllustrationBackground />
+              <IllustrationIcon>
+                <Icon 
+                  type={Icon.TYPES.CUP_DROPLET_OUTLINE} 
+                  size={64}
+                />
+              </IllustrationIcon>
+            </IllustrationWrapper>
 
-          <VStack gap="1rem">
-            <EmptyStateTitle>
-              Currently, there are no themes created in your account.
-            </EmptyStateTitle>
-            <EmptyStateDescription>
-              Initiate the theme creation process by clicking the button below to customize 
-              the appearance and ambiance of your organization.
-            </EmptyStateDescription>
-          </VStack>
+            <VStack gap="1rem">
+              <EmptyStateTitle>
+                Currently, there are no themes created in your account.
+              </EmptyStateTitle>
+              <EmptyStateDescription>
+                Initiate the theme creation process by clicking the button below to customize 
+                the appearance and ambiance of your organization.
+              </EmptyStateDescription>
+            </VStack>
 
-          <Button 
-            appearance={Button.APPEARANCES.PRIMARY} 
-            size={Button.SIZES.M}
-            onClick={handleCreateTheme}
-            icon={{ type: Icon.TYPES.ADD }}
-          >
-            Create a Theme
-          </Button>
-        </EmptyStateContainer>
+            <Button 
+              appearance={Button.APPEARANCES.PRIMARY} 
+              size={Button.SIZES.M}
+              onClick={handleCreateTheme}
+              icon={{ type: Icon.TYPES.ADD }}
+            >
+              Create a Theme
+            </Button>
+          </EmptyStateContainer>
+        ) : (
+          // Theme library
+          <>
+            <SectionTitle>Theme Library</SectionTitle>
+            <ThemeLibraryGrid>
+              {themes.map((themeItem) => (
+                <ThemeCard
+                  key={themeItem.id}
+                  onClick={() => handleEditTheme(themeItem.id)}
+                >
+                  <ThemeCardName>{themeItem.name}</ThemeCardName>
+                  <ColorChipsContainer>
+                    <ColorChip color={themeItem.primaryColor} />
+                    <ColorChip color={themeItem.secondaryColor} />
+                    <ColorChip color={themeItem.tertiaryColor} />
+                  </ColorChipsContainer>
+                </ThemeCard>
+              ))}
+            </ThemeLibraryGrid>
+
+            {/* Assignments Section */}
+            <SectionTitle>Assignments</SectionTitle>
+            {themes.map((themeItem) => (
+              <AssignmentSection key={`assignment-${themeItem.id}`}>
+                <AssignmentThemeTitle>{themeItem.name}</AssignmentThemeTitle>
+                <SupergroupCard>
+                  <SupergroupRow>
+                    <SupergroupContent>
+                      <SupergroupLabel>Include:</SupergroupLabel>
+                      <Chip.Group>
+                        <Chip 
+                          size={Chip.SIZES.L}
+                          icon={Icon.TYPES.USER_OUTLINE}
+                        >
+                          Emerson Culhane
+                        </Chip>
+                        <Chip 
+                          size={Chip.SIZES.L}
+                          icon={Icon.TYPES.USERS_OUTLINE}
+                        >
+                          All admins
+                        </Chip>
+                      </Chip.Group>
+                    </SupergroupContent>
+                    <SupergroupActions>
+                      <Button.Icon
+                        icon={Icon.TYPES.USER_PLUS_OUTLINE}
+                        size={Button.Icon.SIZES.XS}
+                        appearance={Button.Icon.APPEARANCES.OUTLINE}
+                        aria-label="Add user or group"
+                        onClick={() => console.log('Add user/group')}
+                      />
+                      <Button.Icon
+                        icon={Icon.TYPES.SETTINGS_OUTLINE}
+                        size={Button.Icon.SIZES.XS}
+                        appearance={Button.Icon.APPEARANCES.OUTLINE}
+                        aria-label="Settings"
+                        onClick={() => console.log('Settings')}
+                      />
+                    </SupergroupActions>
+                  </SupergroupRow>
+                  <SupergroupFooter>
+                    <FooterLabel>Except:</FooterLabel>
+                    <FooterPlaceholder>Click to add exceptions</FooterPlaceholder>
+                  </SupergroupFooter>
+                </SupergroupCard>
+              </AssignmentSection>
+            ))}
+          </>
+        )}
       </Card.Layout>
 
       {/* Create Theme Modal */}
