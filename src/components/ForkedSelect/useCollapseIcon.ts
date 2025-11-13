@@ -1,18 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Icon from '@rippling/pebble/Icon';
 import { usePebbleTheme } from '../../utils/theme';
 import { INPUT_SIZES } from '@rippling/pebble/Inputs/Input.constants';
-import type { Theme } from '@rippling/pebble/theme';
 
-function getIconSizeFromInputSize(props: { inputSize?: INPUT_SIZES; theme: Theme }) {
+function getIconSizeFromInputSize(props: { inputSize?: INPUT_SIZES; theme: any }) {
   const { inputSize, theme } = props;
 
   switch (inputSize) {
     case INPUT_SIZES.XS:
     case INPUT_SIZES.S:
-      return theme.sizeIcon2xs;
+      return (theme as any).sizeIcon2xs;
     default:
-      return theme.sizeIconXs;
+      return (theme as any).sizeIconXs;
   }
 }
 

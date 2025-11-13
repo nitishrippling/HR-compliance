@@ -72,7 +72,7 @@ const Select = React.forwardRef<
   } = props;
   const hasValueInProps = value !== undefined;
 
-  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' });
+  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' as any });
   const fuseOptions = useSelectFuseOptions({ fuseOptions: fuseOptionsProp as FuseOptions });
 
   // ==============================
@@ -143,11 +143,11 @@ const Select = React.forwardRef<
       emptyListPlaceholderString =
         typeof emptyListPlaceholderProp === 'object'
           ? emptyListPlaceholderProp?.onNoSearchResults
-          : t('noSearchResultPlaceholder');
+          : t('noSearchResultPlaceholder' as any);
     }
     return (
       <EmptyListJSX
-        placeholder={emptyListPlaceholderString || t('emptyListPlaceholder')}
+        placeholder={emptyListPlaceholderString || t('emptyListPlaceholder' as any)}
         searchQuery={inputValue}
       />
     );

@@ -28,7 +28,7 @@ export interface StyleProps {
   maxHeight?: React.CSSProperties['maxHeight'] | number;
 }
 
-const SearchIconContainer = styled.span<Pick<SelectControlProps, 'size' | 'isMulti'>>`
+const SearchIconContainer = styled.span<Pick<SelectControlProps, 'size' | 'isMulti'> & { theme?: any }>`
   padding-top: ${getIconAffixTopPaddingFromInputSize};
   align-self: start;
   display: inline-flex;
@@ -58,7 +58,7 @@ const getMaxHeightStyle = ({ maxHeight, theme, size, isMulti }: TagsContainerPro
   `;
 };
 
-const TagsContainer = styled.div<Omit<TagsContainerProps, 'theme'>>`
+const TagsContainer = styled.div<Omit<TagsContainerProps, 'theme'> & { theme?: any }>`
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -66,10 +66,10 @@ const TagsContainer = styled.div<Omit<TagsContainerProps, 'theme'>>`
   outline: none;
   padding: ${props =>
     `calc(${getTagsContainerVerticalPaddingFromInputize(props)} - ${
-      props.theme?.shapeBorderWidthXs
-    }*2) ${props.theme.space0}`};
+      (props.theme as any)?.shapeBorderWidthXs || '1px'
+    }*2) ${(props.theme as any)?.space0 || '0px'}`};
   max-width: 100%;
-  gap: ${({ theme }) => theme.space100};
+  gap: ${({ theme }) => (theme as any)?.space100 || '4px'};
 `;
 
 const selectLeftSectionStyles = `
@@ -82,17 +82,17 @@ const searchSelectLeftSectionStyles = `
   flex: 1;
 `;
 
-const MiddleSection = styled.div<Pick<StyleProps, 'maxHeight' | 'size' | 'isMulti'>>`
+const MiddleSection = styled.div<Pick<StyleProps, 'maxHeight' | 'size' | 'isMulti'> & { theme?: any }>`
   overflow: hidden;
   max-width: 100%;
-  ${getMaxHeightStyle}
+  ${getMaxHeightStyle as any}
   ${getShowScrollbarAlwaysStyle()}
   align-self: center;
   align-items: center;
   flex: 1;
 `;
 
-const LeftSection = styled.div<Pick<SelectControlProps, 'isMulti' | 'size'>>`
+const LeftSection = styled.div<Pick<SelectControlProps, 'isMulti' | 'size'> & { theme?: any }>`
   display: flex;
   align-self: ${({ isMulti }) => (isMulti ? 'flex-start' : 'center')};
 `;
@@ -103,29 +103,29 @@ const NonSearchActionElement = styled.div`
   align-items: center;
 `;
 
-const Container = styled.div<StyleProps>`
+const Container = styled.div<StyleProps & { theme?: any }>`
   display: flex;
   align-self: flex-start;
 
   align-items: ${({ isMulti }) => (isMulti ? 'flex-start' : 'center')};
 
-  min-height: calc(${getHeightFromSize} - ${({ theme }) => theme.shapeBorderWidthXs} * 2);
+  min-height: calc(${getHeightFromSize} - ${({ theme }) => ((theme as any)?.shapeBorderWidthXs || '1px')} * 2);
   max-height: ${({ maxHeight, size, theme }) =>
-    maxHeight ? getSanitizedMaxHeight(maxHeight) : getMaxHeightFromSize({ size, theme })};
+    maxHeight ? getSanitizedMaxHeight(maxHeight) : getMaxHeightFromSize({ size, theme: theme as any })};
   overflow-y: hidden;
 
-  padding: ${props => `${props.theme.space0} ${getHorizontalPaddingFromInputSize(props)}`};
+  padding: ${props => `${(props.theme as any)?.space0 || '0px'} ${getHorizontalPaddingFromInputSize(props)}`};
 
   ${({ theme, isMulti }) =>
     !isMulti
       ? `
       /* No vertical padding required when not multi since content is center aligned */
-      padding-top: ${theme.space0};
-      padding-bottom: ${theme.space0};
+      padding-top: ${(theme as any)?.space0 || '0px'};
+      padding-bottom: ${(theme as any)?.space0 || '0px'};
     `
       : ''}
 
-  gap: ${({ theme }) => theme.space100};
+  gap: ${({ theme }) => (theme as any)?.space100 || '4px'};
 
   ${MiddleSection} {
     ${props => (props.isSearchable ? searchSelectLeftSectionStyles : selectLeftSectionStyles)};
@@ -134,18 +134,18 @@ const Container = styled.div<StyleProps>`
   ${({ computedCss }) => computedCss}
 `;
 
-const LeftAssetContainer = styled.div`
+const LeftAssetContainer = styled.div<{ theme?: any }>`
   display: inline-flex;
-  margin-right: ${({ theme }) => theme.space100};
+  margin-right: ${({ theme }) => (theme as any)?.space100 || '4px'};
 `;
 
-const DefaultWrapper = styled.div`
+const DefaultWrapper = styled.div<{ theme?: any }>`
   align-items: center;
   display: flex;
   flex: 1;
 `;
 
-const AvatarContainer = styled.div<{ size?: INPUT_SIZES }>`
+const AvatarContainer = styled.div<{ size?: INPUT_SIZES; theme?: any }>`
   height: ${getAvatarSizeFromInputSize};
   width: ${getAvatarSizeFromInputSize};
 
@@ -161,11 +161,11 @@ const AvatarContainer = styled.div<{ size?: INPUT_SIZES }>`
 `;
 
 const CollapseIconContainer = styled.div<
-  Pick<SelectControlProps, 'size' | 'isMulti'> & { isRotated?: boolean }
+  Pick<SelectControlProps, 'size' | 'isMulti'> & { isRotated?: boolean; theme?: any }
 >`
   display: inline-flex;
   ${({ size, isMulti, theme }) =>
-    isMulti && size === INPUT_SIZES.XS ? `margin-top: -${theme.space50};` : ''}
+    isMulti && size === INPUT_SIZES.XS ? `margin-top: -${(theme as any)?.space50 || '2px'};` : ''}
   padding-top: ${getIconAffixTopPaddingFromInputSize};
 
   /* Add rotation transition and transform */

@@ -77,6 +77,13 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     icon: Icon.TYPES.CUSTOM_APPS_OUTLINE,
     folder: '@dvora',
   },
+  {
+    title: 'Employee Profile',
+    description: 'Employee profile page with layout editor and composition management.',
+    path: '/employee-profile',
+    icon: Icon.TYPES.PEO_OUTLINE,
+    folder: '@dvora',
+  },
 ];
 
 // Get demos that user has access to based on VITE_SHOW_DEMOS environment variable
@@ -192,13 +199,6 @@ const GuidesTitle = styled.h2`
   ${({ theme }) => (theme as StyledTheme).typestyleV2TitleLarge};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
   margin: 0 0 ${({ theme }) => (theme as StyledTheme).space800} 0;
-`;
-
-const GuidesDescription = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyLarge};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0 0 ${({ theme }) => (theme as StyledTheme).space600} 0;
-  max-width: 800px;
 `;
 
 const CodePath = styled.code`
@@ -343,14 +343,6 @@ const AddCardTitle = styled.h2`
   text-align: center;
 `;
 
-const AddCardDescription = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0;
-  line-height: 1.5;
-  text-align: center;
-`;
-
 const DrawerContent = styled.div``;
 
 const InstructionSection = styled.div`
@@ -479,13 +471,13 @@ const IndexPage: React.FC = () => {
               <Avatar
                 size={Avatar.SIZES.S}
                 image={avatarUrl}
-                name={displayName}
+                {...({ name: displayName } as any)}
                 alt={`${displayName} avatar`}
               />
             ) : (
               <Avatar
                 size={Avatar.SIZES.S}
-                name={displayName}
+                {...({ name: displayName } as any)}
               />
             )}
             <GreetingText theme={theme}>Hi {firstName}</GreetingText>

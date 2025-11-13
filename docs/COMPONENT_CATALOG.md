@@ -750,7 +750,7 @@ Icon.TYPES.DOLLAR_CIRCLE_OUTLINE
 ### Badge
 
 **Purpose:** Status indicator or count  
-**Import:** `import Badge from '@rippling/pebble/Badge';`  
+**Import:** `import Badge from '@rippling/pebble/Atoms/Badge';`  
 **Usage Guide:** [guides/components/badge.md](./guides/components/badge.md)
 
 **Badge Props:**

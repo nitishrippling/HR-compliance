@@ -19,6 +19,9 @@ import MyFeatureDemo from './demos/@paul/my-feature-demo';
 import AppShellDemo from './demos/official/app-shell-demo';
 import CompositionManagerDemo from './demos/@dvora/CompositionManager/composition-manager-demo';
 import { CompositionDetail } from './demos/@dvora/CompositionManager/compositions/CompositionDetail';
+import EmployeeProfileDemo from './demos/@dvora/EmployeeProfile/employee-profile-demo';
+import { LayoutListPage } from './demos/@dvora/EmployeeProfile/layouts/LayoutListPage';
+import { PageLayoutEditor } from './demos/@dvora/EmployeeProfile/layouts/PageLayoutEditor';
 import IndexPage from './demos/index-page';
 import GettingStartedPage from './demos/getting-started-page';
 import DocViewerPage from './demos/doc-viewer-page';
@@ -75,6 +78,7 @@ enum EditorType {
   MY_FEATURE = 'my-feature',
   APP_SHELL = 'app-shell',
   COMPOSITION_MANAGER = 'composition-manager',
+  EMPLOYEE_PROFILE = 'employee-profile',
 }
 
 // Map demo types to URL paths
@@ -86,6 +90,7 @@ const DEMO_ROUTES: Record<EditorType, string> = {
   [EditorType.FORKED_SELECT_TEST]: '/forked-select-test',
   [EditorType.MY_FEATURE]: '/my-feature-demo',
   [EditorType.COMPOSITION_MANAGER]: '/app-studio/composition-manager',
+  [EditorType.EMPLOYEE_PROFILE]: '/employee-profile',
 };
 
 // Reverse map for path to demo type
@@ -210,6 +215,7 @@ const Playground = (props: { className?: string }) => {
     { type: EditorType.FORKED_SELECT_TEST, label: 'Forked Select Test' },
     { type: EditorType.MY_FEATURE, label: 'My Feature' },
     { type: EditorType.COMPOSITION_MANAGER, label: 'Composition Manager' },
+    { type: EditorType.EMPLOYEE_PROFILE, label: 'Employee Profile' },
   ];
 
   const SETTINGS_OPTIONS = [
@@ -364,13 +370,24 @@ const Playground = (props: { className?: string }) => {
 
   return (
     <>
-      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && buttons}
+      {editorType !== EditorType.APP_SHELL &&
+        editorType !== EditorType.MY_FEATURE &&
+        editorType !== EditorType.COMPOSITION_MANAGER &&
+        editorType !== EditorType.EMPLOYEE_PROFILE &&
+        buttons}
       <div
         role="main"
         style={{
           backgroundColor: theme.colorSurface,
           minHeight: '100vh',
-          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER ? '60px' : '0',
+          paddingTop:
+            isTopBarVisible &&
+            editorType !== EditorType.APP_SHELL &&
+            editorType !== EditorType.MY_FEATURE &&
+            editorType !== EditorType.COMPOSITION_MANAGER &&
+            editorType !== EditorType.EMPLOYEE_PROFILE
+              ? '60px'
+              : '0',
           transition: 'padding-top 0.2s ease',
         }}
         className={className}
@@ -444,6 +461,8 @@ const Playground = (props: { className?: string }) => {
 
         {editorType === EditorType.COMPOSITION_MANAGER && <CompositionManagerDemo />}
 
+        {editorType === EditorType.EMPLOYEE_PROFILE && <EmployeeProfileDemo />}
+
         {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
         {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
         {!logTypingPerf && showEditorBasedPreview && (
@@ -512,7 +531,13 @@ init().then(() => {
             <Route path="/forked-select-test" element={<Playground />} />
             <Route path="/my-feature-demo" element={<Playground />} />
             <Route path="/app-studio/composition-manager" element={<Playground />} />
-            <Route path="/app-studio/composition-manager/compositions/:id" element={<CompositionDetail />} />
+            <Route
+              path="/app-studio/composition-manager/compositions/:id"
+              element={<CompositionDetail />}
+            />
+            <Route path="/employee-profile" element={<Playground />} />
+            <Route path="/employee-profile/layouts" element={<LayoutListPage />} />
+            <Route path="/employee-profile/layouts/:layoutId/edit" element={<PageLayoutEditor />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ThemeProvider>

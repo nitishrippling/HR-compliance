@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { StyledBaseInputContainer, ReadOnlyStyles } from '@rippling/pebble/Inputs/Input.styles';
 import ChipStyles from '@rippling/pebble/Chip/Chip.style';
 import { BaseItemContainer } from '@rippling/pebble/MenuList/atoms/Styles/BaseItem.styles';
-import type { INPUT_SIZES } from '@rippling/pebble/Inputs/Input.constants';
 
 type StyleSelectProps = {
   computedCss?: string;
@@ -19,7 +18,7 @@ export const SelectContainer = styled(StyledBaseInputContainer)<StyleSelectProps
   ${props => props.computedCss};
 `;
 
-export const ReadOnlyList = styled.div<{ size?: INPUT_SIZES }>`
+export const ReadOnlyList = styled.div`
   ${ReadOnlyStyles};
 
   ${BaseItemContainer} {
@@ -33,9 +32,9 @@ export const ReadOnlyList = styled.div<{ size?: INPUT_SIZES }>`
     }
   }
 `;
-const SelectAllToggleContainer = styled.div`
-  border-bottom: ${({ theme }) => `${theme.shapeBorderWidthXs} solid ${theme.colorOutlineVariant}`};
-  margin-bottom: ${({ theme }) => theme.space100};
+const SelectAllToggleContainer = styled.div<{ theme?: any }>`
+  border-bottom: ${({ theme }) => `${(theme as any)?.shapeBorderWidthXs || '1px'} solid ${(theme as any)?.colorOutlineVariant || 'rgba(0,0,0,0.1)'}`};
+  margin-bottom: ${({ theme }) => (theme as any)?.space100 || '4px'};
 `;
 
 export default {

@@ -15,7 +15,7 @@ import { useCollapseIcon } from '../useCollapseIcon';
 import Country from '@rippling/pebble/Atoms/Country';
 import Avatar from '@rippling/pebble/Avatar';
 import Button from '@rippling/pebble/Button';
-import { usePebbleTheme, StyledTheme } from '../../../utils/theme';
+import { usePebbleTheme } from '../../../utils/theme';
 import Text from '@rippling/pebble/Text';
 import {
   getChipSizeFromInputSize,
@@ -96,13 +96,13 @@ const SelectControl = (props: SelectControlProps) => {
     [selectedOptions, isMulti],
   );
 
-  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' });
-  const SELECT_PLACEHOLDER = t('placeholder');
-  const SEARCH_INPUT_PLACEHOLDER = t('searchInputPlaceholder');
+  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' as any });
+  const SELECT_PLACEHOLDER = t('placeholder' as any);
+  const SEARCH_INPUT_PLACEHOLDER = t('searchInputPlaceholder' as any);
 
   const iconTipProps = useMemo(
     () => ({
-      content: t('selectControl.clearTip'),
+      content: t('selectControl.clearTip' as any),
       placement: Icon.TOOLTIP_PLACEMENTS.RIGHT,
     }),
     [t],
@@ -195,12 +195,16 @@ const SelectControl = (props: SelectControlProps) => {
       <Styled.DefaultWrapper>
         {!isMenuOpen && renderLeftDisplayIcon(selectedOptions)}
         <SearchInput
-          {...searchInputProps}
-          {...(ariaProps as Omit<React.HTMLAttributes<HTMLElement>, 'value' | 'defaultValue'>)}
           innerRef={innerRef}
           isDisabled={isDisabled}
           value={inputValue}
-          {...{ onChange, onFocus, onBlur, onKeyDown, size }}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onKeyDown={onKeyDown}
+          placeholder={getSearchInputPlaceholder(hasValidSelection, placeholder || SEARCH_INPUT_PLACEHOLDER)}
+          {...(searchInputProps as any)}
+          {...(ariaProps as any)}
         />
       </Styled.DefaultWrapper>
     );
@@ -232,7 +236,7 @@ const SelectControl = (props: SelectControlProps) => {
       const { title, ...rest } = option.avatarProps || {};
       return (
         <Styled.LeftAssetContainer>
-          <Styled.AvatarContainer size={size}>
+          <Styled.AvatarContainer>
             <Avatar
               image={option.avatarImage}
               imageBackground={option.avatarImageBackground}
@@ -248,7 +252,7 @@ const SelectControl = (props: SelectControlProps) => {
         <Styled.LeftAssetContainer>
           <Icon
             type={option.leftIconType}
-            size={getLeftIconSizeFromInputSize({ size, theme: pebbleTheme })}
+            size={getLeftIconSizeFromInputSize({ size, theme: pebbleTheme as any })}
             color={pebbleTheme.colorOnSurface}
           />
         </Styled.LeftAssetContainer>
@@ -270,7 +274,7 @@ const SelectControl = (props: SelectControlProps) => {
       return (
         <Styled.DefaultWrapper>
           {renderLeftDisplayIcon(selectedOptions)}
-          <Text typestyle={getTypestyleFromInputSize({ size, theme: pebbleTheme })}>
+          <Text typestyle={getTypestyleFromInputSize({ size, theme: pebbleTheme as any })}>
             {option?.label}
           </Text>
         </Styled.DefaultWrapper>
@@ -316,7 +320,7 @@ const SelectControl = (props: SelectControlProps) => {
     return (
       iconProps.type && (
         <Icon
-          size={getSearchIconSizeFromInputSize({ theme: pebbleTheme, size })}
+          size={getSearchIconSizeFromInputSize({ theme: pebbleTheme as any, size })}
           color={pebbleTheme.colorOnSurface}
           {...iconPropsLocal}
         />
@@ -345,7 +349,7 @@ const SelectControl = (props: SelectControlProps) => {
       return (
         <Styled.NonSearchActionElement {...getNonInputControlProps()}>
           <Text
-            typestyle={getPlaceholderTypestyleFromInputSize({ size, theme: pebbleTheme })}
+            typestyle={getPlaceholderTypestyleFromInputSize({ size, theme: pebbleTheme as any })}
             color={pebbleTheme.colorOnSurfaceVariant}
           >
             {placeholder || SELECT_PLACEHOLDER}
@@ -371,7 +375,7 @@ const SelectControl = (props: SelectControlProps) => {
       <Styled.NonSearchActionElement {...getNonInputControlProps()}>
         {isEmpty(selectedOptions) ? (
           <Text
-            typestyle={getPlaceholderTypestyleFromInputSize({ size, theme: pebbleTheme })}
+            typestyle={getPlaceholderTypestyleFromInputSize({ size, theme: pebbleTheme as any })}
             color={pebbleTheme.colorOnSurfaceVariant}
           >
             {placeholder || SELECT_PLACEHOLDER}
@@ -397,7 +401,7 @@ const SelectControl = (props: SelectControlProps) => {
           isInline
           padding={{
             top: getButtonAffixTopPaddingFromInputSize({
-              theme: pebbleTheme,
+              theme: pebbleTheme as any,
               isMulti,
               size,
             }),
@@ -406,7 +410,7 @@ const SelectControl = (props: SelectControlProps) => {
           {/* eslint-disable-next-line react/jsx-pascal-case */}
           <DO_NOT_USE_ButtonContextProvider value={DEFAULT_BUTTON_CONTEXT_VALUE}>
             <Button.Icon
-              aria-label={t('clearLabel')}
+              aria-label={t('clearLabel' as any)}
               icon={Icon.TYPES.CLEAR}
               onClick={onClickCancel}
               tip={iconTipProps}

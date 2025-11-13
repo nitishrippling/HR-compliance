@@ -23,11 +23,11 @@ function renderFooter({
 }
 
 const SelectMenu = forwardRef<HTMLDivElement, SelectMenuProps>(function SelectMenu(props, ref) {
-  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' });
+  const { t } = useTranslation('one-ui', { keyPrefix: 'inputs.select' as any });
 
   const {
     children,
-    emptyListPlaceholder = t('emptyListPlaceholder'),
+    emptyListPlaceholder = t('emptyListPlaceholder' as any),
     footer,
     header,
     height,

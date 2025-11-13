@@ -11,7 +11,7 @@ interface AppShellLayoutProps {
   children: React.ReactNode;
 
   // Page config
-  pageTitle: string;
+  pageTitle?: string;
   pageTabs?: string[];
   defaultActiveTab?: number;
   onTabChange?: (index: number) => void;
@@ -20,6 +20,7 @@ interface AppShellLayoutProps {
   // Navigation config
   mainNavSections: NavSectionData[];
   platformNavSection?: NavSectionData;
+  defaultSidebarCollapsed?: boolean;
 
   // Top nav config
   companyName?: string;
@@ -115,6 +116,7 @@ export const AppShellLayout: React.FC<AppShellLayoutProps> = ({
   pageActions,
   mainNavSections,
   platformNavSection,
+  defaultSidebarCollapsed = false,
   companyName = 'Acme, Inc.',
   userInitial = 'A',
   searchPlaceholder = 'Search or jump to...',
@@ -123,7 +125,7 @@ export const AppShellLayout: React.FC<AppShellLayoutProps> = ({
   notificationCount = 0,
 }) => {
   const { theme, mode: currentMode, name: currentThemeName } = usePebbleTheme();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(defaultSidebarCollapsed);
   const [activeTab, setActiveTab] = useState(defaultActiveTab);
   const [adminMode, setAdminMode] = useState(false);
 
@@ -162,34 +164,40 @@ export const AppShellLayout: React.FC<AppShellLayoutProps> = ({
       <MainContent theme={theme} sidebarCollapsed={sidebarCollapsed}>
         <PageContentContainer theme={theme}>
           {/* Page Header with Actions and Tabs */}
-          <PageHeaderContainer theme={theme}>
-            <PageHeaderWrapper theme={theme}>
-              <Page.Header
-                title={pageTitle}
-                shouldBeUnderlined={false}
-                size={Page.Header.SIZES.FLUID}
-                actions={
-                  pageActions ? (
-                    <PageHeaderActions theme={theme}>{pageActions}</PageHeaderActions>
-                  ) : undefined
-                }
-              />
-            </PageHeaderWrapper>
+          {(pageTitle || pageActions || (pageTabs && pageTabs.length > 0)) && (
+            <PageHeaderContainer theme={theme}>
+              {(pageTitle || pageActions) && (
+                <PageHeaderWrapper theme={theme}>
+                  {pageTitle && (
+                    <Page.Header
+                      title={pageTitle}
+                      shouldBeUnderlined={false}
+                      size={Page.Header.SIZES.FLUID}
+                      actions={
+                        pageActions ? (
+                          <PageHeaderActions theme={theme}>{pageActions}</PageHeaderActions>
+                        ) : undefined
+                      }
+                    />
+                  )}
+                </PageHeaderWrapper>
+              )}
 
-            {/* Tabs integrated in header */}
-            {pageTabs && pageTabs.length > 0 && (
-              <TabsWrapper theme={theme}>
-                <Tabs.LINK
-                  activeIndex={activeTab}
-                  onChange={index => handleTabChange(Number(index))}
-                >
-                  {pageTabs.map((tab, index) => (
-                    <Tabs.Tab key={`tab-${index}`} title={tab} />
-                  ))}
-                </Tabs.LINK>
-              </TabsWrapper>
-            )}
-          </PageHeaderContainer>
+              {/* Tabs integrated in header */}
+              {pageTabs && pageTabs.length > 0 && (
+                <TabsWrapper theme={theme}>
+                  <Tabs.LINK
+                    activeIndex={activeTab}
+                    onChange={index => handleTabChange(Number(index))}
+                  >
+                    {pageTabs.map((tab, index) => (
+                      <Tabs.Tab key={`tab-${index}`} title={tab} />
+                    ))}
+                  </Tabs.LINK>
+                </TabsWrapper>
+              )}
+            </PageHeaderContainer>
+          )}
 
           {/* Page Content */}
           <PageContent theme={theme}>{children}</PageContent>
