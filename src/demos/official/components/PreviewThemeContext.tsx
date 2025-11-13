@@ -91,6 +91,9 @@ interface PreviewThemeProviderProps {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  darkPrimaryColor?: string;
+  darkSecondaryColor?: string;
+  darkTertiaryColor?: string;
   mode?: 'light' | 'dark';
   children: ReactNode;
 }
@@ -378,10 +381,18 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   primaryColor,
   secondaryColor,
   tertiaryColor,
+  darkPrimaryColor,
+  darkSecondaryColor,
+  darkTertiaryColor,
   mode = 'light',
   children,
 }) => {
-  const theme = createPreviewTheme(primaryColor, secondaryColor, tertiaryColor, mode);
+  // Use dark mode colors if provided and mode is dark, otherwise use light mode colors
+  const effectivePrimary = mode === 'dark' && darkPrimaryColor ? darkPrimaryColor : primaryColor;
+  const effectiveSecondary = mode === 'dark' && darkSecondaryColor ? darkSecondaryColor : secondaryColor;
+  const effectiveTertiary = mode === 'dark' && darkTertiaryColor ? darkTertiaryColor : tertiaryColor;
+  
+  const theme = createPreviewTheme(effectivePrimary, effectiveSecondary, effectiveTertiary, mode);
   
   return (
     <EmotionThemeProvider theme={theme}>

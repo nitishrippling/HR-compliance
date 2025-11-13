@@ -717,6 +717,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                   primaryColor={primaryColor}
                   secondaryColor={secondaryColor}
                   tertiaryColor={tertiaryColor}
+                  darkPrimaryColor={darkPrimaryColor}
+                  darkSecondaryColor={darkSecondaryColor}
+                  darkTertiaryColor={darkTertiaryColor}
                   mode={previewMode}
                 >
                   <RealTimePreview />
