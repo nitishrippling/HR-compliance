@@ -1,18 +1,67 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { useTheme } from '@emotion/react';
 import { PreviewTheme } from './PreviewThemeContext';
 import Icon from '@rippling/pebble/Icon';
 import Button from '@rippling/pebble/Button';
 import Input from '@rippling/pebble/Inputs';
 import Avatar from '@rippling/pebble/Avatar';
 import Badge from '@rippling/pebble/Atoms/Badge';
+import RipplingLogoLight from '@/assets/rippling-logo-light.svg';
+import RipplingLogoDark from '@/assets/rippling-logo-dark.svg';
 
 /**
  * RealTimePreview
  * 
  * Pixel-perfect implementation from Figma design.
  * Uses theme tokens for dynamic color updates.
+ * Includes Rippling logos with smart selection based on background color.
+ * 
+ * Logo Selection Logic:
+ * - If background needs white text → use Light logo (white/light colored)
+ * - If background needs black text → use Dark logo (black/dark colored)
  */
+
+/**
+ * Calculate relative luminance for WCAG contrast
+ */
+function getLuminance(color: string): number {
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  
+  const [rs, gs, bs] = [r, g, b].map(c => {
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+/**
+ * Calculate contrast ratio between two colors
+ */
+function getContrastRatio(color1: string, color2: string): number {
+  const lum1 = getLuminance(color1);
+  const lum2 = getLuminance(color2);
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Determine which logo to use based on background color
+ * LogoLight = dark/black logo (for light backgrounds)
+ * LogoDark = light/white logo (for dark backgrounds)
+ */
+function getLogoForBackground(backgroundColor: string): string {
+  const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
+  const blackContrast = getContrastRatio(backgroundColor, '#000000');
+  
+  // If white text has better contrast (dark background), use LogoDark (white logo)
+  // If black text has better contrast (light background), use LogoLight (black logo)
+  return whiteContrast > blackContrast ? RipplingLogoDark : RipplingLogoLight;
+}
 
 const PreviewContainer = styled.div`
   width: 100%;
@@ -671,23 +720,46 @@ const LoginHeader = styled.div`
   background: ${({ theme }) => (theme as PreviewTheme).colorPrimary};
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 `;
 
 const BrandLogo = styled.div`
-  width: 140.53px;
-  height: 20px;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
-  font-size: 16px;
-  font-family: 'Basel Grotesk', sans-serif;
-  font-weight: 600;
-  letter-spacing: 2px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  
+  img {
+    height: 100%;
+    width: auto;
+  }
+`;
+
+const CompanyName = styled.div`
+  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+  ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleLarge};
+  font-weight: 600;
+`;
+
+const DocumentCompanyName = styled.div`
+  color: ${({ theme }) => (theme as PreviewTheme).colorOnSurface};
+  ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleLarge};
+  font-weight: 600;
+  margin-left: 12px;
+`;
+
+const NavLogo = styled.img`
+  height: 32px;
+  width: auto;
+`;
+
+const DocumentLogo = styled.img`
+  height: 40px;
+  width: auto;
 `;
 
 const LoginBody = styled.div`
@@ -886,15 +958,6 @@ const DocumentHeaderRow = styled.div`
   position: relative;
 `;
 
-const CompanyInfo = styled.div`
-  position: absolute;
-  left: 0;
-  top: 9px;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnSurface};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyLarge};
-  font-weight: 535;
-`;
-
 const DownloadButton = styled.button`
   position: absolute;
   right: 0;
@@ -1041,6 +1104,13 @@ const PayrollDecoration = styled.div`
 `;
 
 export const RealTimePreview: React.FC = () => {
+  const theme = useTheme() as PreviewTheme;
+  
+  // Determine which logos to use based on background colors
+  const navLogo = getLogoForBackground(theme.colorPrimary);
+  const loginLogo = getLogoForBackground(theme.colorPrimary);
+  const documentLogo = getLogoForBackground(theme.colorSurfaceBright);
+  
   return (
     <PreviewContainer>
       <InnerContainer>
@@ -1059,7 +1129,7 @@ export const RealTimePreview: React.FC = () => {
                 {/* Top Navigation Bar */}
                 <TopNavBar>
                   <NavLogoSection>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold' }}>⚡</div>
+                    <NavLogo src={navLogo} alt="Rippling" />
                   </NavLogoSection>
                   <NavMainSection>
                     <SearchBar>
@@ -1262,11 +1332,14 @@ export const RealTimePreview: React.FC = () => {
               <LoginContainer>
                 <LoginCard>
                   <LoginHeader>
-                    <BrandLogo>⚡ RIPPLING</BrandLogo>
+                    <BrandLogo>
+                      <img src={loginLogo} alt="Rippling" />
+                    </BrandLogo>
+                    <CompanyName>Acme Industries</CompanyName>
                   </LoginHeader>
                   <LoginBody>
                     <LockIcon />
-                    <LoginTitle>Sign into Rippling</LoginTitle>
+                    <LoginTitle>Sign into Acme Industries</LoginTitle>
                     <FormContainer>
                       <InputGroup>
                         <InputLabel>
@@ -1310,7 +1383,10 @@ export const RealTimePreview: React.FC = () => {
             <DocumentFrame>
               <DocumentContainer>
                 <DocumentHeaderRow>
-                  <CompanyInfo>Acme Industries</CompanyInfo>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <DocumentLogo src={documentLogo} alt="Rippling" />
+                    <DocumentCompanyName>Acme Industries</DocumentCompanyName>
+                  </div>
                   <div style={{ position: 'absolute', right: 0, top: 0 }}>
                     <Button 
                       size={Button.SIZES.M}
@@ -1326,7 +1402,7 @@ export const RealTimePreview: React.FC = () => {
                   <InfoColumn>
                     <InfoLabel>Employer</InfoLabel>
                     <InfoValue>
-                      Rippling<br />
+                      Acme Industries<br />
                       55 2nd st<br />
                       London, England
                     </InfoValue>
