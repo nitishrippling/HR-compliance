@@ -943,7 +943,7 @@ const DocumentFrame = styled.div`
 const DocumentContainer = styled.div`
   width: 720px;
   padding: 24px;
-  background: white;
+  background: ${({ theme }) => (theme as PreviewTheme).colorSurfaceBright};
   border-radius: 2px;
   display: inline-flex;
   flex-direction: column;

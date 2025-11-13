@@ -91,6 +91,7 @@ interface PreviewThemeProviderProps {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  mode?: 'light' | 'dark';
   children: ReactNode;
 }
 
@@ -223,11 +224,39 @@ function createColorPalette(
 const createPreviewTheme = (
   primaryColor: string,
   secondaryColor: string,
-  tertiaryColor: string
+  tertiaryColor: string,
+  mode: 'light' | 'dark' = 'light'
 ): PreviewTheme => {
   const primary = createColorPalette(primaryColor, 'primary');
   const secondary = createColorPalette(secondaryColor, 'secondary');
   const tertiary = createColorPalette(tertiaryColor, 'tertiary');
+  
+  // Surface colors based on theme mode
+  const surfaceColors = mode === 'dark' 
+    ? {
+        colorSurface: '#141415',
+        colorOnSurface: '#FAFAFA',
+        colorSurfaceVariant: '#A3A3A5',
+        colorOnSurfaceVariant: '#A8A8A8',
+        colorSurfaceBright: '#202022',
+        colorSurfaceContainerLow: '#171614',
+        colorSurfaceContainerHigh: '#232220',
+        colorOutline: 'rgba(255, 255, 255, 0.2)',
+        colorOutlineVariant: 'rgba(255, 255, 255, 0.1)',
+      }
+    : {
+
+
+        colorSurface: '#F9F7F6',
+        colorOnSurface: '#000000',
+        colorSurfaceVariant: '#716F6C',
+        colorOnSurfaceVariant: '#716F6C',
+        colorSurfaceBright: '#FFFFFF',
+        colorSurfaceContainerLow: '#F3F1EE',
+        colorSurfaceContainerHigh: '#E6E4E1',
+        colorOutline: 'rgba(0, 0, 0, 0.2)',
+        colorOutlineVariant: 'rgba(0, 0, 0, 0.1)',
+      };
   
   return {
     // Primary colors
@@ -254,18 +283,8 @@ const createPreviewTheme = (
     colorTertiaryVariant: tertiary.variant,
     colorOnTertiaryVariant: tertiary.onVariant,
     
-    // Surface colors (neutral)
-    colorSurface: '#FAFAFA',
-    colorOnSurface: '#202022',
-    colorSurfaceVariant: '#E3E3E3',
-    colorOnSurfaceVariant: '#6F6F72',
-    colorSurfaceBright: '#FFFFFF',
-    colorSurfaceContainerLow: '#F5F5F5',
-    colorSurfaceContainerHigh: '#EEEEEE',
-    
-    // Outline colors
-    colorOutline: 'rgba(0, 0, 0, 0.2)',
-    colorOutlineVariant: 'rgba(0, 0, 0, 0.1)',
+    // Surface colors (from mode)
+    ...surfaceColors,
     
     // Semantic colors
     colorError: '#D32F2F',
@@ -359,9 +378,10 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   primaryColor,
   secondaryColor,
   tertiaryColor,
+  mode = 'light',
   children,
 }) => {
-  const theme = createPreviewTheme(primaryColor, secondaryColor, tertiaryColor);
+  const theme = createPreviewTheme(primaryColor, secondaryColor, tertiaryColor, mode);
   
   return (
     <EmotionThemeProvider theme={theme}>

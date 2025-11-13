@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme, usePebbleTheme } from '@/utils/theme';
+import { useTheme } from '@rippling/pebble/theme';
 import Icon from '@rippling/pebble/Icon';
 import Button from '@rippling/pebble/Button';
 import Card from '@rippling/pebble/Card';
@@ -212,6 +213,11 @@ const FooterEnd = styled.div`
 
 const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) => {
   const { theme } = usePebbleTheme();
+  const { name: currentThemeName, mode: colorMode } = useTheme();
+  
+  // Detect if current theme is dark mode (check both theme name and color mode)
+  const isDarkMode = colorMode === 'dark' || currentThemeName?.toLowerCase().includes('dark') || false;
+  const previewMode: 'light' | 'dark' = isDarkMode ? 'dark' : 'light';
 
   // State for theme configuration
   const [selectedTheme, setSelectedTheme] = useState(themeName);
@@ -444,6 +450,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, onBack }) 
                   primaryColor={primaryColor}
                   secondaryColor={secondaryColor}
                   tertiaryColor={tertiaryColor}
+                  mode={previewMode}
                 >
                   <RealTimePreview />
                 </PreviewThemeProvider>
