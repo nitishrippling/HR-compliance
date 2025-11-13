@@ -1,6 +1,18 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, createContext, useContext } from 'react';
 import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
 import Color from 'colorjs.io';
+
+// Context for logo data
+interface LogoContextData {
+  lightLogo?: string;
+  darkLogo?: string;
+  lightLogoBackground?: string;
+  darkLogoBackground?: string;
+}
+
+const LogoContext = createContext<LogoContextData>({});
+
+export const useLogoContext = () => useContext(LogoContext);
 
 /**
  * PreviewThemeContext
@@ -94,6 +106,10 @@ interface PreviewThemeProviderProps {
   darkPrimaryColor?: string;
   darkSecondaryColor?: string;
   darkTertiaryColor?: string;
+  lightLogo?: string;
+  darkLogo?: string;
+  lightLogoBackground?: string;
+  darkLogoBackground?: string;
   mode?: 'light' | 'dark';
   children: ReactNode;
 }
@@ -384,6 +400,10 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   darkPrimaryColor,
   darkSecondaryColor,
   darkTertiaryColor,
+  lightLogo,
+  darkLogo,
+  lightLogoBackground,
+  darkLogoBackground,
   mode = 'light',
   children,
 }) => {
@@ -394,9 +414,18 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   
   const theme = createPreviewTheme(effectivePrimary, effectiveSecondary, effectiveTertiary, mode);
   
+  const logoData: LogoContextData = {
+    lightLogo,
+    darkLogo,
+    lightLogoBackground,
+    darkLogoBackground,
+  };
+  
   return (
     <EmotionThemeProvider theme={theme}>
-      {children}
+      <LogoContext.Provider value={logoData}>
+        {children}
+      </LogoContext.Provider>
     </EmotionThemeProvider>
   );
 };

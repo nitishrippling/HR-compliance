@@ -30,6 +30,10 @@ interface Theme {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  lightLogo?: string; // Data URL or file path for light background logo
+  darkLogo?: string; // Data URL or file path for dark background logo
+  lightLogoBackground?: string; // Background color for light logo
+  darkLogoBackground?: string; // Background color for dark logo
 }
 
 interface ThemeEditorPageProps {
@@ -202,6 +206,81 @@ const FileTypeHint = styled.span`
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
 `;
 
+const HiddenFileInput = styled.input`
+  display: none;
+`;
+
+const LogoPreviewBox = styled.div<{ isDark?: boolean; bgColor?: string }>`
+  height: 98px;
+  border: 2px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  background-color: ${({ bgColor, theme, isDark }) =>
+    bgColor === 'transparent'
+      ? isDark
+        ? (theme as StyledTheme).colorSurfaceContainerHighest
+        : (theme as StyledTheme).colorSurfaceContainerLow
+      : bgColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => (theme as StyledTheme).space400};
+  position: relative;
+  overflow: hidden;
+`;
+
+const LogoPreviewImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+`;
+
+const ChipContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const BackgroundSelectorLabel = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const BackgroundColorOptions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const BackgroundColorOption = styled.button<{ color: string; isSelected: boolean }>`
+  width: 24px;
+  height: 24px;
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerSm};
+  background-color: ${({ color }) => color};
+  border: ${({ isSelected, theme }) =>
+    isSelected
+      ? `2px solid ${(theme as StyledTheme).colorPrimary}`
+      : `1px solid ${(theme as StyledTheme).colorOutlineVariant}`};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+  
+  ${({ color }) =>
+    color === 'transparent' &&
+    `
+    background: 
+      linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  `}
+`;
+
 // Color input grid
 const ColorInputGrid = styled.div`
   display: grid;
@@ -358,6 +437,14 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
   
+  // Logo state
+  const [lightLogo, setLightLogo] = useState<string | undefined>(initialThemeToUse?.lightLogo);
+  const [darkLogo, setDarkLogo] = useState<string | undefined>(initialThemeToUse?.darkLogo);
+  const [lightLogoBackground, setLightLogoBackground] = useState<string>(initialThemeToUse?.lightLogoBackground || 'transparent');
+  const [darkLogoBackground, setDarkLogoBackground] = useState<string>(initialThemeToUse?.darkLogoBackground || 'transparent');
+  const [lightLogoFileName, setLightLogoFileName] = useState<string>('');
+  const [darkLogoFileName, setDarkLogoFileName] = useState<string>('');
+  
   // Modal state for adding new themes
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newThemeName, setNewThemeName] = useState('');
@@ -369,16 +456,24 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(initialTheme.primaryColor);
       setSecondaryColor(initialTheme.secondaryColor);
       setTertiaryColor(initialTheme.tertiaryColor);
+      setLightLogo(initialTheme.lightLogo);
+      setDarkLogo(initialTheme.darkLogo);
+      setLightLogoBackground(initialTheme.lightLogoBackground || 'transparent');
+      setDarkLogoBackground(initialTheme.darkLogoBackground || 'transparent');
     }
   }, [initialTheme]);
 
-  // Update colors when allThemes or selectedThemeId changes
+  // Update colors and logos when allThemes or selectedThemeId changes
   useEffect(() => {
     const currentTheme = allThemes.find(t => t.id === selectedThemeId);
     if (currentTheme) {
       setPrimaryColor(currentTheme.primaryColor);
       setSecondaryColor(currentTheme.secondaryColor);
       setTertiaryColor(currentTheme.tertiaryColor);
+      setLightLogo(currentTheme.lightLogo);
+      setDarkLogo(currentTheme.darkLogo);
+      setLightLogoBackground(currentTheme.lightLogoBackground || 'transparent');
+      setDarkLogoBackground(currentTheme.darkLogoBackground || 'transparent');
     }
   }, [allThemes, selectedThemeId]);
 
@@ -407,6 +502,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
         primaryColor,
         secondaryColor,
         tertiaryColor,
+        lightLogo,
+        darkLogo,
+        lightLogoBackground,
+        darkLogoBackground,
       };
       onSave(currentTheme, false);
     }
@@ -418,6 +517,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(selectedTheme.primaryColor);
       setSecondaryColor(selectedTheme.secondaryColor);
       setTertiaryColor(selectedTheme.tertiaryColor);
+      setLightLogo(selectedTheme.lightLogo);
+      setDarkLogo(selectedTheme.darkLogo);
+      setLightLogoBackground(selectedTheme.lightLogoBackground || 'transparent');
+      setDarkLogoBackground(selectedTheme.darkLogoBackground || 'transparent');
       
       // Call parent's onThemeSwitch
       if (onThemeSwitch) {
@@ -445,6 +548,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
         primaryColor,
         secondaryColor,
         tertiaryColor,
+        lightLogo,
+        darkLogo,
+        lightLogoBackground,
+        darkLogoBackground,
       };
       onSave(currentTheme, false);
     }
@@ -456,6 +563,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       primaryColor: '#7a005d', // Rippling Berry primary
       secondaryColor: '#ffa81d', // Rippling Berry secondary
       tertiaryColor: '#1e4aa9', // Rippling Berry tertiary
+      lightLogo: undefined,
+      darkLogo: undefined,
+      lightLogoBackground: 'transparent',
+      darkLogoBackground: 'transparent',
     };
 
     // Add the new theme (don't close editor)
@@ -468,6 +579,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
     setPrimaryColor(newTheme.primaryColor);
     setSecondaryColor(newTheme.secondaryColor);
     setTertiaryColor(newTheme.tertiaryColor);
+    setLightLogo(undefined);
+    setDarkLogo(undefined);
+    setLightLogoBackground('transparent');
+    setDarkLogoBackground('transparent');
 
     // Call parent's onThemeSwitch to update the parent state
     if (onThemeSwitch) {
@@ -485,6 +600,43 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
     }
   };
 
+  // Logo upload handlers
+  const handleLightLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setLightLogoFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setLightLogo(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDarkLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setDarkLogoFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setDarkLogo(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLightLogo = () => {
+    setLightLogo(undefined);
+    setLightLogoFileName('');
+  };
+
+  const handleRemoveDarkLogo = () => {
+    setDarkLogo(undefined);
+    setDarkLogoFileName('');
+  };
+
   const handleSave = () => {
     const savedTheme: Theme = {
       id: selectedThemeId || `theme-${Date.now()}`,
@@ -492,6 +644,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       primaryColor,
       secondaryColor,
       tertiaryColor,
+      lightLogo,
+      darkLogo,
+      lightLogoBackground,
+      darkLogoBackground,
     };
     
     console.log('Saving theme configuration:', savedTheme);
@@ -572,20 +728,157 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
               </div>
 
               <LogoUploadGrid theme={theme}>
+                {/* Light Logo Upload */}
                 <LogoUploadArea>
                   <SectionSubtitle theme={theme}>Logo for light backgrounds</SectionSubtitle>
-                  <UploadBox theme={theme}>
-                    <UploadText theme={theme}>Drop logo here</UploadText>
-                  </UploadBox>
+                  
+                  {/* Show chip if logo is uploaded */}
+                  {lightLogo && (
+                    <ChipContainer theme={theme}>
+                      <Chip
+                        isCloseable
+                        onClose={handleRemoveLightLogo}
+                      >
+                        {lightLogoFileName || 'Uploaded logo'}
+                      </Chip>
+                    </ChipContainer>
+                  )}
+                  
+                  {/* Hidden file input */}
+                  <HiddenFileInput
+                    ref={(input: HTMLInputElement | null) => {
+                      if (input) input.accept = 'image/png, image/svg+xml';
+                    }}
+                    type="file"
+                    id="light-logo-upload"
+                    accept="image/png, image/svg+xml"
+                    onChange={handleLightLogoUpload}
+                  />
+                  
+                  {/* Show preview if uploaded, otherwise show upload box */}
+                  {lightLogo ? (
+                    <LogoPreviewBox theme={theme} bgColor={lightLogoBackground}>
+                      <LogoPreviewImage src={lightLogo} alt="Light logo preview" />
+                    </LogoPreviewBox>
+                  ) : (
+                    <UploadBox
+                      theme={theme}
+                      onClick={() => document.getElementById('light-logo-upload')?.click()}
+                    >
+                      <UploadText theme={theme}>Drop logo here</UploadText>
+                    </UploadBox>
+                  )}
+                  
                   <FileTypeHint theme={theme}>PNG or SVG</FileTypeHint>
+                  
+                  {/* Background color selector */}
+                  {lightLogo && (
+                    <div>
+                      <BackgroundSelectorLabel theme={theme}>
+                        Set logo background
+                      </BackgroundSelectorLabel>
+                      <BackgroundColorOptions theme={theme}>
+                        <BackgroundColorOption
+                          theme={theme}
+                          color="transparent"
+                          isSelected={lightLogoBackground === 'transparent'}
+                          onClick={() => setLightLogoBackground('transparent')}
+                          aria-label="Transparent background"
+                        />
+                        <BackgroundColorOption
+                          theme={theme}
+                          color={primaryColor}
+                          isSelected={lightLogoBackground === primaryColor}
+                          onClick={() => setLightLogoBackground(primaryColor)}
+                          aria-label="Primary color background"
+                        />
+                        <BackgroundColorOption
+                          theme={theme}
+                          color="#FFFFFF"
+                          isSelected={lightLogoBackground === '#FFFFFF'}
+                          onClick={() => setLightLogoBackground('#FFFFFF')}
+                          aria-label="White background"
+                        />
+                      </BackgroundColorOptions>
+                    </div>
+                  )}
                 </LogoUploadArea>
 
+                {/* Dark Logo Upload */}
                 <LogoUploadArea>
                   <SectionSubtitle theme={theme}>Logo for dark backgrounds</SectionSubtitle>
-                  <UploadBox theme={theme} isDark>
-                    <UploadText theme={theme}>Drop logo here</UploadText>
-                  </UploadBox>
+                  
+                  {/* Show chip if logo is uploaded */}
+                  {darkLogo && (
+                    <ChipContainer theme={theme}>
+                      <Chip
+                        isCloseable
+                        onClose={handleRemoveDarkLogo}
+                      >
+                        {darkLogoFileName || 'Uploaded logo'}
+                      </Chip>
+                    </ChipContainer>
+                  )}
+                  
+                  {/* Hidden file input */}
+                  <HiddenFileInput
+                    ref={(input: HTMLInputElement | null) => {
+                      if (input) input.accept = 'image/png, image/svg+xml';
+                    }}
+                    type="file"
+                    id="dark-logo-upload"
+                    accept="image/png, image/svg+xml"
+                    onChange={handleDarkLogoUpload}
+                  />
+                  
+                  {/* Show preview if uploaded, otherwise show upload box */}
+                  {darkLogo ? (
+                    <LogoPreviewBox theme={theme} isDark bgColor={darkLogoBackground}>
+                      <LogoPreviewImage src={darkLogo} alt="Dark logo preview" />
+                    </LogoPreviewBox>
+                  ) : (
+                    <UploadBox
+                      theme={theme}
+                      isDark
+                      onClick={() => document.getElementById('dark-logo-upload')?.click()}
+                    >
+                      <UploadText theme={theme}>Drop logo here</UploadText>
+                    </UploadBox>
+                  )}
+                  
                   <FileTypeHint theme={theme}>PNG or SVG</FileTypeHint>
+                  
+                  {/* Background color selector */}
+                  {darkLogo && (
+                    <div>
+                      <BackgroundSelectorLabel theme={theme}>
+                        Set logo background
+                      </BackgroundSelectorLabel>
+                      <BackgroundColorOptions theme={theme}>
+                        <BackgroundColorOption
+                          theme={theme}
+                          color="transparent"
+                          isSelected={darkLogoBackground === 'transparent'}
+                          onClick={() => setDarkLogoBackground('transparent')}
+                          aria-label="Transparent background"
+                        />
+                        <BackgroundColorOption
+                          theme={theme}
+                          color={primaryColor}
+                          isSelected={darkLogoBackground === primaryColor}
+                          onClick={() => setDarkLogoBackground(primaryColor)}
+                          aria-label="Primary color background"
+                        />
+                        <BackgroundColorOption
+                          theme={theme}
+                          color="#000000"
+                          isSelected={darkLogoBackground === '#000000'}
+                          onClick={() => setDarkLogoBackground('#000000')}
+                          aria-label="Black background"
+                        />
+                      </BackgroundColorOptions>
+                    </div>
+                  )}
                 </LogoUploadArea>
               </LogoUploadGrid>
             </VStack>
@@ -720,6 +1013,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                   darkPrimaryColor={darkPrimaryColor}
                   darkSecondaryColor={darkSecondaryColor}
                   darkTertiaryColor={darkTertiaryColor}
+                  lightLogo={lightLogo}
+                  darkLogo={darkLogo}
+                  lightLogoBackground={lightLogoBackground}
+                  darkLogoBackground={darkLogoBackground}
                   mode={previewMode}
                 >
                   <RealTimePreview />

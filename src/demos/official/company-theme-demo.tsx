@@ -17,6 +17,10 @@ interface Theme {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  lightLogo?: string; // Data URL or file path for light background logo
+  darkLogo?: string; // Data URL or file path for dark background logo
+  lightLogoBackground?: string; // Background color for light logo
+  darkLogoBackground?: string; // Background color for dark logo
 }
 
 /**

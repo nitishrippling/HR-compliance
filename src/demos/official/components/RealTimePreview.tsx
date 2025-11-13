@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useTheme } from '@emotion/react';
-import { PreviewTheme } from './PreviewThemeContext';
+import { PreviewTheme, useLogoContext } from './PreviewThemeContext';
 import Icon from '@rippling/pebble/Icon';
 import Button from '@rippling/pebble/Button';
 import Input from '@rippling/pebble/Inputs';
@@ -1105,11 +1105,31 @@ const PayrollDecoration = styled.div`
 
 export const RealTimePreview: React.FC = () => {
   const theme = useTheme() as PreviewTheme;
+  const logoContext = useLogoContext();
   
-  // Determine which logos to use based on background colors
-  const navLogo = getLogoForBackground(theme.colorPrimary);
-  const loginLogo = getLogoForBackground(theme.colorPrimary);
-  const documentLogo = getLogoForBackground(theme.colorSurfaceBright);
+  // Determine which logos to use based on background colors and custom uploads
+  // If custom logos are provided, use them; otherwise, use default Rippling logos
+  const getEffectiveLogo = (backgroundColor: string) => {
+    const defaultLogo = getLogoForBackground(backgroundColor);
+    
+    // Determine if we should use light or dark logo based on contrast
+    const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
+    const blackContrast = getContrastRatio(backgroundColor, '#000000');
+    const shouldUseDarkLogo = whiteContrast > blackContrast;
+    
+    // Use custom logo if available, otherwise use default
+    if (shouldUseDarkLogo && logoContext.darkLogo) {
+      return logoContext.darkLogo;
+    } else if (!shouldUseDarkLogo && logoContext.lightLogo) {
+      return logoContext.lightLogo;
+    }
+    
+    return defaultLogo;
+  };
+  
+  const navLogo = getEffectiveLogo(theme.colorPrimary);
+  const loginLogo = getEffectiveLogo(theme.colorPrimary);
+  const documentLogo = getEffectiveLogo(theme.colorSurfaceBright);
   
   return (
     <PreviewContainer>
