@@ -723,7 +723,7 @@ const LoginHeader = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 `;
 
 const BrandLogo = styled.div`

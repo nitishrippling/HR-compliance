@@ -437,7 +437,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
   
-  // Logo state
+  // Logo state - store original and wrapped versions
+  const [originalLightLogo, setOriginalLightLogo] = useState<string | undefined>(initialThemeToUse?.lightLogo);
+  const [originalDarkLogo, setOriginalDarkLogo] = useState<string | undefined>(initialThemeToUse?.darkLogo);
   const [lightLogo, setLightLogo] = useState<string | undefined>(initialThemeToUse?.lightLogo);
   const [darkLogo, setDarkLogo] = useState<string | undefined>(initialThemeToUse?.darkLogo);
   const [lightLogoBackground, setLightLogoBackground] = useState<string>(initialThemeToUse?.lightLogoBackground || 'transparent');
@@ -456,6 +458,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(initialTheme.primaryColor);
       setSecondaryColor(initialTheme.secondaryColor);
       setTertiaryColor(initialTheme.tertiaryColor);
+      // Store both original and wrapped logos
+      setOriginalLightLogo(initialTheme.lightLogo);
+      setOriginalDarkLogo(initialTheme.darkLogo);
       setLightLogo(initialTheme.lightLogo);
       setDarkLogo(initialTheme.darkLogo);
       setLightLogoBackground(initialTheme.lightLogoBackground || 'transparent');
@@ -470,6 +475,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(currentTheme.primaryColor);
       setSecondaryColor(currentTheme.secondaryColor);
       setTertiaryColor(currentTheme.tertiaryColor);
+      // Store both original and wrapped logos
+      setOriginalLightLogo(currentTheme.lightLogo);
+      setOriginalDarkLogo(currentTheme.darkLogo);
       setLightLogo(currentTheme.lightLogo);
       setDarkLogo(currentTheme.darkLogo);
       setLightLogoBackground(currentTheme.lightLogoBackground || 'transparent');
@@ -517,6 +525,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(selectedTheme.primaryColor);
       setSecondaryColor(selectedTheme.secondaryColor);
       setTertiaryColor(selectedTheme.tertiaryColor);
+      // Store both original and wrapped logos
+      setOriginalLightLogo(selectedTheme.lightLogo);
+      setOriginalDarkLogo(selectedTheme.darkLogo);
       setLightLogo(selectedTheme.lightLogo);
       setDarkLogo(selectedTheme.darkLogo);
       setLightLogoBackground(selectedTheme.lightLogoBackground || 'transparent');
@@ -579,6 +590,8 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
     setPrimaryColor(newTheme.primaryColor);
     setSecondaryColor(newTheme.secondaryColor);
     setTertiaryColor(newTheme.tertiaryColor);
+    setOriginalLightLogo(undefined);
+    setOriginalDarkLogo(undefined);
     setLightLogo(undefined);
     setDarkLogo(undefined);
     setLightLogoBackground('transparent');
@@ -600,6 +613,40 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
     }
   };
 
+  // Helper function to wrap logo in SVG with padding and background
+  const wrapLogoWithBackground = (
+    logoDataUrl: string,
+    backgroundColor: string,
+    callback: (wrappedLogo: string) => void
+  ) => {
+    if (backgroundColor === 'transparent') {
+      // No wrapping needed for transparent background
+      callback(logoDataUrl);
+      return;
+    }
+
+    // Create an image to get dimensions
+    const img = new Image();
+    img.onload = () => {
+      const padding = 24; // 24px padding around the logo
+      const svgWidth = img.width + (padding * 2);
+      const svgHeight = img.height + (padding * 2);
+      
+      // Create SVG that wraps the logo with background and padding
+      const wrappedSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+          <rect width="${svgWidth}" height="${svgHeight}" fill="${backgroundColor}" rx="20%"/>
+          <image href="${logoDataUrl}" x="${padding}" y="${padding}" width="${img.width}" height="${img.height}"/>
+        </svg>
+      `;
+      
+      // Convert SVG to data URL
+      const wrappedDataUrl = `data:image/svg+xml;base64,${btoa(wrappedSvg)}`;
+      callback(wrappedDataUrl);
+    };
+    img.src = logoDataUrl;
+  };
+
   // Logo upload handlers
   const handleLightLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -608,7 +655,12 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string;
-        setLightLogo(dataUrl);
+        // Store the original logo
+        setOriginalLightLogo(dataUrl);
+        // Wrap with current background
+        wrapLogoWithBackground(dataUrl, lightLogoBackground, (wrappedLogo) => {
+          setLightLogo(wrappedLogo);
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -621,18 +673,45 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string;
-        setDarkLogo(dataUrl);
+        // Store the original logo
+        setOriginalDarkLogo(dataUrl);
+        // Wrap with current background
+        wrapLogoWithBackground(dataUrl, darkLogoBackground, (wrappedLogo) => {
+          setDarkLogo(wrappedLogo);
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Handler for light logo background change
+  const handleLightLogoBackgroundChange = (backgroundColor: string) => {
+    setLightLogoBackground(backgroundColor);
+    if (originalLightLogo) {
+      wrapLogoWithBackground(originalLightLogo, backgroundColor, (wrappedLogo) => {
+        setLightLogo(wrappedLogo);
+      });
+    }
+  };
+
+  // Handler for dark logo background change
+  const handleDarkLogoBackgroundChange = (backgroundColor: string) => {
+    setDarkLogoBackground(backgroundColor);
+    if (originalDarkLogo) {
+      wrapLogoWithBackground(originalDarkLogo, backgroundColor, (wrappedLogo) => {
+        setDarkLogo(wrappedLogo);
+      });
+    }
+  };
+
   const handleRemoveLightLogo = () => {
+    setOriginalLightLogo(undefined);
     setLightLogo(undefined);
     setLightLogoFileName('');
   };
 
   const handleRemoveDarkLogo = () => {
+    setOriginalDarkLogo(undefined);
     setDarkLogo(undefined);
     setDarkLogoFileName('');
   };
@@ -782,22 +861,22 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                           theme={theme}
                           color="transparent"
                           isSelected={lightLogoBackground === 'transparent'}
-                          onClick={() => setLightLogoBackground('transparent')}
+                          onClick={() => handleLightLogoBackgroundChange('transparent')}
                           aria-label="Transparent background"
-                        />
-                        <BackgroundColorOption
-                          theme={theme}
-                          color={primaryColor}
-                          isSelected={lightLogoBackground === primaryColor}
-                          onClick={() => setLightLogoBackground(primaryColor)}
-                          aria-label="Primary color background"
                         />
                         <BackgroundColorOption
                           theme={theme}
                           color="#FFFFFF"
                           isSelected={lightLogoBackground === '#FFFFFF'}
-                          onClick={() => setLightLogoBackground('#FFFFFF')}
+                          onClick={() => handleLightLogoBackgroundChange('#FFFFFF')}
                           aria-label="White background"
+                        />
+                        <BackgroundColorOption
+                          theme={theme}
+                          color="#000000"
+                          isSelected={lightLogoBackground === '#000000'}
+                          onClick={() => handleLightLogoBackgroundChange('#000000')}
+                          aria-label="Black background"
                         />
                       </BackgroundColorOptions>
                     </div>
@@ -859,21 +938,21 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                           theme={theme}
                           color="transparent"
                           isSelected={darkLogoBackground === 'transparent'}
-                          onClick={() => setDarkLogoBackground('transparent')}
+                          onClick={() => handleDarkLogoBackgroundChange('transparent')}
                           aria-label="Transparent background"
                         />
                         <BackgroundColorOption
                           theme={theme}
-                          color={primaryColor}
-                          isSelected={darkLogoBackground === primaryColor}
-                          onClick={() => setDarkLogoBackground(primaryColor)}
-                          aria-label="Primary color background"
+                          color="#FFFFFF"
+                          isSelected={darkLogoBackground === '#FFFFFF'}
+                          onClick={() => handleDarkLogoBackgroundChange('#FFFFFF')}
+                          aria-label="White background"
                         />
                         <BackgroundColorOption
                           theme={theme}
                           color="#000000"
                           isSelected={darkLogoBackground === '#000000'}
-                          onClick={() => setDarkLogoBackground('#000000')}
+                          onClick={() => handleDarkLogoBackgroundChange('#000000')}
                           aria-label="Black background"
                         />
                       </BackgroundColorOptions>
