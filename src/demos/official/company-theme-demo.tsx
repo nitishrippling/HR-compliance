@@ -312,7 +312,19 @@ const CompanyThemeDemo: React.FC = () => {
   };
 
   const handleSaveTheme = () => {
-    // In a real app, this would save the theme to the backend
+    // Create the initial theme object with default Rippling Berry colors
+    const newTheme: Theme = {
+      id: `theme-${Date.now()}`,
+      name: themeName,
+      primaryColor: '#7a005d', // Rippling Berry primary
+      secondaryColor: '#ffa81d', // Rippling Berry secondary
+      tertiaryColor: '#1e4aa9', // Rippling Berry tertiary
+    };
+    
+    // Add the theme to the themes array
+    setThemes([...themes, newTheme]);
+    setEditingThemeId(newTheme.id);
+    
     console.log('Creating theme:', themeName);
     setShowCreateModal(false);
     // Show the theme editor
@@ -320,13 +332,17 @@ const CompanyThemeDemo: React.FC = () => {
   };
 
   const handleSaveThemeFromEditor = (savedTheme: Theme, shouldClose: boolean = false) => {
-    if (editingThemeId) {
+    // Check if this theme already exists in the array
+    const existingThemeIndex = themes.findIndex(t => t.id === savedTheme.id);
+    
+    if (existingThemeIndex !== -1) {
       // Update existing theme
-      setThemes(themes.map(t => t.id === editingThemeId ? savedTheme : t));
+      const updatedThemes = [...themes];
+      updatedThemes[existingThemeIndex] = savedTheme;
+      setThemes(updatedThemes);
     } else {
-      // Add new theme
+      // Add new theme (this handles themes created from within the editor)
       setThemes([...themes, savedTheme]);
-      // Update editingThemeId to the new theme so we can continue editing it
       setEditingThemeId(savedTheme.id);
       setThemeName(savedTheme.name);
     }

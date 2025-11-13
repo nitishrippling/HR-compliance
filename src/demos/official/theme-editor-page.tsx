@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme, usePebbleTheme } from '@/utils/theme';
 import { useTheme } from '@rippling/pebble/theme';
@@ -8,7 +8,6 @@ import Card from '@rippling/pebble/Card';
 import Chip from '@rippling/pebble/Chip';
 import Modal from '@rippling/pebble/Modal';
 import Input from '@rippling/pebble/Inputs';
-import Select from '@rippling/pebble/Inputs/Select';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
 import { PreviewThemeProvider } from './components/PreviewThemeContext';
@@ -109,10 +108,43 @@ const SectionSubtitle = styled.p`
 `;
 
 // Theme selector with color chips
-const ThemeSelectorRow = styled.div`
-  display: flex;
-  align-items: center;
+const ThemeGridContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: ${({ theme }) => (theme as StyledTheme).space400};
+`;
+
+const ThemeBox = styled.div<{ isSelected: boolean }>`
+  background: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
+  border: ${({ isSelected, theme }) =>
+    isSelected
+      ? `3px solid ${(theme as StyledTheme).colorPrimary}`
+      : `1px solid ${(theme as StyledTheme).colorOutlineVariant}`};
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  padding: ${({ theme }) => (theme as StyledTheme).space400};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => (theme as StyledTheme).space300};
+
+  &:hover {
+    border-color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ThemeBoxName = styled.div`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelLarge};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ThemeBoxColors = styled.div`
+  display: flex;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
 `;
 
 const ColorChips = styled.div`
@@ -316,10 +348,12 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   const previewMode: 'light' | 'dark' = isDarkMode ? 'dark' : 'light';
 
   // State for theme configuration - initialize from initialTheme if provided
-  const [selectedThemeId, setSelectedThemeId] = useState(initialTheme?.id || '');
-  const [primaryColor, setPrimaryColor] = useState(initialTheme?.primaryColor || '#6B2C91');
-  const [secondaryColor, setSecondaryColor] = useState(initialTheme?.secondaryColor || '#007991');
-  const [tertiaryColor, setTertiaryColor] = useState(initialTheme?.tertiaryColor || '#FF8C00');
+  // If initialTheme is not provided, try to use the first theme from allThemes
+  const initialThemeToUse = initialTheme || (allThemes.length > 0 ? allThemes[0] : null);
+  const [selectedThemeId, setSelectedThemeId] = useState(initialThemeToUse?.id || '');
+  const [primaryColor, setPrimaryColor] = useState(initialThemeToUse?.primaryColor || '#6B2C91');
+  const [secondaryColor, setSecondaryColor] = useState(initialThemeToUse?.secondaryColor || '#007991');
+  const [tertiaryColor, setTertiaryColor] = useState(initialThemeToUse?.tertiaryColor || '#FF8C00');
   const [darkPrimaryColor, setDarkPrimaryColor] = useState('#B39DDB');
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
@@ -328,16 +362,17 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newThemeName, setNewThemeName] = useState('');
 
-  // Build theme options from allThemes - memoized to update when allThemes changes
-  const themeOptions = useMemo(() => 
-    allThemes.map(t => ({
-      label: t.name,
-      value: t.id,
-    })),
-    [allThemes]
-  );
+  // Sync selectedThemeId when initialTheme changes
+  useEffect(() => {
+    if (initialTheme && initialTheme.id !== selectedThemeId) {
+      setSelectedThemeId(initialTheme.id);
+      setPrimaryColor(initialTheme.primaryColor);
+      setSecondaryColor(initialTheme.secondaryColor);
+      setTertiaryColor(initialTheme.tertiaryColor);
+    }
+  }, [initialTheme]);
 
-  // Update colors when initialTheme or selectedThemeId changes
+  // Update colors when allThemes or selectedThemeId changes
   useEffect(() => {
     const currentTheme = allThemes.find(t => t.id === selectedThemeId);
     if (currentTheme) {
@@ -500,22 +535,23 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                 </Button>
               </HStack>
 
-              <ThemeSelectorRow theme={theme}>
-                <div style={{ flex: 1 }}>
-                  <Select
-                    id="theme-select"
-                    list={themeOptions}
-                    value={selectedThemeId}
-                    onChange={(value) => handleThemeChange(value as string)}
-                    size={Select.SIZES.M}
-                  />
-                </div>
-                <ColorChips theme={theme}>
-                  <ColorChip color={primaryColor} theme={theme} />
-                  <ColorChip color={secondaryColor} theme={theme} />
-                  <ColorChip color={tertiaryColor} theme={theme} />
-                </ColorChips>
-              </ThemeSelectorRow>
+              <ThemeGridContainer theme={theme}>
+                {allThemes.map((themeItem) => (
+                  <ThemeBox
+                    key={themeItem.id}
+                    isSelected={themeItem.id === selectedThemeId}
+                    theme={theme}
+                    onClick={() => handleThemeChange(themeItem.id)}
+                  >
+                    <ThemeBoxName theme={theme}>{themeItem.name}</ThemeBoxName>
+                    <ThemeBoxColors theme={theme}>
+                      <ColorChip color={themeItem.primaryColor} theme={theme} />
+                      <ColorChip color={themeItem.secondaryColor} theme={theme} />
+                      <ColorChip color={themeItem.tertiaryColor} theme={theme} />
+                    </ThemeBoxColors>
+                  </ThemeBox>
+                ))}
+              </ThemeGridContainer>
             </VStack>
           </Card.Layout>
 
