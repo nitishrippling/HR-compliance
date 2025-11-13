@@ -143,18 +143,35 @@ const ThemeCard = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
+  position: relative;
   
   &:hover {
     border-color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    
+    .delete-button {
+      opacity: 1;
+    }
   }
+`;
+
+const ThemeCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => (theme as StyledTheme).space200};
 `;
 
 const ThemeCardName = styled.div`
   ${({ theme }) => (theme as StyledTheme).typestyleV2BodyLarge};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
   font-weight: 535;
-  margin-bottom: ${({ theme }) => (theme as StyledTheme).space200};
+  flex: 1;
+`;
+
+const DeleteButtonWrapper = styled.div`
+  opacity: 0;
+  transition: opacity 0.2s ease;
 `;
 
 const ColorChipsContainer = styled.div`
@@ -242,7 +259,7 @@ const CompanyThemeDemo: React.FC = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [editingThemeId, setEditingThemeId] = useState<string | null>(null);
   
-  // Store list of themes
+  // Store list of themes - start with empty array
   const [themes, setThemes] = useState<Theme[]>([]);
 
   // Sidebar navigation - Company Settings section
@@ -287,6 +304,13 @@ const CompanyThemeDemo: React.FC = () => {
     }
   };
 
+  const handleDeleteTheme = (themeId: string, event: React.MouseEvent) => {
+    // Prevent card click event from triggering
+    event.stopPropagation();
+    // Remove theme from list
+    setThemes(themes.filter(t => t.id !== themeId));
+  };
+
   const handleSaveTheme = () => {
     // In a real app, this would save the theme to the backend
     console.log('Creating theme:', themeName);
@@ -295,16 +319,23 @@ const CompanyThemeDemo: React.FC = () => {
     setShowEditor(true);
   };
 
-  const handleSaveThemeFromEditor = (savedTheme: Theme) => {
+  const handleSaveThemeFromEditor = (savedTheme: Theme, shouldClose: boolean = false) => {
     if (editingThemeId) {
       // Update existing theme
       setThemes(themes.map(t => t.id === editingThemeId ? savedTheme : t));
     } else {
       // Add new theme
       setThemes([...themes, savedTheme]);
+      // Update editingThemeId to the new theme so we can continue editing it
+      setEditingThemeId(savedTheme.id);
+      setThemeName(savedTheme.name);
     }
-    setShowEditor(false);
-    setEditingThemeId(null);
+    
+    // Only close the editor if explicitly requested (e.g., from "Save changes" button)
+    if (shouldClose) {
+      setShowEditor(false);
+      setEditingThemeId(null);
+    }
   };
 
   const handleCancelModal = () => {
@@ -321,14 +352,31 @@ const CompanyThemeDemo: React.FC = () => {
   };
 
   const pageActions = (
-    <Button 
-      appearance={Button.APPEARANCES.OUTLINE} 
-      size={Button.SIZES.M}
-      onClick={handleCreateTheme}
-      icon={{ type: Icon.TYPES.ADD }}
-    >
-      Create Theme
-    </Button>
+    <HStack gap="0.5rem">
+      {themes.length > 0 && (
+        <Button 
+          appearance={Button.APPEARANCES.PRIMARY} 
+          size={Button.SIZES.M}
+          onClick={() => {
+            // Open editor for the first theme (or you could show a dropdown to select)
+            if (themes.length > 0) {
+              handleEditTheme(themes[0].id);
+            }
+          }}
+          icon={{ type: Icon.TYPES.EDIT_OUTLINE }}
+        >
+          Theme Editor
+        </Button>
+      )}
+      <Button 
+        appearance={themes.length > 0 ? Button.APPEARANCES.OUTLINE : Button.APPEARANCES.PRIMARY}
+        size={Button.SIZES.M}
+        onClick={handleCreateTheme}
+        icon={{ type: Icon.TYPES.ADD }}
+      >
+        Create Theme
+      </Button>
+    </HStack>
   );
 
   // If editor is open, show theme editor page
@@ -338,11 +386,20 @@ const CompanyThemeDemo: React.FC = () => {
       <ThemeEditorPage 
         themeName={themeName} 
         initialTheme={editingTheme}
+        allThemes={themes}
         onBack={() => {
           setShowEditor(false);
           setEditingThemeId(null);
         }}
         onSave={handleSaveThemeFromEditor}
+        onThemeSwitch={(themeId: string) => {
+          // Switch to a different theme
+          const theme = themes.find(t => t.id === themeId);
+          if (theme) {
+            setEditingThemeId(themeId);
+            setThemeName(theme.name);
+          }
+        }}
       />
     );
   }
@@ -405,7 +462,18 @@ const CompanyThemeDemo: React.FC = () => {
                   key={themeItem.id}
                   onClick={() => handleEditTheme(themeItem.id)}
                 >
-                  <ThemeCardName>{themeItem.name}</ThemeCardName>
+                  <ThemeCardHeader>
+                    <ThemeCardName>{themeItem.name}</ThemeCardName>
+                    <DeleteButtonWrapper className="delete-button">
+                      <Button.Icon
+                        icon={Icon.TYPES.TRASH_OUTLINE}
+                        size={Button.Icon.SIZES.XS}
+                        appearance={Button.Icon.APPEARANCES.GHOST}
+                        aria-label="Delete theme"
+                        onClick={(e) => handleDeleteTheme(themeItem.id, e)}
+                      />
+                    </DeleteButtonWrapper>
+                  </ThemeCardHeader>
                   <ColorChipsContainer>
                     <ColorChip color={themeItem.primaryColor} />
                     <ColorChip color={themeItem.secondaryColor} />
@@ -441,7 +509,7 @@ const CompanyThemeDemo: React.FC = () => {
                     </SupergroupContent>
                     <SupergroupActions>
                       <Button.Icon
-                        icon={Icon.TYPES.USER_PLUS_OUTLINE}
+                        icon={Icon.TYPES.USERS_OUTLINE}
                         size={Button.Icon.SIZES.XS}
                         appearance={Button.Icon.APPEARANCES.OUTLINE}
                         aria-label="Add user or group"

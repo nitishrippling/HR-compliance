@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme, usePebbleTheme } from '@/utils/theme';
 import { useTheme } from '@rippling/pebble/theme';
@@ -6,6 +6,8 @@ import Icon from '@rippling/pebble/Icon';
 import Button from '@rippling/pebble/Button';
 import Card from '@rippling/pebble/Card';
 import Chip from '@rippling/pebble/Chip';
+import Modal from '@rippling/pebble/Modal';
+import Input from '@rippling/pebble/Inputs';
 import Select from '@rippling/pebble/Inputs/Select';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
@@ -34,8 +36,10 @@ interface Theme {
 interface ThemeEditorPageProps {
   themeName: string;
   initialTheme?: Theme | null;
+  allThemes?: Theme[];
   onBack?: () => void;
-  onSave?: (theme: Theme) => void;
+  onSave?: (theme: Theme, shouldClose?: boolean) => void;
+  onThemeSwitch?: (themeId: string) => void;
 }
 
 // Main container with single scroll
@@ -277,7 +281,33 @@ const FooterPlaceholder = styled.span`
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
 `;
 
-const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialTheme, onBack, onSave }) => {
+// Modal styles
+const ModalBody = styled.div`
+  padding: ${({ theme }) => (theme as StyledTheme).space600} ${({ theme }) => (theme as StyledTheme).space600} ${({ theme }) => (theme as StyledTheme).space400};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => (theme as StyledTheme).space400};
+`;
+
+const FormField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+`;
+
+const Label = styled.label`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+`;
+
+const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ 
+  themeName, 
+  initialTheme, 
+  allThemes = [],
+  onBack, 
+  onSave,
+  onThemeSwitch,
+}) => {
   const { theme } = usePebbleTheme();
   const { name: currentThemeName, mode: colorMode } = useTheme();
   
@@ -286,18 +316,36 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
   const previewMode: 'light' | 'dark' = isDarkMode ? 'dark' : 'light';
 
   // State for theme configuration - initialize from initialTheme if provided
-  const [selectedTheme, setSelectedTheme] = useState(themeName);
+  const [selectedThemeId, setSelectedThemeId] = useState(initialTheme?.id || '');
   const [primaryColor, setPrimaryColor] = useState(initialTheme?.primaryColor || '#6B2C91');
   const [secondaryColor, setSecondaryColor] = useState(initialTheme?.secondaryColor || '#007991');
   const [tertiaryColor, setTertiaryColor] = useState(initialTheme?.tertiaryColor || '#FF8C00');
   const [darkPrimaryColor, setDarkPrimaryColor] = useState('#B39DDB');
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
+  
+  // Modal state for adding new themes
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newThemeName, setNewThemeName] = useState('');
 
-  // Mock theme options
-  const themeOptions = [
-    { label: themeName, value: themeName },
-  ];
+  // Build theme options from allThemes - memoized to update when allThemes changes
+  const themeOptions = useMemo(() => 
+    allThemes.map(t => ({
+      label: t.name,
+      value: t.id,
+    })),
+    [allThemes]
+  );
+
+  // Update colors when initialTheme or selectedThemeId changes
+  useEffect(() => {
+    const currentTheme = allThemes.find(t => t.id === selectedThemeId);
+    if (currentTheme) {
+      setPrimaryColor(currentTheme.primaryColor);
+      setSecondaryColor(currentTheme.secondaryColor);
+      setTertiaryColor(currentTheme.tertiaryColor);
+    }
+  }, [allThemes, selectedThemeId]);
 
   const handleBack = () => {
     if (onBack) {
@@ -315,10 +363,97 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
     setDarkTertiaryColor('#c8d5ed'); // Berry tertiary variant
   };
 
+  const handleThemeChange = (themeId: string) => {
+    // Save current theme before switching (don't close editor)
+    if (onSave && selectedThemeId) {
+      const currentTheme: Theme = {
+        id: selectedThemeId,
+        name: allThemes.find(t => t.id === selectedThemeId)?.name || themeName,
+        primaryColor,
+        secondaryColor,
+        tertiaryColor,
+      };
+      onSave(currentTheme, false);
+    }
+
+    // Switch to the selected theme
+    const selectedTheme = allThemes.find(t => t.id === themeId);
+    if (selectedTheme) {
+      setSelectedThemeId(themeId);
+      setPrimaryColor(selectedTheme.primaryColor);
+      setSecondaryColor(selectedTheme.secondaryColor);
+      setTertiaryColor(selectedTheme.tertiaryColor);
+      
+      // Call parent's onThemeSwitch
+      if (onThemeSwitch) {
+        onThemeSwitch(themeId);
+      }
+    }
+  };
+
+  const handleAddTheme = () => {
+    setNewThemeName('');
+    setShowCreateModal(true);
+  };
+
+  const handleCancelModal = () => {
+    setShowCreateModal(false);
+    setNewThemeName('');
+  };
+
+  const handleCreateNewTheme = () => {
+    // Save the current theme first (don't close editor)
+    if (onSave && selectedThemeId) {
+      const currentTheme: Theme = {
+        id: selectedThemeId,
+        name: allThemes.find(t => t.id === selectedThemeId)?.name || themeName,
+        primaryColor,
+        secondaryColor,
+        tertiaryColor,
+      };
+      onSave(currentTheme, false);
+    }
+
+    // Create the new theme with default Rippling Berry theme colors
+    const newTheme: Theme = {
+      id: `theme-${Date.now()}`,
+      name: newThemeName,
+      primaryColor: '#7a005d', // Rippling Berry primary
+      secondaryColor: '#ffa81d', // Rippling Berry secondary
+      tertiaryColor: '#1e4aa9', // Rippling Berry tertiary
+    };
+
+    // Add the new theme (don't close editor)
+    if (onSave) {
+      onSave(newTheme, false);
+    }
+
+    // Switch to the new theme
+    setSelectedThemeId(newTheme.id);
+    setPrimaryColor(newTheme.primaryColor);
+    setSecondaryColor(newTheme.secondaryColor);
+    setTertiaryColor(newTheme.tertiaryColor);
+
+    // Call parent's onThemeSwitch to update the parent state
+    if (onThemeSwitch) {
+      onThemeSwitch(newTheme.id);
+    }
+
+    // Close modal and reset
+    setShowCreateModal(false);
+    setNewThemeName('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && newThemeName.trim()) {
+      handleCreateNewTheme();
+    }
+  };
+
   const handleSave = () => {
     const savedTheme: Theme = {
-      id: initialTheme?.id || `theme-${Date.now()}`,
-      name: selectedTheme,
+      id: selectedThemeId || `theme-${Date.now()}`,
+      name: allThemes.find(t => t.id === selectedThemeId)?.name || themeName,
       primaryColor,
       secondaryColor,
       tertiaryColor,
@@ -326,12 +461,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
     
     console.log('Saving theme configuration:', savedTheme);
     
-    // Call the onSave callback if provided
+    // Call the onSave callback if provided - pass shouldClose: false to stay in editor
     if (onSave) {
-      onSave(savedTheme);
-    } else {
-      // If no onSave callback, just go back
-      handleBack();
+      onSave(savedTheme, false);
     }
   };
 
@@ -362,6 +494,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
                   size={Button.SIZES.S}
                   appearance={Button.APPEARANCES.OUTLINE}
                   icon={{ type: Icon.TYPES.ADD }}
+                  onClick={handleAddTheme}
                 >
                   Add Theme
                 </Button>
@@ -372,8 +505,8 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
                   <Select
                     id="theme-select"
                     list={themeOptions}
-                    value={selectedTheme}
-                    onChange={(value) => setSelectedTheme(value as string)}
+                    value={selectedThemeId}
+                    onChange={(value) => handleThemeChange(value as string)}
                     size={Select.SIZES.M}
                   />
                 </div>
@@ -565,8 +698,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
             size={Button.SIZES.M}
             appearance={Button.APPEARANCES.GHOST}
             onClick={handleBack}
+            icon={{ type: Icon.TYPES.ARROW_LEFT }}
           >
-            Cancel
+            Back
           </Button>
         </FooterStart>
         
@@ -587,6 +721,47 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({ themeName, initialThe
           </Button>
         </FooterEnd>
       </StickyFooter>
+
+      {/* Create Theme Modal */}
+      <Modal
+        isVisible={showCreateModal}
+        onCancel={handleCancelModal}
+        title="Create a new theme"
+        width={500}
+      >
+        <ModalBody theme={theme}>
+          <FormField theme={theme}>
+            <Label theme={theme}>Theme name</Label>
+            <Input.Text
+              id="new-theme-name"
+              value={newThemeName}
+              onChange={(e: any) => setNewThemeName(e?.target?.value || e)}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter theme name"
+              size={Input.Text.SIZES.M}
+              autoFocus
+            />
+          </FormField>
+        </ModalBody>
+        
+        <Modal.Footer>
+          <Button
+            appearance={Button.APPEARANCES.OUTLINE}
+            onClick={handleCancelModal}
+            size={Button.SIZES.M}
+          >
+            Cancel
+          </Button>
+          <Button
+            appearance={Button.APPEARANCES.PRIMARY}
+            onClick={handleCreateNewTheme}
+            size={Button.SIZES.M}
+            isDisabled={!newThemeName.trim()}
+          >
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </EditorContainer>
   );
 };
