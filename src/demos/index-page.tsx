@@ -40,7 +40,7 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     description: 'Company Settings theme management interface with empty state and theme creation workflow.',
     path: '/company-theme-demo',
     icon: Icon.TYPES.CUP_DROPLET_OUTLINE,
-    folder: 'official',
+    folder: '@rahul',
   },
   {
     title: 'Design Tokens',
@@ -110,13 +110,13 @@ const filterDemosByTab = (demos: DemoCard[], activeTab: string): DemoCard[] => {
     case 'all':
       return demos; // Show all accessible demos
     case 'personal':
-      // Show only current user's demos (@paul folder)
+      // Show only current user's demos (@rahul folder)
       // Private demos aren't in the list (gitignored)
-      return demos.filter(demo => demo.folder === '@paul');
+      return demos.filter(demo => demo.folder === '@rahul');
     case 'team':
-      // Show team demos + other people's @ folders (exclude current user's @paul)
+      // Show team demos + other people's @ folders (exclude current user's @rahul)
       return demos.filter(demo => 
-        demo.folder === 'team' || (demo.folder.startsWith('@') && demo.folder !== '@paul')
+        demo.folder === 'team' || (demo.folder.startsWith('@') && demo.folder !== '@rahul')
       );
     case 'templates':
       return demos.filter(demo => demo.folder === 'official');
@@ -461,9 +461,9 @@ const IndexPage: React.FC = () => {
 
   // Calculate badge counts for each tab
   const allCount = accessibleDemos.length;
-  const personalCount = accessibleDemos.filter(demo => demo.folder === '@paul').length;
+  const personalCount = accessibleDemos.filter(demo => demo.folder === '@rahul').length;
   const teamCount = accessibleDemos.filter(demo => 
-    demo.folder === 'team' || (demo.folder.startsWith('@') && demo.folder !== '@paul')
+    demo.folder === 'team' || (demo.folder.startsWith('@') && demo.folder !== '@rahul')
   ).length;
   const templatesCount = accessibleDemos.filter(demo => demo.folder === 'official').length;
 
@@ -556,7 +556,7 @@ const IndexPage: React.FC = () => {
             <EmptyStateDescription theme={theme}>
               Get started by creating your first demo! Click the "+ Create New Demo" button below.
               <br /><br />
-              Tip: Start in your <code>private/</code> folder for experiments, then move to <code>@paul/</code> when ready to share.
+              Tip: Start in your <code>private/</code> folder for experiments, then move to <code>@rahul/</code> when ready to share.
             </EmptyStateDescription>
           </EmptyState>
         )}
