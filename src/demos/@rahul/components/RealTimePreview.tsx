@@ -294,13 +294,14 @@ const CompanyText = styled.div`
   font-weight: 535;
 `;
 
-const CompanyAvatar = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutlineVariant};
-  background: ${({ theme }) => (theme as PreviewTheme).colorPrimaryContainer};
-`;
+// Unused styled component - kept for potential future use
+// const CompanyAvatar = styled.div`
+//   width: 32px;
+//   height: 32px;
+//   border-radius: 9999px;
+//   border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutlineVariant};
+//   background: ${({ theme }) => (theme as PreviewTheme).colorPrimaryContainer};
+// `;
 
 const DashboardContent = styled.div`
   left: 76px;
@@ -396,14 +397,15 @@ const CardHeader = styled.div`
   gap: 12px;
 `;
 
-const AvatarPlaceholder = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutlineVariant};
-  overflow: hidden;
-  background: ${({ theme }) => (theme as PreviewTheme).colorPrimaryContainer};
-`;
+// Unused styled component - kept for potential future use
+// const AvatarPlaceholder = styled.div`
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 9999px;
+//   border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutlineVariant};
+//   overflow: hidden;
+//   background: ${({ theme }) => (theme as PreviewTheme).colorPrimaryContainer};
+// `;
 
 const HeaderContent = styled.div`
   flex: 1 1 0;
@@ -434,34 +436,35 @@ const ButtonGroup = styled.div`
   gap: 12px;
 `;
 
-const StyledButton = styled.button<{ appearance?: 'outline' | 'primary' }>`
-  height: 32px;
-  padding: 0 12px;
-  background: ${({ theme, appearance }) =>
-    appearance === 'primary'
-      ? (theme as PreviewTheme).colorPrimary
-      : (theme as PreviewTheme).colorSurfaceBright};
-  overflow: hidden;
-  border-radius: 6px;
-  border: ${({ theme, appearance }) =>
-    appearance === 'outline' 
-      ? `1px solid ${(theme as PreviewTheme).colorOutline}` 
-      : 'none'};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  color: ${({ theme, appearance }) =>
-    appearance === 'primary'
-      ? (theme as PreviewTheme).colorOnPrimary
-      : (theme as PreviewTheme).colorOnSurface};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleSmall};
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+// Unused styled component - kept for potential future use
+// const StyledButton = styled.button<{ appearance?: 'outline' | 'primary' }>`
+//   height: 32px;
+//   padding: 0 12px;
+//   background: ${({ theme, appearance }) =>
+//     appearance === 'primary'
+//       ? (theme as PreviewTheme).colorPrimary
+//       : (theme as PreviewTheme).colorSurfaceBright};
+//   overflow: hidden;
+//   border-radius: 6px;
+//   border: ${({ theme, appearance }) =>
+//     appearance === 'outline' 
+//       ? `1px solid ${(theme as PreviewTheme).colorOutline}` 
+//       : 'none'};
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 6px;
+//   cursor: pointer;
+//   color: ${({ theme, appearance }) =>
+//     appearance === 'primary'
+//       ? (theme as PreviewTheme).colorOnPrimary
+//       : (theme as PreviewTheme).colorOnSurface};
+//   ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleSmall};
+//   
+//   &:hover {
+//     opacity: 0.9;
+//   }
+// `;
 
 const CardBody = styled.div`
   align-self: stretch;
@@ -551,25 +554,26 @@ const Tab = styled.button<{ isActive?: boolean }>`
   }
 `;
 
-const AccentButton = styled.button`
-  height: 32px;
-  padding: 0 12px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorTertiaryVariant};
-  overflow: hidden;
-  border-radius: 6px;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnTertiaryVariant};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleSmall};
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+// Unused styled component - kept for potential future use
+// const AccentButton = styled.button`
+//   height: 32px;
+//   padding: 0 12px;
+//   background: ${({ theme }) => (theme as PreviewTheme).colorTertiaryVariant};
+//   overflow: hidden;
+//   border-radius: 6px;
+//   border: none;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 6px;
+//   cursor: pointer;
+//   color: ${({ theme }) => (theme as PreviewTheme).colorOnTertiaryVariant};
+//   ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleSmall};
+//   
+//   &:hover {
+//     opacity: 0.9;
+//   }
+// `;
 
 const ContentRow = styled.div`
   align-self: stretch;
@@ -622,23 +626,24 @@ const BadgeText = styled.span`
   font-weight: 535;
 `;
 
-const SuccessBadge = styled.div`
-  height: 20px;
-  max-width: 320px;
-  padding: 0 6px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorSuccess}33;
-  border-radius: 9999px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-`;
-
-const BadgeLabel = styled.div`
-  flex: 1 1 0;
-  color: ${({ theme }) => (theme as PreviewTheme).colorSuccess};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2LabelMedium};
-`;
+// Unused styled components - kept for potential future use
+// const SuccessBadge = styled.div`
+//   height: 20px;
+//   max-width: 320px;
+//   padding: 0 6px;
+//   background: ${({ theme }) => (theme as PreviewTheme).colorSuccess}33;
+//   border-radius: 9999px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 4px;
+// `;
+// 
+// const BadgeLabel = styled.div`
+//   flex: 1 1 0;
+//   color: ${({ theme }) => (theme as PreviewTheme).colorSuccess};
+//   ${({ theme }) => (theme as PreviewTheme).typestyleV2LabelMedium};
+// `;
 
 // Custom button wrapper for TertiaryVariant colors
 const TertiaryVariantButtonWrapper = styled.div`
@@ -831,53 +836,54 @@ const RequiredStar = styled.span`
   ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyLarge};
 `;
 
-const InputField = styled.input`
-  align-self: stretch;
-  height: 48px;
-  min-height: 40px;
-  padding: 0 16px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorSurfaceBright};
-  overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutline};
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnSurface};
-  font-size: 15px;
-  font-family: 'Basel Grotesk', sans-serif;
-  font-weight: 430;
-  line-height: 19px;
-  letter-spacing: 0.25px;
-  
-  &::placeholder {
-    color: ${({ theme }) => (theme as PreviewTheme).colorOnSurfaceVariant};
-  }
-  
-  &:focus {
-    outline: 2px solid ${({ theme }) => (theme as PreviewTheme).colorPrimary};
-    border-color: transparent;
-  }
-`;
-
-const PrimaryButton = styled.button`
-  align-self: stretch;
-  height: 48px;
-  padding: 0 24px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorPrimary};
-  overflow: hidden;
-  border-radius: 10px;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyLarge};
-  font-weight: 535;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+// Unused styled components - kept for potential future use
+// const InputField = styled.input`
+//   align-self: stretch;
+//   height: 48px;
+//   min-height: 40px;
+//   padding: 0 16px;
+//   background: ${({ theme }) => (theme as PreviewTheme).colorSurfaceBright};
+//   overflow: hidden;
+//   border-radius: 10px;
+//   border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutline};
+//   color: ${({ theme }) => (theme as PreviewTheme).colorOnSurface};
+//   font-size: 15px;
+//   font-family: 'Basel Grotesk', sans-serif;
+//   font-weight: 430;
+//   line-height: 19px;
+//   letter-spacing: 0.25px;
+//   
+//   &::placeholder {
+//     color: ${({ theme }) => (theme as PreviewTheme).colorOnSurfaceVariant};
+//   }
+//   
+//   &:focus {
+//     outline: 2px solid ${({ theme }) => (theme as PreviewTheme).colorPrimary};
+//     border-color: transparent;
+//   }
+// `;
+// 
+// const PrimaryButton = styled.button`
+//   align-self: stretch;
+//   height: 48px;
+//   padding: 0 24px;
+//   background: ${({ theme }) => (theme as PreviewTheme).colorPrimary};
+//   overflow: hidden;
+//   border-radius: 10px;
+//   border: none;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 8px;
+//   cursor: pointer;
+//   color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+//   ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyLarge};
+//   font-weight: 535;
+//   
+//   &:hover {
+//     opacity: 0.9;
+//   }
+// `;
 
 const FooterLinks = styled.div`
   align-self: stretch;
@@ -958,31 +964,32 @@ const DocumentHeaderRow = styled.div`
   position: relative;
 `;
 
-const DownloadButton = styled.button`
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 8px 16px;
-  background: white;
-  overflow: hidden;
-  border-radius: 2px;
-  border: 2px solid ${({ theme }) => (theme as PreviewTheme).colorPrimaryVariant};
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: ${({ theme }) => (theme as PreviewTheme).colorPrimaryVariant};
-  font-size: 15px;
-  font-family: 'Basel Grotesk', sans-serif;
-  font-weight: 535;
-  line-height: 22px;
-  letter-spacing: 0.25px;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+// Unused styled component - kept for potential future use
+// const DownloadButton = styled.button`
+//   position: absolute;
+//   right: 0;
+//   top: 0;
+//   padding: 8px 16px;
+//   background: white;
+//   overflow: hidden;
+//   border-radius: 2px;
+//   border: 2px solid ${({ theme }) => (theme as PreviewTheme).colorPrimaryVariant};
+//   display: inline-flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 8px;
+//   cursor: pointer;
+//   color: ${({ theme }) => (theme as PreviewTheme).colorPrimaryVariant};
+//   font-size: 15px;
+//   font-family: 'Basel Grotesk', sans-serif;
+//   font-weight: 535;
+//   line-height: 22px;
+//   letter-spacing: 0.25px;
+//   
+//   &:hover {
+//     opacity: 0.9;
+//   }
+// `;
 
 const InfoRow = styled.div`
   width: 744px;

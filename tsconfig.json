@@ -27,6 +27,12 @@
     }
   },
   "include": ["src"],
+  "exclude": [
+    "src/components/ForkedSelect",
+    "src/demos/@paul",
+    "src/demos/@dvora",
+    "src/overrides"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
 

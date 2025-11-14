@@ -201,13 +201,6 @@ const GuidesTitle = styled.h2`
   margin: 0 0 ${({ theme }) => (theme as StyledTheme).space800} 0;
 `;
 
-const GuidesDescription = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyLarge};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0 0 ${({ theme }) => (theme as StyledTheme).space600} 0;
-  max-width: 800px;
-`;
-
 const CodePath = styled.code`
   ${({ theme }) => (theme as StyledTheme).typestyleV2CodeSmall};
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurfaceContainerLow};
@@ -350,14 +343,6 @@ const AddCardTitle = styled.h2`
   text-align: center;
 `;
 
-const AddCardDescription = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0;
-  line-height: 1.5;
-  text-align: center;
-`;
-
 const DrawerContent = styled.div``;
 
 const InstructionSection = styled.div`
@@ -482,17 +467,10 @@ const IndexPage: React.FC = () => {
       <ContentWrapper>
         <Header theme={theme}>
           <GreetingRow theme={theme}>
-            {avatarUrl ? (
+            {avatarUrl && (
               <Avatar
                 size={Avatar.SIZES.S}
                 image={avatarUrl}
-                name={displayName}
-                alt={`${displayName} avatar`}
-              />
-            ) : (
-              <Avatar
-                size={Avatar.SIZES.S}
-                name={displayName}
               />
             )}
             <GreetingText theme={theme}>Hi {firstName}</GreetingText>
