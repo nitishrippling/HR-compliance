@@ -158,7 +158,7 @@ All components accept `theme` prop and use emotion styled components, so they au
 ## 📝 Examples
 
 See working examples in:
-- `src/demos/official/app-shell-demo.tsx` - Full featured demo
+- `src/demos/rahul/app-shell-demo.tsx` - Full featured demo
 - `src/demos/@dvora/CompositionManager/composition-manager-demo.tsx` - Composition Manager
 
 ## 🎨 Styling
