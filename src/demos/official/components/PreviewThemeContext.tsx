@@ -257,7 +257,7 @@ const createPreviewTheme = (
         colorOnSurface: '#FAFAFA',
         colorSurfaceVariant: '#A3A3A5',
         colorOnSurfaceVariant: '#A8A8A8',
-        colorSurfaceBright: '#202022',
+        colorSurfaceBright: '#21201E',
         colorSurfaceContainerLow: '#171614',
         colorSurfaceContainerHigh: '#232220',
         colorOutline: 'rgba(255, 255, 255, 0.2)',
