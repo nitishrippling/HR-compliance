@@ -41,3 +41,8 @@ lerna-debug.log*
 src/demos/private/
 
 
+<<<<<<< Updated upstream
+=======
+# .npmrc
+yarn.lock
+>>>>>>> Stashed changes
