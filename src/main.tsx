@@ -16,7 +16,8 @@ import AnimationsDemo from './demos/@paul/animations-demo';
 import DesignTokensDemo from './demos/@paul/design-tokens-demo';
 import ForkedSelectTest from './demos/@paul/forked-select-test';
 import MyFeatureDemo from './demos/@paul/my-feature-demo';
-import AppShellDemo from './demos/official/app-shell-demo';
+import AppShellDemo from './demos/@rahul/app-shell-demo';
+import CompanyThemeDemo from './demos/@rahul/company-theme-demo';
 import CompositionManagerDemo from './demos/@dvora/CompositionManager/composition-manager-demo';
 import { CompositionDetail } from './demos/@dvora/CompositionManager/compositions/CompositionDetail';
 import IndexPage from './demos/index-page';
@@ -74,6 +75,7 @@ enum EditorType {
   FORKED_SELECT_TEST = 'forked-select-test',
   MY_FEATURE = 'my-feature',
   APP_SHELL = 'app-shell',
+  COMPANY_THEME = 'company-theme',
   COMPOSITION_MANAGER = 'composition-manager',
 }
 
@@ -85,6 +87,7 @@ const DEMO_ROUTES: Record<EditorType, string> = {
   [EditorType.MODAL_DEMO]: '/drawer-demo',
   [EditorType.FORKED_SELECT_TEST]: '/forked-select-test',
   [EditorType.MY_FEATURE]: '/my-feature-demo',
+  [EditorType.COMPANY_THEME]: '/company-theme-demo',
   [EditorType.COMPOSITION_MANAGER]: '/app-studio/composition-manager',
 };
 
@@ -209,6 +212,7 @@ const Playground = (props: { className?: string }) => {
     { type: EditorType.MODAL_DEMO, label: 'Drawer Demo' },
     { type: EditorType.FORKED_SELECT_TEST, label: 'Forked Select Test' },
     { type: EditorType.MY_FEATURE, label: 'My Feature' },
+    { type: EditorType.COMPANY_THEME, label: 'Company Theme' },
     { type: EditorType.COMPOSITION_MANAGER, label: 'Composition Manager' },
   ];
 
@@ -442,6 +446,8 @@ const Playground = (props: { className?: string }) => {
 
         {editorType === EditorType.MY_FEATURE && <MyFeatureDemo />}
 
+        {editorType === EditorType.COMPANY_THEME && <CompanyThemeDemo />}
+
         {editorType === EditorType.COMPOSITION_MANAGER && <CompositionManagerDemo />}
 
         {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
@@ -511,6 +517,7 @@ init().then(() => {
             <Route path="/drawer-demo" element={<Playground />} />
             <Route path="/forked-select-test" element={<Playground />} />
             <Route path="/my-feature-demo" element={<Playground />} />
+            <Route path="/company-theme-demo" element={<Playground />} />
             <Route path="/app-studio/composition-manager" element={<Playground />} />
             <Route path="/app-studio/composition-manager/compositions/:id" element={<CompositionDetail />} />
             <Route path="*" element={<Navigate to="/" replace />} />

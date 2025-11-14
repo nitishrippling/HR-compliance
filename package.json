@@ -30,6 +30,7 @@
     "@rippling/pebble": "latest",
     "@rippling/pebble-tokens": "^0.0.107",
     "@rippling/ui-utils": "latest",
+    "colorjs.io": "^0.5.2",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "marked": "^16.4.1",
