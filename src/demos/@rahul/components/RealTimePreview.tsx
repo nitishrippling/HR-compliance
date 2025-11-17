@@ -1352,7 +1352,7 @@ export const RealTimePreview: React.FC = () => {
                         size={Input.Text.SIZES.L}
                       />
                     </InputGroup>
-                    <div style={{ width: '100%' }}>
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                       <Button 
                         size={Button.SIZES.L}
                         appearance={Button.APPEARANCES.PRIMARY}
