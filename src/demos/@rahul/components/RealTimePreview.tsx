@@ -64,63 +64,10 @@ function getLogoForBackground(backgroundColor: string): string {
 }
 
 const PreviewContainer = styled.div`
-  // width: 100%;
-  padding: 16px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorSurfaceBright};
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOutlineVariant};
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const InnerContainer = styled.div`
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
   gap: 24px;
-`;
-
-const TitleSection = styled.div`
-  align-self: stretch;
-  padding-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 24px;
-`;
-
-const TitleRow = styled.div`
-  align-self: stretch;
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: flex-end;
-  gap: 48px;
-`;
-
-const TitleText = styled.div`
-  flex: 1 1 0;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 4px;
-`;
-
-const Title = styled.div`
-  align-self: stretch;
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: column;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnSurface};
-  ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleMedium};
-  font-size: 18px;
-  line-height: 22px;
 `;
 
 // Section Components
@@ -1173,39 +1120,31 @@ export const RealTimePreview: React.FC = () => {
   
   return (
     <PreviewContainer>
-      <InnerContainer>
-        <TitleSection>
-          <TitleRow>
-            <TitleText>
-              <Title>Real-time Preview</Title>
-            </TitleText>
-          </TitleRow>
-
-          {/* Dashboard Section */}
-          <PreviewSection>
-            <SectionLabel>Dashboard</SectionLabel>
-            <DashboardFrame>
-              <DashboardInner>
-                {/* Top Navigation Bar */}
-                <TopNavBar>
-                  <NavLogoSection>
-                    <NavLogo src={navLogo} alt="Rippling" />
-                  </NavLogoSection>
-                  <NavMainSection>
-                    <SearchBar>
-                      <SearchIconWrapper>
-                        <SearchIconSvg />
-                      </SearchIconWrapper>
-                      <SearchText>Search or jump to...</SearchText>
-                    </SearchBar>
-                    <NavRightSection>
-                      <CompanySection>
-                        <CompanyText>Acme, Inc.</CompanyText>
-                        <Avatar size={Avatar.SIZES.XS} />
-                      </CompanySection>
-                    </NavRightSection>
-                  </NavMainSection>
-                </TopNavBar>
+      {/* Dashboard Section */}
+      <PreviewSection>
+        <SectionLabel>Dashboard</SectionLabel>
+        <DashboardFrame>
+          <DashboardInner>
+            {/* Top Navigation Bar */}
+            <TopNavBar>
+              <NavLogoSection>
+                <NavLogo src={navLogo} alt="Rippling" />
+              </NavLogoSection>
+              <NavMainSection>
+                <SearchBar>
+                  <SearchIconWrapper>
+                    <SearchIconSvg />
+                  </SearchIconWrapper>
+                  <SearchText>Search or jump to...</SearchText>
+                </SearchBar>
+                <NavRightSection>
+                  <CompanySection>
+                    <CompanyText>Acme, Inc.</CompanyText>
+                    <Avatar size={Avatar.SIZES.XS} />
+                  </CompanySection>
+                </NavRightSection>
+              </NavMainSection>
+            </TopNavBar>
 
                 {/* Sidebar */}
                 <Sidebar>
@@ -1383,12 +1322,12 @@ export const RealTimePreview: React.FC = () => {
                 </DashboardContent>
               </DashboardInner>
             </DashboardFrame>
-          </PreviewSection>
+      </PreviewSection>
 
-          {/* Login Section */}
-          <PreviewSection>
-            <SectionLabel>Login</SectionLabel>
-            <LoginFrame>
+      {/* Login Section */}
+      <PreviewSection>
+        <SectionLabel>Login</SectionLabel>
+        <LoginFrame>
               <LoginContainer>
                 <LoginCard>
                   <LoginHeader>
@@ -1435,12 +1374,12 @@ export const RealTimePreview: React.FC = () => {
                 </FooterLinks>
               </LoginContainer>
             </LoginFrame>
-          </PreviewSection>
+      </PreviewSection>
 
-          {/* Document Section */}
-          <PreviewSection>
-            <SectionLabel>Document Preview</SectionLabel>
-            <DocumentFrame>
+      {/* Document Section */}
+      <PreviewSection>
+        <SectionLabel>Document Preview</SectionLabel>
+        <DocumentFrame>
               <DocumentContainer>
                 <DocumentHeaderRow>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1495,9 +1434,7 @@ export const RealTimePreview: React.FC = () => {
                 </PayrollCard>
               </DocumentContainer>
             </DocumentFrame>
-          </PreviewSection>
-        </TitleSection>
-      </InnerContainer>
+      </PreviewSection>
     </PreviewContainer>
   );
 };

@@ -164,7 +164,7 @@ const PreviewSection = styled.div`
 
 const PreviewFrame = styled.div`
   width: 100%;
-  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  // border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCorner2xl};
   overflow: hidden;
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
