@@ -736,9 +736,9 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
     
     console.log('Saving theme configuration:', savedTheme);
     
-    // Call the onSave callback if provided - pass shouldClose: false to stay in editor
+    // Call the onSave callback if provided - pass shouldClose: true to close editor
     if (onSave) {
-      onSave(savedTheme, false);
+      onSave(savedTheme, true);
     }
   };
 
