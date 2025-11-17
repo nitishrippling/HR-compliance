@@ -254,6 +254,10 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
   const [secondaryColor, setSecondaryColor] = useState(initialTheme.secondaryColor);
   const [tertiaryColor, setTertiaryColor] = useState(initialTheme.tertiaryColor);
   
+  // Navigation color for Mode B (separate from primary color)
+  const [navColor, setNavColor] = useState(initialTheme.navColor || initialTheme.primaryColor);
+  const [darkNavColor, setDarkNavColor] = useState(initialTheme.navColor || initialTheme.primaryColor);
+  
   // Dark mode colors
   const [darkPrimaryColor, setDarkPrimaryColor] = useState(initialTheme.primaryColor);
   const [darkSecondaryColor, setDarkSecondaryColor] = useState(initialTheme.secondaryColor);
@@ -380,6 +384,7 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
       primaryColor,
       secondaryColor,
       tertiaryColor,
+      navColor,
       lightLogo,
       darkLogo,
       lightLogoBackground,
@@ -584,9 +589,9 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
                       {currentMode === ThemeMode.LOGO_NAV_COLOR && (
                         <ColorInput
                           id="nav-color"
-                          label="Primary Color"
-                          value={primaryColor}
-                          onChange={setPrimaryColor}
+                          label="Navigation Color"
+                          value={navColor}
+                          onChange={setNavColor}
                         />
                       )}
 
@@ -633,9 +638,9 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
                       {currentMode === ThemeMode.LOGO_NAV_COLOR && (
                         <ColorInput
                           id="dark-nav-color"
-                          label="Primary Color"
-                          value={darkPrimaryColor}
-                          onChange={setDarkPrimaryColor}
+                          label="Navigation Color"
+                          value={darkNavColor}
+                          onChange={setDarkNavColor}
                         />
                       )}
 
@@ -692,6 +697,8 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
                     darkPrimaryColor={darkPrimaryColor}
                     darkSecondaryColor={darkSecondaryColor}
                     darkTertiaryColor={darkTertiaryColor}
+                    navColor={currentMode === ThemeMode.LOGO_NAV_COLOR ? navColor : undefined}
+                    darkNavColor={currentMode === ThemeMode.LOGO_NAV_COLOR ? darkNavColor : undefined}
                     lightLogo={lightLogo}
                     darkLogo={darkLogo}
                     lightLogoBackground={lightLogoBackground}

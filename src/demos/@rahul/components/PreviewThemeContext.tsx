@@ -29,6 +29,10 @@ export const useLogoContext = () => useContext(LogoContext);
  */
 
 export interface PreviewTheme {
+  // Navigation color (for Mode B - separate from primary)
+  colorNav?: string;
+  colorOnNav?: string;
+  
   // Primary colors
   colorPrimary: string;
   colorOnPrimary: string;
@@ -106,6 +110,8 @@ interface PreviewThemeProviderProps {
   darkPrimaryColor?: string;
   darkSecondaryColor?: string;
   darkTertiaryColor?: string;
+  navColor?: string; // Separate nav color for Mode B
+  darkNavColor?: string; // Separate dark nav color for Mode B
   lightLogo?: string;
   darkLogo?: string;
   lightLogoBackground?: string;
@@ -244,11 +250,15 @@ const createPreviewTheme = (
   primaryColor: string,
   secondaryColor: string,
   tertiaryColor: string,
-  mode: 'light' | 'dark' = 'light'
+  mode: 'light' | 'dark' = 'light',
+  navColor?: string
 ): PreviewTheme => {
   const primary = createColorPalette(primaryColor, 'primary');
   const secondary = createColorPalette(secondaryColor, 'secondary');
   const tertiary = createColorPalette(tertiaryColor, 'tertiary');
+  
+  // Create nav palette if navColor is provided (Mode B)
+  const nav = navColor ? createColorPalette(navColor, 'primary') : null;
   
   // Surface colors based on theme mode
   const surfaceColors = mode === 'dark' 
@@ -278,6 +288,12 @@ const createPreviewTheme = (
       };
   
   return {
+    // Navigation colors (Mode B - if provided)
+    ...(nav ? {
+      colorNav: nav.base,
+      colorOnNav: nav.onBase,
+    } : {}),
+    
     // Primary colors
     colorPrimary: primary.base,
     colorOnPrimary: primary.onBase,
@@ -400,6 +416,8 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   darkPrimaryColor,
   darkSecondaryColor,
   darkTertiaryColor,
+  navColor,
+  darkNavColor,
   lightLogo,
   darkLogo,
   lightLogoBackground,
@@ -411,8 +429,9 @@ export const PreviewThemeProvider: React.FC<PreviewThemeProviderProps> = ({
   const effectivePrimary = mode === 'dark' && darkPrimaryColor ? darkPrimaryColor : primaryColor;
   const effectiveSecondary = mode === 'dark' && darkSecondaryColor ? darkSecondaryColor : secondaryColor;
   const effectiveTertiary = mode === 'dark' && darkTertiaryColor ? darkTertiaryColor : tertiaryColor;
+  const effectiveNav = navColor ? (mode === 'dark' && darkNavColor ? darkNavColor : navColor) : undefined;
   
-  const theme = createPreviewTheme(effectivePrimary, effectiveSecondary, effectiveTertiary, mode);
+  const theme = createPreviewTheme(effectivePrimary, effectiveSecondary, effectiveTertiary, mode, effectiveNav);
   
   const logoData: LogoContextData = {
     lightLogo,

@@ -205,8 +205,15 @@ const TopNavBar = styled.div`
   left: 0;
   top: 0;
   position: absolute;
-  background: ${({ theme }) => (theme as PreviewTheme).colorPrimary};
-  border-bottom: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOnPrimary}1A;
+  background: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorNav || t.colorPrimary;
+  }};
+  border-bottom: 1px solid ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    const onColor = t.colorOnNav || t.colorOnPrimary;
+    return `${onColor}1A`;
+  }};
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
@@ -219,8 +226,15 @@ const NavLogoSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid ${({ theme }) => (theme as PreviewTheme).colorOnPrimary}33;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+  border-right: 1px solid ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    const onColor = t.colorOnNav || t.colorOnPrimary;
+    return `${onColor}33`;
+  }};
+  color: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorOnNav || t.colorOnPrimary;
+  }};
 `;
 
 const NavMainSection = styled.div`
@@ -241,7 +255,11 @@ const SearchBar = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary}1A;
+  background: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    const onColor = t.colorOnNav || t.colorOnPrimary;
+    return `${onColor}1A`;
+  }};
   height: 36px;
 `;
 
@@ -252,7 +270,10 @@ const SearchIconWrapper = styled.div`
   
   svg {
     fill: none;
-    stroke: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+    stroke: ${({ theme }) => {
+      const t = theme as PreviewTheme;
+      return t.colorOnNav || t.colorOnPrimary;
+    }};
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -268,7 +289,10 @@ const SearchIconSvg = () => (
 
 const SearchText = styled.div`
   flex: 1 1 0;
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+  color: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorOnNav || t.colorOnPrimary;
+  }};
   opacity: 0.6;
   ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyMedium};
 `;
@@ -289,7 +313,10 @@ const CompanySection = styled.div`
 `;
 
 const CompanyText = styled.div`
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+  color: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorOnNav || t.colorOnPrimary;
+  }};
   ${({ theme }) => (theme as PreviewTheme).typestyleV2BodyLarge};
   font-weight: 535;
 `;
@@ -722,7 +749,10 @@ const LoginCard = styled.div`
 const LoginHeader = styled.div`
   align-self: stretch;
   padding: 24px 0;
-  background: ${({ theme }) => (theme as PreviewTheme).colorPrimary};
+  background: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorNav || t.colorPrimary;
+  }};
   overflow: hidden;
   display: flex;
   flex-direction: row;
@@ -745,7 +775,10 @@ const BrandLogo = styled.div`
 `;
 
 const CompanyName = styled.div`
-  color: ${({ theme }) => (theme as PreviewTheme).colorOnPrimary};
+  color: ${({ theme }) => {
+    const t = theme as PreviewTheme;
+    return t.colorOnNav || t.colorOnPrimary;
+  }};
   ${({ theme }) => (theme as PreviewTheme).typestyleV2TitleLarge};
   font-weight: 600;
 `;
