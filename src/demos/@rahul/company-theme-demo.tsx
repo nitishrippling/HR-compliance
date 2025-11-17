@@ -11,6 +11,7 @@ import { AppShellLayout, NavSectionData } from '@/components/app-shell';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import ThemeEditorPage from './theme-editor-page';
 import SimpleThemeEditor from './simple-theme-editor';
+import ReadOnlyThemeView from './read-only-theme-view';
 
 export enum ThemeMode {
   LOGO_ONLY = 'logo-only',
@@ -176,68 +177,8 @@ const SectionTitle = styled.h3`
   font-weight: 535;
 `;
 
-const SectionDescription = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0;
-`;
-
-const SectionSubtitle = styled.div`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelLarge};
-  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
-  font-weight: 600;
-`;
-
-const LogoPreviewSmall = styled.div<{ bgColor?: string }>`
-  width: 120px;
-  height: 80px;
-  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
-  background-color: ${({ bgColor }) => bgColor || 'transparent'};
-  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => (theme as StyledTheme).space300};
-
-  ${({ bgColor }) => bgColor === 'transparent' && `
-    background: 
-      linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-      linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-      linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
-    background-size: 12px 12px;
-    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
-  `}
-
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-`;
-
-const ColorPreviewSwatch = styled.div<{ color: string; label?: string }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => (theme as StyledTheme).space200};
-
-  &::before {
-    content: '';
-    width: 48px;
-    height: 48px;
-    border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
-    background-color: ${({ color }) => color};
-    border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
-    display: block;
-  }
-
-  &::after {
-    content: ${({ label }) => label ? `'${label}'` : '""'};
-    ${({ theme }) => (theme as StyledTheme).typestyleV2LabelSmall};
-    color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  }
-`;
+// Removed unused styled components - now using ReadOnlyThemeView for Modes A-D
+// These were: SectionDescription, SectionSubtitle, LogoPreviewSmall, ColorPreviewSwatch
 
 const ThemeLibraryGrid = styled.div`
   display: grid;
@@ -650,63 +591,12 @@ const CompanyThemeDemo: React.FC = () => {
                 </Button>
               </EmptyStateContainer>
             ) : (
-              // Show current branding
-              <VStack gap="2rem">
-                <HStack gap="1rem" align="center" justify="space-between">
-                  <div>
-                    <SectionTitle>Company Branding</SectionTitle>
-                    <SectionDescription>
-                      Your company's visual identity
-                    </SectionDescription>
-                  </div>
-                  <Button
-                    appearance={Button.APPEARANCES.PRIMARY}
-                    size={Button.SIZES.M}
-                    onClick={() => setShowEditor(true)}
-                    icon={{ type: Icon.TYPES.EDIT_OUTLINE }}
-                  >
-                    Edit Branding
-                  </Button>
-                </HStack>
-
-                {/* Preview current branding */}
-                <HStack gap="3rem" align="flex-start">
-                  {/* Logos Preview */}
-                  {(themes[0].lightLogo || themes[0].darkLogo) && (
-                    <VStack gap="0.75rem">
-                      <SectionSubtitle>Logos</SectionSubtitle>
-                      <HStack gap="1rem">
-                        {themes[0].lightLogo && (
-                          <LogoPreviewSmall bgColor={themes[0].lightLogoBackground || 'transparent'}>
-                            <img src={themes[0].lightLogo} alt="Light logo" />
-                          </LogoPreviewSmall>
-                        )}
-                        {themes[0].darkLogo && (
-                          <LogoPreviewSmall bgColor={themes[0].darkLogoBackground || '#1a1a1a'}>
-                            <img src={themes[0].darkLogo} alt="Dark logo" />
-                          </LogoPreviewSmall>
-                        )}
-                      </HStack>
-                    </VStack>
-                  )}
-
-                  {/* Colors Preview */}
-                  {currentMode !== ThemeMode.LOGO_ONLY && (
-                    <VStack gap="0.75rem">
-                      <SectionSubtitle>Colors</SectionSubtitle>
-                      <HStack gap="0.75rem">
-                        <ColorPreviewSwatch color={themes[0].primaryColor} label="Primary" />
-                        {currentMode === ThemeMode.FULL_PALETTE && (
-                          <>
-                            <ColorPreviewSwatch color={themes[0].secondaryColor} label="Secondary" />
-                            <ColorPreviewSwatch color={themes[0].tertiaryColor} label="Tertiary" />
-                          </>
-                        )}
-                      </HStack>
-                    </VStack>
-                  )}
-                </HStack>
-              </VStack>
+              // Show read-only theme view with same layout as editor
+              <ReadOnlyThemeView
+                theme={themes[0]}
+                currentMode={currentMode}
+                onEdit={() => setShowEditor(true)}
+              />
             )}
           </>
         ) : (

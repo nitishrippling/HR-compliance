@@ -14,6 +14,7 @@ interface ColorInputProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
 const ColorInputContainer = styled.div`
@@ -27,7 +28,7 @@ const Label = styled.label`
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ disabled?: boolean }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => (theme as StyledTheme).space300};
@@ -35,20 +36,25 @@ const InputWrapper = styled.div`
   border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurfaceBright};
+  
+  ${({ disabled }) => disabled && `
+    opacity: 0.6;
+    cursor: not-allowed;
+  `}
 `;
 
-const ColorSwatch = styled.div<{ color: string }>`
+const ColorSwatch = styled.div<{ color: string; disabled?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerSm};
   background-color: ${({ color }) => color};
   border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
-  cursor: pointer;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
   position: relative;
   overflow: hidden;
 
   &:hover {
-    opacity: 0.9;
+    opacity: ${({ disabled }) => disabled ? '1' : '0.9'};
   }
 `;
 
@@ -68,17 +74,18 @@ const HexValue = styled.span`
   font-family: monospace;
 `;
 
-export const ColorInput: React.FC<ColorInputProps> = ({ id, label, value, onChange }) => {
+export const ColorInput: React.FC<ColorInputProps> = ({ id, label, value, onChange, disabled = false }) => {
   return (
     <ColorInputContainer>
       <Label htmlFor={id}>{label}</Label>
-      <InputWrapper>
-        <ColorSwatch color={value}>
+      <InputWrapper disabled={disabled}>
+        <ColorSwatch color={value} disabled={disabled}>
           <ColorPickerInput
             id={id}
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
           />
         </ColorSwatch>
         <HexValue>{value}</HexValue>
