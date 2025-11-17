@@ -64,7 +64,7 @@ function getLogoForBackground(backgroundColor: string): string {
 }
 
 const PreviewContainer = styled.div`
-  width: 100%;
+  // width: 100%;
   padding: 16px;
   background: ${({ theme }) => (theme as PreviewTheme).colorSurfaceBright};
   overflow: hidden;

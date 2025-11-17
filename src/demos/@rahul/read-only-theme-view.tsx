@@ -57,15 +57,18 @@ const SectionHeader = styled.div`
 
 const TwoColumnGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: ${({ theme }) => (theme as StyledTheme).space600};
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space600};
+  max-width: 100%;
 `;
 
 const LogoColumn = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => (theme as StyledTheme).space300};
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 const ColumnLabel = styled.div`
@@ -77,6 +80,7 @@ const ColumnLabel = styled.div`
 
 const EmptyLogoBox = styled.div`
   width: 100%;
+  max-width: 100%;
   height: 152px;
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
   border: 1px dashed ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
@@ -86,10 +90,13 @@ const EmptyLogoBox = styled.div`
   ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurfaceContainerLow};
+  overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const LogoPreviewBox = styled.div<{ bgColor?: string }>`
   width: 100%;
+  max-width: 100%;
   height: 152px;
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
   background-color: ${({ bgColor }) => bgColor || 'transparent'};
@@ -99,6 +106,8 @@ const LogoPreviewBox = styled.div<{ bgColor?: string }>`
   justify-content: center;
   padding: ${({ theme }) => (theme as StyledTheme).space400};
   opacity: 0.9;
+  overflow: hidden;
+  box-sizing: border-box;
 
   ${({ bgColor }) => bgColor === 'transparent' && `
     background: 

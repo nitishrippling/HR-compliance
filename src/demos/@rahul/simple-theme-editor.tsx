@@ -68,15 +68,18 @@ const SectionTitle = styled.h2`
 
 const TwoColumnGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: ${({ theme }) => (theme as StyledTheme).space600};
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space600};
+  max-width: 100%;
 `;
 
 const LogoColumn = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => (theme as StyledTheme).space400};
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 const ColumnLabel = styled.div`
@@ -96,6 +99,7 @@ const ChipContainer = styled.div`
 
 const UploadBox = styled.div`
   width: 100%;
+  max-width: 100%;
   height: 168px;
   border: 2px dashed ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
@@ -105,6 +109,8 @@ const UploadBox = styled.div`
   cursor: pointer;
   transition: all 0.2s;
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurfaceContainerLow};
+  overflow: hidden;
+  box-sizing: border-box;
 
   &:hover {
     border-color: ${({ theme }) => (theme as StyledTheme).colorOutline};
@@ -125,6 +131,7 @@ const PreviewLabel = styled.div`
 
 const LogoPreviewBox = styled.div<{ bgColor?: string }>`
   width: 100%;
+  max-width: 100%;
   height: 152px;
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
   background-color: ${({ bgColor }) => bgColor || 'transparent'};
@@ -133,6 +140,18 @@ const LogoPreviewBox = styled.div<{ bgColor?: string }>`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => (theme as StyledTheme).space400};
+  overflow: hidden;
+  box-sizing: border-box;
+
+  ${({ bgColor }) => bgColor === 'transparent' && `
+    background: 
+      linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  `}
 `;
 
 const LogoPreviewImage = styled.img`
@@ -150,6 +169,8 @@ const BackgroundSelectorLabel = styled.div`
 const BackgroundColorOptions = styled.div`
   display: flex;
   gap: ${({ theme }) => (theme as StyledTheme).space200};
+  position: relative;
+  z-index: 1;
 `;
 
 const BackgroundColorOption = styled.div<{ color: string; isSelected: boolean }>`
@@ -162,6 +183,8 @@ const BackgroundColorOption = styled.div<{ color: string; isSelected: boolean }>
   cursor: pointer;
   transition: border-color 0.2s;
   position: relative;
+  user-select: none;
+  flex-shrink: 0;
 
   ${({ color }) => color === 'transparent' && `
     background: 
@@ -175,6 +198,10 @@ const BackgroundColorOption = styled.div<{ color: string; isSelected: boolean }>
 
   &:hover {
     border-color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;
 
