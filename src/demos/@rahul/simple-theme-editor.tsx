@@ -259,13 +259,49 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
   const [darkSecondaryColor, setDarkSecondaryColor] = useState(initialTheme.secondaryColor);
   const [darkTertiaryColor, setDarkTertiaryColor] = useState(initialTheme.tertiaryColor);
 
-  // Logo state
+  // Logo state - store original and wrapped versions
+  const [originalLightLogo, setOriginalLightLogo] = useState<string | undefined>(initialTheme.lightLogo);
+  const [originalDarkLogo, setOriginalDarkLogo] = useState<string | undefined>(initialTheme.darkLogo);
   const [lightLogo, setLightLogo] = useState(initialTheme.lightLogo || '');
   const [darkLogo, setDarkLogo] = useState(initialTheme.darkLogo || '');
   const [lightLogoBackground, setLightLogoBackground] = useState(initialTheme.lightLogoBackground || 'transparent');
   const [darkLogoBackground, setDarkLogoBackground] = useState(initialTheme.darkLogoBackground || 'transparent');
   const [lightLogoFileName, setLightLogoFileName] = useState('');
   const [darkLogoFileName, setDarkLogoFileName] = useState('');
+
+  // Helper function to wrap logo in SVG with padding and background
+  const wrapLogoWithBackground = (
+    logoDataUrl: string,
+    backgroundColor: string,
+    callback: (wrappedLogo: string) => void
+  ) => {
+    if (backgroundColor === 'transparent') {
+      // No wrapping needed for transparent background
+      callback(logoDataUrl);
+      return;
+    }
+
+    // Create an image to get dimensions
+    const img = new Image();
+    img.onload = () => {
+      const padding = 24; // 24px padding around the logo
+      const svgWidth = img.width + (padding * 2);
+      const svgHeight = img.height + (padding * 2);
+      
+      // Create SVG that wraps the logo with background and padding
+      const wrappedSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+          <rect width="${svgWidth}" height="${svgHeight}" fill="${backgroundColor}" rx="20%"/>
+          <image href="${logoDataUrl}" x="${padding}" y="${padding}" width="${img.width}" height="${img.height}"/>
+        </svg>
+      `;
+      
+      // Convert SVG to data URL
+      const wrappedDataUrl = `data:image/svg+xml;base64,${btoa(wrappedSvg)}`;
+      callback(wrappedDataUrl);
+    };
+    img.src = logoDataUrl;
+  };
 
   // Logo upload handlers
   const handleLightLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,7 +310,13 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
       setLightLogoFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
-        setLightLogo(event.target?.result as string);
+        const dataUrl = event.target?.result as string;
+        // Store the original logo
+        setOriginalLightLogo(dataUrl);
+        // Wrap with current background
+        wrapLogoWithBackground(dataUrl, lightLogoBackground, (wrappedLogo) => {
+          setLightLogo(wrappedLogo);
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -286,19 +328,47 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
       setDarkLogoFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
-        setDarkLogo(event.target?.result as string);
+        const dataUrl = event.target?.result as string;
+        // Store the original logo
+        setOriginalDarkLogo(dataUrl);
+        // Wrap with current background
+        wrapLogoWithBackground(dataUrl, darkLogoBackground, (wrappedLogo) => {
+          setDarkLogo(wrappedLogo);
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Handler for light logo background change
+  const handleLightLogoBackgroundChange = (backgroundColor: string) => {
+    setLightLogoBackground(backgroundColor);
+    if (originalLightLogo) {
+      wrapLogoWithBackground(originalLightLogo, backgroundColor, (wrappedLogo) => {
+        setLightLogo(wrappedLogo);
+      });
+    }
+  };
+
+  // Handler for dark logo background change
+  const handleDarkLogoBackgroundChange = (backgroundColor: string) => {
+    setDarkLogoBackground(backgroundColor);
+    if (originalDarkLogo) {
+      wrapLogoWithBackground(originalDarkLogo, backgroundColor, (wrappedLogo) => {
+        setDarkLogo(wrappedLogo);
+      });
+    }
+  };
+
   const handleRemoveLightLogo = () => {
+    setOriginalLightLogo(undefined);
     setLightLogo('');
     setLightLogoFileName('');
     setLightLogoBackground('transparent');
   };
 
   const handleRemoveDarkLogo = () => {
+    setOriginalDarkLogo(undefined);
     setDarkLogo('');
     setDarkLogoFileName('');
     setDarkLogoBackground('transparent');
@@ -400,21 +470,21 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
                               theme={theme}
                               color="transparent"
                               isSelected={lightLogoBackground === 'transparent'}
-                              onClick={() => setLightLogoBackground('transparent')}
+                              onClick={() => handleLightLogoBackgroundChange('transparent')}
                               aria-label="Transparent background"
                             />
                             <BackgroundColorOption
                               theme={theme}
                               color="#FFFFFF"
                               isSelected={lightLogoBackground === '#FFFFFF'}
-                              onClick={() => setLightLogoBackground('#FFFFFF')}
+                              onClick={() => handleLightLogoBackgroundChange('#FFFFFF')}
                               aria-label="White background"
                             />
                             <BackgroundColorOption
                               theme={theme}
                               color="#000000"
                               isSelected={lightLogoBackground === '#000000'}
-                              onClick={() => setLightLogoBackground('#000000')}
+                              onClick={() => handleLightLogoBackgroundChange('#000000')}
                               aria-label="Black background"
                             />
                           </BackgroundColorOptions>
@@ -467,21 +537,21 @@ const SimpleThemeEditor: React.FC<SimpleThemeEditorProps> = ({
                               theme={theme}
                               color="transparent"
                               isSelected={darkLogoBackground === 'transparent'}
-                              onClick={() => setDarkLogoBackground('transparent')}
+                              onClick={() => handleDarkLogoBackgroundChange('transparent')}
                               aria-label="Transparent background"
                             />
                             <BackgroundColorOption
                               theme={theme}
                               color="#FFFFFF"
                               isSelected={darkLogoBackground === '#FFFFFF'}
-                              onClick={() => setDarkLogoBackground('#FFFFFF')}
+                              onClick={() => handleDarkLogoBackgroundChange('#FFFFFF')}
                               aria-label="White background"
                             />
                             <BackgroundColorOption
                               theme={theme}
                               color="#000000"
                               isSelected={darkLogoBackground === '#000000'}
-                              onClick={() => setDarkLogoBackground('#000000')}
+                              onClick={() => handleDarkLogoBackgroundChange('#000000')}
                               aria-label="Black background"
                             />
                           </BackgroundColorOptions>
