@@ -10,6 +10,49 @@ import Chip from '@rippling/pebble/Chip';
 import { AppShellLayout, NavSectionData } from '@/components/app-shell';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import ThemeEditorPage from './theme-editor-page';
+import SimpleThemeEditor from './simple-theme-editor';
+
+export enum ThemeMode {
+  LOGO_ONLY = 'logo-only',
+  LOGO_NAV_COLOR = 'logo-nav-color',
+  LOGO_PRIMARY = 'logo-primary',
+  FULL_PALETTE = 'full-palette',
+  MULTI_THEME = 'multi-theme',
+}
+
+export interface ThemeModeOption {
+  mode: ThemeMode;
+  label: string;
+  description: string;
+}
+
+export const THEME_MODES: ThemeModeOption[] = [
+  {
+    mode: ThemeMode.LOGO_ONLY,
+    label: 'Mode A — Logo only',
+    description: 'Light and dark logos only',
+  },
+  {
+    mode: ThemeMode.LOGO_NAV_COLOR,
+    label: 'Mode B — Logo + Nav color',
+    description: 'Logos and navigation bar color',
+  },
+  {
+    mode: ThemeMode.LOGO_PRIMARY,
+    label: 'Mode C — Logo + Primary (auto calc)',
+    description: 'Logos and primary color with auto-calculated palette',
+  },
+  {
+    mode: ThemeMode.FULL_PALETTE,
+    label: 'Mode D — Full palette',
+    description: 'Primary, secondary, and tertiary colors',
+  },
+  {
+    mode: ThemeMode.MULTI_THEME,
+    label: 'Mode E — Multi-theme',
+    description: 'Multiple themes with assignments',
+  },
+];
 
 interface Theme {
   id: string;
@@ -17,6 +60,7 @@ interface Theme {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  navColor?: string; // Navigation bar color for Mode B
   lightLogo?: string; // Data URL or file path for light background logo
   darkLogo?: string; // Data URL or file path for dark background logo
   lightLogoBackground?: string; // Background color for light logo
@@ -130,6 +174,69 @@ const SectionTitle = styled.h3`
   margin: 0;
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
   font-weight: 535;
+`;
+
+const SectionDescription = styled.p`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+  margin: 0;
+`;
+
+const SectionSubtitle = styled.div`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelLarge};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  font-weight: 600;
+`;
+
+const LogoPreviewSmall = styled.div<{ bgColor?: string }>`
+  width: 120px;
+  height: 80px;
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  background-color: ${({ bgColor }) => bgColor || 'transparent'};
+  border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => (theme as StyledTheme).space300};
+
+  ${({ bgColor }) => bgColor === 'transparent' && `
+    background: 
+      linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+      linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+      linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+  `}
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+`;
+
+const ColorPreviewSwatch = styled.div<{ color: string; label?: string }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+
+  &::before {
+    content: '';
+    width: 48px;
+    height: 48px;
+    border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+    background-color: ${({ color }) => color};
+    border: 1px solid ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+    display: block;
+  }
+
+  &::after {
+    content: ${({ label }) => label ? `'${label}'` : '""'};
+    ${({ theme }) => (theme as StyledTheme).typestyleV2LabelSmall};
+    color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+  }
 `;
 
 const ThemeLibraryGrid = styled.div`
@@ -256,12 +363,30 @@ const FooterPlaceholder = styled.span`
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
 `;
 
+const ModeSelectWrapper = styled.div`
+  min-width: 200px;
+
+  /* Remove extra margin from dropdown menu content - override PageHeaderWrapper styles */
+  [role="listbox"] div[class*='Content'] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: ${({ theme }) => (theme as StyledTheme).space200};
+  }
+
+  /* Additional specificity to override global styles */
+  div[class*='Content'][class*='css-'] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+`;
+
 const CompanyThemeDemo: React.FC = () => {
   const { theme } = usePebbleTheme();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [themeName, setThemeName] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [editingThemeId, setEditingThemeId] = useState<string | null>(null);
+  const [currentMode, setCurrentMode] = useState<ThemeMode>(ThemeMode.MULTI_THEME);
   
   // Store list of themes - start with empty array
   const [themes, setThemes] = useState<Theme[]>([]);
@@ -373,6 +498,21 @@ const CompanyThemeDemo: React.FC = () => {
 
   const pageActions = (
     <HStack gap="0.5rem">
+      {/* Mode Selector */}
+      <ModeSelectWrapper theme={theme}>
+        <Input.Select
+          size={Input.Select.SIZES.M}
+          value={currentMode}
+          onChange={(value) => {
+            setCurrentMode(value as ThemeMode);
+          }}
+          list={THEME_MODES.map((modeOption) => ({
+            label: modeOption.label.split('—')[0].trim(),
+            value: modeOption.mode,
+          }))}
+        />
+      </ModeSelectWrapper>
+
       {themes.length > 0 && (
         <Button 
           appearance={Button.APPEARANCES.PRIMARY} 
@@ -399,14 +539,49 @@ const CompanyThemeDemo: React.FC = () => {
     </HStack>
   );
 
-  // If editor is open, show theme editor page
+  // If editor is open, show appropriate editor based on mode
   if (showEditor) {
     const editingTheme = editingThemeId ? themes.find(t => t.id === editingThemeId) : null;
+    
+    // For Modes A-D, use simple editor
+    if (currentMode !== ThemeMode.MULTI_THEME) {
+      // Create a single theme if it doesn't exist
+      const singleTheme = themes.length > 0 ? themes[0] : {
+        id: 'default-theme',
+        name: 'Default Theme',
+        primaryColor: '#7a005d',
+        secondaryColor: '#ffa81d',
+        tertiaryColor: '#1e4aa9',
+      };
+
+      return (
+        <SimpleThemeEditor
+          theme={singleTheme}
+          currentMode={currentMode}
+          onSave={(updatedTheme) => {
+            // For single-theme modes, just update or add the single theme
+            if (themes.length === 0) {
+              setThemes([updatedTheme]);
+            } else {
+              setThemes([updatedTheme]);
+            }
+            setShowEditor(false);
+          }}
+          onCancel={() => {
+            setShowEditor(false);
+            setEditingThemeId(null);
+          }}
+        />
+      );
+    }
+
+    // For Mode E, use complex multi-theme editor
     return (
       <ThemeEditorPage 
         themeName={themeName} 
         initialTheme={editingTheme}
         allThemes={themes}
+        currentMode={currentMode}
         onBack={() => {
           setShowEditor(false);
           setEditingThemeId(null);
@@ -440,117 +615,216 @@ const CompanyThemeDemo: React.FC = () => {
           <CardTitle>Theme Settings</CardTitle>
         </CardHeader>
 
-        {themes.length === 0 ? (
-          // Empty state
-          <EmptyStateContainer>
-            <IllustrationWrapper>
-              <IllustrationBackground />
-              <IllustrationIcon>
-                <Icon 
-                  type={Icon.TYPES.CUP_DROPLET_OUTLINE} 
-                  size={64}
-                />
-              </IllustrationIcon>
-            </IllustrationWrapper>
-
-            <VStack gap="1rem">
-              <EmptyStateTitle>
-                Currently, there are no themes created in your account.
-              </EmptyStateTitle>
-              <EmptyStateDescription>
-                Initiate the theme creation process by clicking the button below to customize 
-                the appearance and ambiance of your organization.
-              </EmptyStateDescription>
-            </VStack>
-
-            <Button 
-              appearance={Button.APPEARANCES.PRIMARY} 
-              size={Button.SIZES.M}
-              onClick={handleCreateTheme}
-              icon={{ type: Icon.TYPES.ADD }}
-            >
-              Create a Theme
-            </Button>
-          </EmptyStateContainer>
-        ) : (
-          // Theme library
+        {/* For Modes A-D: Show simple branding UI */}
+        {currentMode !== ThemeMode.MULTI_THEME ? (
           <>
-            <SectionTitle>Theme Library</SectionTitle>
-            <ThemeLibraryGrid>
-              {themes.map((themeItem) => (
-                <ThemeCard
-                  key={themeItem.id}
-                  onClick={() => handleEditTheme(themeItem.id)}
-                >
-                  <ThemeCardHeader>
-                    <ThemeCardName>{themeItem.name}</ThemeCardName>
-                    <DeleteButtonWrapper className="delete-button">
-                      <Button.Icon
-                        icon={Icon.TYPES.TRASH_OUTLINE}
-                        size={Button.Icon.SIZES.XS}
-                        appearance={Button.Icon.APPEARANCES.GHOST}
-                        aria-label="Delete theme"
-                        onClick={(e) => handleDeleteTheme(themeItem.id, e)}
-                      />
-                    </DeleteButtonWrapper>
-                  </ThemeCardHeader>
-                  <ColorChipsContainer>
-                    <ColorChip color={themeItem.primaryColor} />
-                    <ColorChip color={themeItem.secondaryColor} />
-                    <ColorChip color={themeItem.tertiaryColor} />
-                  </ColorChipsContainer>
-                </ThemeCard>
-              ))}
-            </ThemeLibraryGrid>
+            {themes.length === 0 ? (
+              // Empty state for simple modes
+              <EmptyStateContainer>
+                <IllustrationWrapper>
+                  <IllustrationBackground />
+                  <IllustrationIcon>
+                    <Icon 
+                      type={Icon.TYPES.CUP_DROPLET_OUTLINE} 
+                      size={64}
+                    />
+                  </IllustrationIcon>
+                </IllustrationWrapper>
 
-            {/* Assignments Section */}
-            <SectionTitle>Assignments</SectionTitle>
-            {themes.map((themeItem) => (
-              <AssignmentSection key={`assignment-${themeItem.id}`}>
-                <AssignmentThemeTitle>{themeItem.name}</AssignmentThemeTitle>
-                <SupergroupCard>
-                  <SupergroupRow>
-                    <SupergroupContent>
-                      <SupergroupLabel>Include:</SupergroupLabel>
-                      <Chip.Group>
-                        <Chip 
-                          size={Chip.SIZES.L}
-                          icon={Icon.TYPES.USER_OUTLINE}
-                        >
-                          Emerson Culhane
-                        </Chip>
-                        <Chip 
-                          size={Chip.SIZES.L}
-                          icon={Icon.TYPES.USERS_OUTLINE}
-                        >
-                          All admins
-                        </Chip>
-                      </Chip.Group>
-                    </SupergroupContent>
-                    <SupergroupActions>
-                      <Button.Icon
-                        icon={Icon.TYPES.USERS_OUTLINE}
-                        size={Button.Icon.SIZES.XS}
-                        appearance={Button.Icon.APPEARANCES.OUTLINE}
-                        aria-label="Add user or group"
-                        onClick={() => console.log('Add user/group')}
-                      />
-                      <Button.Icon
-                        icon={Icon.TYPES.SETTINGS_OUTLINE}
-                        size={Button.Icon.SIZES.XS}
-                        appearance={Button.Icon.APPEARANCES.OUTLINE}
-                        aria-label="Settings"
-                        onClick={() => console.log('Settings')}
-                      />
-                    </SupergroupActions>
-                  </SupergroupRow>
-                  <SupergroupFooter>
-                    <FooterLabel>Except:</FooterLabel>
-                    <FooterPlaceholder>Click to add exceptions</FooterPlaceholder>
-                  </SupergroupFooter>
-                </SupergroupCard>
-              </AssignmentSection>
-            ))}
+                <VStack gap="1rem">
+                  <EmptyStateTitle>
+                    No branding configured yet
+                  </EmptyStateTitle>
+                  <EmptyStateDescription>
+                    Get started by setting up your company's visual identity including logos and colors.
+                  </EmptyStateDescription>
+                </VStack>
+
+                <Button 
+                  appearance={Button.APPEARANCES.PRIMARY} 
+                  size={Button.SIZES.M}
+                  onClick={() => setShowEditor(true)}
+                  icon={{ type: Icon.TYPES.EDIT_OUTLINE }}
+                >
+                  Edit Branding
+                </Button>
+              </EmptyStateContainer>
+            ) : (
+              // Show current branding
+              <VStack gap="2rem">
+                <HStack gap="1rem" align="center" justify="space-between">
+                  <div>
+                    <SectionTitle>Company Branding</SectionTitle>
+                    <SectionDescription>
+                      Your company's visual identity
+                    </SectionDescription>
+                  </div>
+                  <Button
+                    appearance={Button.APPEARANCES.PRIMARY}
+                    size={Button.SIZES.M}
+                    onClick={() => setShowEditor(true)}
+                    icon={{ type: Icon.TYPES.EDIT_OUTLINE }}
+                  >
+                    Edit Branding
+                  </Button>
+                </HStack>
+
+                {/* Preview current branding */}
+                <HStack gap="3rem" align="flex-start">
+                  {/* Logos Preview */}
+                  {(themes[0].lightLogo || themes[0].darkLogo) && (
+                    <VStack gap="0.75rem">
+                      <SectionSubtitle>Logos</SectionSubtitle>
+                      <HStack gap="1rem">
+                        {themes[0].lightLogo && (
+                          <LogoPreviewSmall bgColor={themes[0].lightLogoBackground || 'transparent'}>
+                            <img src={themes[0].lightLogo} alt="Light logo" />
+                          </LogoPreviewSmall>
+                        )}
+                        {themes[0].darkLogo && (
+                          <LogoPreviewSmall bgColor={themes[0].darkLogoBackground || '#1a1a1a'}>
+                            <img src={themes[0].darkLogo} alt="Dark logo" />
+                          </LogoPreviewSmall>
+                        )}
+                      </HStack>
+                    </VStack>
+                  )}
+
+                  {/* Colors Preview */}
+                  {currentMode !== ThemeMode.LOGO_ONLY && (
+                    <VStack gap="0.75rem">
+                      <SectionSubtitle>Colors</SectionSubtitle>
+                      <HStack gap="0.75rem">
+                        <ColorPreviewSwatch color={themes[0].primaryColor} label="Primary" />
+                        {currentMode === ThemeMode.FULL_PALETTE && (
+                          <>
+                            <ColorPreviewSwatch color={themes[0].secondaryColor} label="Secondary" />
+                            <ColorPreviewSwatch color={themes[0].tertiaryColor} label="Tertiary" />
+                          </>
+                        )}
+                      </HStack>
+                    </VStack>
+                  )}
+                </HStack>
+              </VStack>
+            )}
+          </>
+        ) : (
+          // Mode E: Multi-theme mode
+          <>
+            {themes.length === 0 ? (
+              // Empty state for multi-theme mode
+              <EmptyStateContainer>
+                <IllustrationWrapper>
+                  <IllustrationBackground />
+                  <IllustrationIcon>
+                    <Icon 
+                      type={Icon.TYPES.CUP_DROPLET_OUTLINE} 
+                      size={64}
+                    />
+                  </IllustrationIcon>
+                </IllustrationWrapper>
+
+                <VStack gap="1rem">
+                  <EmptyStateTitle>
+                    Currently, there are no themes created in your account.
+                  </EmptyStateTitle>
+                  <EmptyStateDescription>
+                    Initiate the theme creation process by clicking the button below to customize 
+                    the appearance and ambiance of your organization.
+                  </EmptyStateDescription>
+                </VStack>
+
+                <Button 
+                  appearance={Button.APPEARANCES.PRIMARY} 
+                  size={Button.SIZES.M}
+                  onClick={handleCreateTheme}
+                  icon={{ type: Icon.TYPES.ADD }}
+                >
+                  Create a Theme
+                </Button>
+              </EmptyStateContainer>
+            ) : (
+              // Theme library
+              <>
+                <SectionTitle>Theme Library</SectionTitle>
+                <ThemeLibraryGrid>
+                  {themes.map((themeItem) => (
+                    <ThemeCard
+                      key={themeItem.id}
+                      onClick={() => handleEditTheme(themeItem.id)}
+                    >
+                      <ThemeCardHeader>
+                        <ThemeCardName>{themeItem.name}</ThemeCardName>
+                        <DeleteButtonWrapper className="delete-button">
+                          <Button.Icon
+                            icon={Icon.TYPES.TRASH_OUTLINE}
+                            size={Button.Icon.SIZES.XS}
+                            appearance={Button.Icon.APPEARANCES.GHOST}
+                            aria-label="Delete theme"
+                            onClick={(e) => handleDeleteTheme(themeItem.id, e)}
+                          />
+                        </DeleteButtonWrapper>
+                      </ThemeCardHeader>
+                      <ColorChipsContainer>
+                        <ColorChip color={themeItem.primaryColor} />
+                        <ColorChip color={themeItem.secondaryColor} />
+                        <ColorChip color={themeItem.tertiaryColor} />
+                      </ColorChipsContainer>
+                    </ThemeCard>
+                  ))}
+                </ThemeLibraryGrid>
+
+                {/* Assignments Section */}
+                <SectionTitle>Assignments</SectionTitle>
+                {themes.map((themeItem) => (
+                  <AssignmentSection key={`assignment-${themeItem.id}`}>
+                    <AssignmentThemeTitle>{themeItem.name}</AssignmentThemeTitle>
+                    <SupergroupCard>
+                      <SupergroupRow>
+                        <SupergroupContent>
+                          <SupergroupLabel>Include:</SupergroupLabel>
+                          <Chip.Group>
+                            <Chip 
+                              size={Chip.SIZES.L}
+                              icon={Icon.TYPES.USER_OUTLINE}
+                            >
+                              Emerson Culhane
+                            </Chip>
+                            <Chip 
+                              size={Chip.SIZES.L}
+                              icon={Icon.TYPES.USERS_OUTLINE}
+                            >
+                              All admins
+                            </Chip>
+                          </Chip.Group>
+                        </SupergroupContent>
+                        <SupergroupActions>
+                          <Button.Icon
+                            icon={Icon.TYPES.USERS_OUTLINE}
+                            size={Button.Icon.SIZES.XS}
+                            appearance={Button.Icon.APPEARANCES.OUTLINE}
+                            aria-label="Add user or group"
+                            onClick={() => console.log('Add user/group')}
+                          />
+                          <Button.Icon
+                            icon={Icon.TYPES.SETTINGS_OUTLINE}
+                            size={Button.Icon.SIZES.XS}
+                            appearance={Button.Icon.APPEARANCES.OUTLINE}
+                            aria-label="Settings"
+                            onClick={() => console.log('Settings')}
+                          />
+                        </SupergroupActions>
+                      </SupergroupRow>
+                      <SupergroupFooter>
+                        <FooterLabel>Except:</FooterLabel>
+                        <FooterPlaceholder>Click to add exceptions</FooterPlaceholder>
+                      </SupergroupFooter>
+                    </SupergroupCard>
+                  </AssignmentSection>
+                ))}
+              </>
+            )}
           </>
         )}
       </Card.Layout>

@@ -12,16 +12,18 @@ import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
 import { PreviewThemeProvider } from './components/PreviewThemeContext';
 import { RealTimePreview } from './components/RealTimePreview';
+import { ThemeMode } from './company-theme-demo';
 
 /**
  * Theme Editor Page
  *
  * Full-screen theme editor with bento grid layout:
- * - Theme selector with color chips
- * - Brand assets upload (light/dark logos)
- * - Color customization (light/dark modes)
- * - Theme assignments to departments
- * - Real-time preview panel
+ * - Theme selector with color chips (Mode E only)
+ * - Brand assets upload (light/dark logos) (All modes)
+ * - Nav color customization (Mode B only)
+ * - Primary color customization (Mode C, D, E)
+ * - Full color palette (Mode D, E)
+ * - Real-time preview panel (All modes)
  */
 
 interface Theme {
@@ -30,6 +32,7 @@ interface Theme {
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;
+  navColor?: string; // Navigation bar color for Mode B
   lightLogo?: string; // Data URL or file path for light background logo
   darkLogo?: string; // Data URL or file path for dark background logo
   lightLogoBackground?: string; // Background color for light logo
@@ -40,6 +43,7 @@ interface ThemeEditorPageProps {
   themeName: string;
   initialTheme?: Theme | null;
   allThemes?: Theme[];
+  currentMode: ThemeMode;
   onBack?: () => void;
   onSave?: (theme: Theme, shouldClose?: boolean) => void;
   onThemeSwitch?: (themeId: string) => void;
@@ -415,6 +419,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   themeName, 
   initialTheme, 
   allThemes = [],
+  currentMode,
   onBack, 
   onSave,
   onThemeSwitch,
@@ -754,41 +759,43 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       <BentoGrid theme={theme}>
         {/* Left Column - Configuration */}
         <LeftColumn theme={theme}>
-          {/* Theme Selector Card */}
-          <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
-            <VStack gap="1.5rem">
-              <HStack>
-                <SectionTitle theme={theme}>Theme Selector</SectionTitle>
-                <div style={{ flex: 1 }} />
-                <Button
-                  size={Button.SIZES.S}
-                  appearance={Button.APPEARANCES.OUTLINE}
-                  icon={{ type: Icon.TYPES.ADD }}
-                  onClick={handleAddTheme}
-                >
-                  Add Theme
-                </Button>
-              </HStack>
-
-              <ThemeGridContainer theme={theme}>
-                {allThemes.map((themeItem) => (
-                  <ThemeBox
-                    key={themeItem.id}
-                    isSelected={themeItem.id === selectedThemeId}
-                    theme={theme}
-                    onClick={() => handleThemeChange(themeItem.id)}
+          {/* Theme Selector Card - Only show in MULTI_THEME mode */}
+          {currentMode === ThemeMode.MULTI_THEME && (
+            <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
+              <VStack gap="1.5rem">
+                <HStack>
+                  <SectionTitle theme={theme}>Theme Selector</SectionTitle>
+                  <div style={{ flex: 1 }} />
+                  <Button
+                    size={Button.SIZES.S}
+                    appearance={Button.APPEARANCES.OUTLINE}
+                    icon={{ type: Icon.TYPES.ADD }}
+                    onClick={handleAddTheme}
                   >
-                    <ThemeBoxName theme={theme}>{themeItem.name}</ThemeBoxName>
-                    <ThemeBoxColors theme={theme}>
-                      <ColorChip color={themeItem.primaryColor} theme={theme} />
-                      <ColorChip color={themeItem.secondaryColor} theme={theme} />
-                      <ColorChip color={themeItem.tertiaryColor} theme={theme} />
-                    </ThemeBoxColors>
-                  </ThemeBox>
-                ))}
-              </ThemeGridContainer>
-            </VStack>
-          </Card.Layout>
+                    Add Theme
+                  </Button>
+                </HStack>
+
+                <ThemeGridContainer theme={theme}>
+                  {allThemes.map((themeItem) => (
+                    <ThemeBox
+                      key={themeItem.id}
+                      isSelected={themeItem.id === selectedThemeId}
+                      theme={theme}
+                      onClick={() => handleThemeChange(themeItem.id)}
+                    >
+                      <ThemeBoxName theme={theme}>{themeItem.name}</ThemeBoxName>
+                      <ThemeBoxColors theme={theme}>
+                        <ColorChip color={themeItem.primaryColor} theme={theme} />
+                        <ColorChip color={themeItem.secondaryColor} theme={theme} />
+                        <ColorChip color={themeItem.tertiaryColor} theme={theme} />
+                      </ThemeBoxColors>
+                    </ThemeBox>
+                  ))}
+                </ThemeGridContainer>
+              </VStack>
+            </Card.Layout>
+          )}
 
           {/* Brand Assets Card */}
           <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
@@ -963,119 +970,189 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
             </VStack>
           </Card.Layout>
 
-          {/* Colors Card */}
-          <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
-            <VStack gap="1.5rem">
-              <SectionTitle theme={theme}>Colors</SectionTitle>
+          {/* Colors Card - Conditional based on mode */}
+          {currentMode !== ThemeMode.LOGO_ONLY && (
+            <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
+              <VStack gap="1.5rem">
+                <SectionTitle theme={theme}>
+                  {currentMode === ThemeMode.LOGO_NAV_COLOR ? 'Navigation Color' : 'Colors'}
+                </SectionTitle>
 
-              <ColorInputGrid theme={theme}>
-                <ColorColumn>
-                  <ColumnLabel theme={theme}>Light mode colors</ColumnLabel>
-                  <ColorInput
-                    id="primary-color"
-                    label="Primary Color"
-                    value={primaryColor}
-                    onChange={setPrimaryColor}
-                  />
-                  <ColorInput
-                    id="secondary-color"
-                    label="Secondary Color"
-                    value={secondaryColor}
-                    onChange={setSecondaryColor}
-                  />
-                  <ColorInput
-                    id="tertiary-color"
-                    label="Tertiary Color"
-                    value={tertiaryColor}
-                    onChange={setTertiaryColor}
-                  />
-                  <Button
-                    size={Button.SIZES.M}
-                    appearance={Button.APPEARANCES.OUTLINE}
-                  >
-                    Auto select from logo
-                  </Button>
-                </ColorColumn>
+                <ColorInputGrid theme={theme}>
+                  <ColorColumn>
+                    <ColumnLabel theme={theme}>Light mode colors</ColumnLabel>
+                    
+                    {/* Mode B: Nav Color Only */}
+                    {currentMode === ThemeMode.LOGO_NAV_COLOR && (
+                      <ColorInput
+                        id="nav-color"
+                        label="Navigation Bar Color"
+                        value={primaryColor}
+                        onChange={setPrimaryColor}
+                      />
+                    )}
 
-                <ColorColumn>
-                  <ColumnLabel theme={theme}>Dark mode colors</ColumnLabel>
-                  <ColorInput
-                    id="dark-primary-color"
-                    label="Primary Color"
-                    value={darkPrimaryColor}
-                    onChange={setDarkPrimaryColor}
-                  />
-                  <ColorInput
-                    id="dark-secondary-color"
-                    label="Secondary Color"
-                    value={darkSecondaryColor}
-                    onChange={setDarkSecondaryColor}
-                  />
-                  <ColorInput
-                    id="dark-tertiary-color"
-                    label="Tertiary Color"
-                    value={darkTertiaryColor}
-                    onChange={setDarkTertiaryColor}
-                  />
-                  <Button
-                    size={Button.SIZES.M}
-                    appearance={Button.APPEARANCES.OUTLINE}
-                  >
-                    Auto generate dark mode
-                  </Button>
-                </ColorColumn>
-              </ColorInputGrid>
-            </VStack>
-          </Card.Layout>
+                    {/* Mode C: Primary Color (auto-calc palette) */}
+                    {currentMode === ThemeMode.LOGO_PRIMARY && (
+                      <>
+                        <ColorInput
+                          id="primary-color"
+                          label="Primary Color"
+                          value={primaryColor}
+                          onChange={setPrimaryColor}
+                        />
+                        <SectionSubtitle theme={theme} style={{ marginTop: '8px' }}>
+                          Secondary and tertiary colors will be auto-calculated from primary
+                        </SectionSubtitle>
+                      </>
+                    )}
 
-          {/* Theme Assignments Card */}
-          <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
-            <VStack gap="1rem">
-              <SectionTitle theme={theme}>Theme Assignments</SectionTitle>
-              <SectionSubtitle theme={theme}>{themeName}</SectionSubtitle>
-              <SupergroupCard theme={theme}>
-                <SupergroupRow>
-                  <SupergroupContent theme={theme}>
-                    <SupergroupLabel theme={theme}>Include:</SupergroupLabel>
-                    <Chip.Group>
-                      <Chip 
-                        size={Chip.SIZES.L}
-                        icon={Icon.TYPES.USER_OUTLINE}
-                      >
-                        Emerson Culhane
-                      </Chip>
-                      <Chip 
-                        size={Chip.SIZES.L}
+                    {/* Mode D & E: Full Palette */}
+                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME) && (
+                      <>
+                        <ColorInput
+                          id="primary-color"
+                          label="Primary Color"
+                          value={primaryColor}
+                          onChange={setPrimaryColor}
+                        />
+                        <ColorInput
+                          id="secondary-color"
+                          label="Secondary Color"
+                          value={secondaryColor}
+                          onChange={setSecondaryColor}
+                        />
+                        <ColorInput
+                          id="tertiary-color"
+                          label="Tertiary Color"
+                          value={tertiaryColor}
+                          onChange={setTertiaryColor}
+                        />
+                      </>
+                    )}
+
+                    <Button
+                      size={Button.SIZES.M}
+                      appearance={Button.APPEARANCES.OUTLINE}
+                    >
+                      Auto select from logo
+                    </Button>
+                  </ColorColumn>
+
+                  <ColorColumn>
+                    <ColumnLabel theme={theme}>Dark mode colors</ColumnLabel>
+                    
+                    {/* Mode B: Nav Color Only */}
+                    {currentMode === ThemeMode.LOGO_NAV_COLOR && (
+                      <ColorInput
+                        id="dark-nav-color"
+                        label="Navigation Bar Color"
+                        value={darkPrimaryColor}
+                        onChange={setDarkPrimaryColor}
+                      />
+                    )}
+
+                    {/* Mode C: Primary Color (auto-calc palette) */}
+                    {currentMode === ThemeMode.LOGO_PRIMARY && (
+                      <>
+                        <ColorInput
+                          id="dark-primary-color"
+                          label="Primary Color"
+                          value={darkPrimaryColor}
+                          onChange={setDarkPrimaryColor}
+                        />
+                        <SectionSubtitle theme={theme} style={{ marginTop: '8px' }}>
+                          Secondary and tertiary colors will be auto-calculated
+                        </SectionSubtitle>
+                      </>
+                    )}
+
+                    {/* Mode D & E: Full Palette */}
+                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME) && (
+                      <>
+                        <ColorInput
+                          id="dark-primary-color"
+                          label="Primary Color"
+                          value={darkPrimaryColor}
+                          onChange={setDarkPrimaryColor}
+                        />
+                        <ColorInput
+                          id="dark-secondary-color"
+                          label="Secondary Color"
+                          value={darkSecondaryColor}
+                          onChange={setDarkSecondaryColor}
+                        />
+                        <ColorInput
+                          id="dark-tertiary-color"
+                          label="Tertiary Color"
+                          value={darkTertiaryColor}
+                          onChange={setDarkTertiaryColor}
+                        />
+                      </>
+                    )}
+
+                    <Button
+                      size={Button.SIZES.M}
+                      appearance={Button.APPEARANCES.OUTLINE}
+                    >
+                      Auto generate dark mode
+                    </Button>
+                  </ColorColumn>
+                </ColorInputGrid>
+              </VStack>
+            </Card.Layout>
+          )}
+
+          {/* Theme Assignments Card - Only show in MULTI_THEME mode */}
+          {currentMode === ThemeMode.MULTI_THEME && (
+            <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
+              <VStack gap="1rem">
+                <SectionTitle theme={theme}>Theme Assignments</SectionTitle>
+                <SectionSubtitle theme={theme}>{themeName}</SectionSubtitle>
+                <SupergroupCard theme={theme}>
+                  <SupergroupRow>
+                    <SupergroupContent theme={theme}>
+                      <SupergroupLabel theme={theme}>Include:</SupergroupLabel>
+                      <Chip.Group>
+                        <Chip 
+                          size={Chip.SIZES.L}
+                          icon={Icon.TYPES.USER_OUTLINE}
+                        >
+                          Emerson Culhane
+                        </Chip>
+                        <Chip 
+                          size={Chip.SIZES.L}
+                          icon={Icon.TYPES.USERS_OUTLINE}
+                        >
+                          All admins
+                        </Chip>
+                      </Chip.Group>
+                    </SupergroupContent>
+                    <SupergroupActions theme={theme}>
+                      <Button.Icon
                         icon={Icon.TYPES.USERS_OUTLINE}
-                      >
-                        All admins
-                      </Chip>
-                    </Chip.Group>
-                  </SupergroupContent>
-                  <SupergroupActions theme={theme}>
-                    <Button.Icon
-                      icon={Icon.TYPES.USERS_OUTLINE}
-                      size={Button.Icon.SIZES.XS}
-                      appearance={Button.Icon.APPEARANCES.OUTLINE}
-                      aria-label="Add user or group"
-                      onClick={() => console.log('Add user/group')}
-                    />
-                    <Button.Icon
-                      icon={Icon.TYPES.SETTINGS_OUTLINE}
-                      size={Button.Icon.SIZES.XS}
-                      appearance={Button.Icon.APPEARANCES.OUTLINE}
-                      aria-label="Settings"
-                      onClick={() => console.log('Settings')}
-                    />
-                  </SupergroupActions>
-                </SupergroupRow>
-                <SupergroupFooter theme={theme}>
-                  <FooterLabel theme={theme}>Except:</FooterLabel>
-                  <FooterPlaceholder theme={theme}>Click to add exceptions</FooterPlaceholder>
-                </SupergroupFooter>
-              </SupergroupCard>
-            </VStack>
-          </Card.Layout>
+                        size={Button.Icon.SIZES.XS}
+                        appearance={Button.Icon.APPEARANCES.OUTLINE}
+                        aria-label="Add user or group"
+                        onClick={() => console.log('Add user/group')}
+                      />
+                      <Button.Icon
+                        icon={Icon.TYPES.SETTINGS_OUTLINE}
+                        size={Button.Icon.SIZES.XS}
+                        appearance={Button.Icon.APPEARANCES.OUTLINE}
+                        aria-label="Settings"
+                        onClick={() => console.log('Settings')}
+                      />
+                    </SupergroupActions>
+                  </SupergroupRow>
+                  <SupergroupFooter theme={theme}>
+                    <FooterLabel theme={theme}>Except:</FooterLabel>
+                    <FooterPlaceholder theme={theme}>Click to add exceptions</FooterPlaceholder>
+                  </SupergroupFooter>
+                </SupergroupCard>
+              </VStack>
+            </Card.Layout>
+          )}
         </LeftColumn>
 
         {/* Right Column - Preview */}
