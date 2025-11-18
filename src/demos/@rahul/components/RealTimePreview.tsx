@@ -259,6 +259,13 @@ const CompanySection = styled.div`
   gap: 12px;
 `;
 
+const CompanyLogo = styled.img`
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+`;
+
 const CompanyText = styled.div`
   color: ${({ theme }) => {
     const t = theme as PreviewTheme;
@@ -705,7 +712,7 @@ const LoginHeader = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 0px;
 `;
 
 const BrandLogo = styled.div`
@@ -756,18 +763,12 @@ const LoginBody = styled.div`
   gap: 32px;
 `;
 
-const LockIcon = styled.div`
+const LoginCompanyLogo = styled.img`
   width: 80px;
   height: 80px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &::before {
-    content: '🔒';
-    font-size: 48px;
-  }
+  object-fit: contain;
+  max-width: 200px;
+  max-height: 80px;
 `;
 
 const LoginTitle = styled.div`
@@ -1114,8 +1115,15 @@ export const RealTimePreview: React.FC = () => {
     return defaultLogo;
   };
   
-  const navLogo = getEffectiveLogo(theme.colorPrimary);
-  const loginLogo = getEffectiveLogo(theme.colorPrimary);
+  // Nav logo always uses default Rippling logo (left corner)
+  const navLogo = getLogoForBackground(theme.colorPrimary);
+  
+  // Company logo uses user's uploaded logo if available (before avatar)
+  const companyLogo = getEffectiveLogo(theme.colorPrimary);
+  
+  // Login header logo always uses default Rippling logo
+  const loginLogo = getLogoForBackground(theme.colorPrimary);
+  
   const documentLogo = getEffectiveLogo(theme.colorSurfaceBright);
   
   return (
@@ -1140,6 +1148,9 @@ export const RealTimePreview: React.FC = () => {
                 <NavRightSection>
                   <CompanySection>
                     <CompanyText>Acme, Inc.</CompanyText>
+                    {logoContext.lightLogo || logoContext.darkLogo ? (
+                      <CompanyLogo src={companyLogo} alt="Company logo" />
+                    ) : null}
                     <Avatar size={Avatar.SIZES.XS} />
                   </CompanySection>
                 </NavRightSection>
@@ -1332,12 +1343,14 @@ export const RealTimePreview: React.FC = () => {
                 <LoginCard>
                   <LoginHeader>
                     <BrandLogo>
-                      <img src={loginLogo} alt="Rippling" />
+                      <img src={navLogo} alt="Rippling" />
                     </BrandLogo>
-                    <CompanyName>Acme Industries</CompanyName>
+                    <CompanyName>Rippling</CompanyName>
                   </LoginHeader>
                   <LoginBody>
-                    <LockIcon />
+                    {logoContext.lightLogo || logoContext.darkLogo ? (
+                      <LoginCompanyLogo src={companyLogo} alt="Company logo" />
+                    ) : null}
                     <LoginTitle>Sign into Acme Industries</LoginTitle>
                     <FormContainer>
                       <InputGroup>
