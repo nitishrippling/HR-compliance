@@ -1118,13 +1118,13 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                           size={Chip.SIZES.L}
                           icon={Icon.TYPES.USER_OUTLINE}
                         >
-                          Emerson Culhane
+                          All employees in India
                         </Chip>
                         <Chip 
                           size={Chip.SIZES.L}
                           icon={Icon.TYPES.USERS_OUTLINE}
                         >
-                          All admins
+                          HR Department
                         </Chip>
                       </Chip.Group>
                     </SupergroupContent>
