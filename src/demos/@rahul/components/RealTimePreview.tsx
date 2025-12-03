@@ -39,29 +39,20 @@ function getLuminance(color: string): number {
 }
 
 /**
- * Calculate contrast ratio between two colors
+ * Determine which logo to use based on text color (onColor)
+ * This ensures the logo matches the text color for consistency
+ * LogoLight = dark/black logo (matches dark text)
+ * LogoDark = light/white logo (matches light text)
  */
-function getContrastRatio(color1: string, color2: string): number {
-  const lum1 = getLuminance(color1);
-  const lum2 = getLuminance(color2);
-  const lighter = Math.max(lum1, lum2);
-  const darker = Math.min(lum1, lum2);
-  return (lighter + 0.05) / (darker + 0.05);
+function getLogoForTextColor(textColor: string): string {
+  // Get text color luminance
+  const textLuminance = getLuminance(textColor);
+  
+  // If text is light (luminance > 0.5), use white logo (LogoDark)
+  // If text is dark (luminance <= 0.5), use black logo (LogoLight)
+  return textLuminance > 0.5 ? RipplingLogoDark : RipplingLogoLight;
 }
 
-/**
- * Determine which logo to use based on background color
- * LogoLight = dark/black logo (for light backgrounds)
- * LogoDark = light/white logo (for dark backgrounds)
- */
-function getLogoForBackground(backgroundColor: string): string {
-  const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
-  const blackContrast = getContrastRatio(backgroundColor, '#000000');
-  
-  // If white text has better contrast (dark background), use LogoDark (white logo)
-  // If black text has better contrast (light background), use LogoLight (black logo)
-  return whiteContrast > blackContrast ? RipplingLogoDark : RipplingLogoLight;
-}
 
 const PreviewContainer = styled.div`
   width: 100%;
@@ -1095,15 +1086,15 @@ export const RealTimePreview: React.FC = () => {
   const theme = useTheme() as PreviewTheme;
   const logoContext = useLogoContext();
   
-  // Determine which logos to use based on background colors and custom uploads
+  // Determine which logos to use based on text color and custom uploads
   // If custom logos are provided, use them; otherwise, use default Rippling logos
-  const getEffectiveLogo = (backgroundColor: string) => {
-    const defaultLogo = getLogoForBackground(backgroundColor);
+  const getEffectiveLogo = (textColor: string) => {
+    // Use text color to determine logo (matches the text color)
+    const defaultLogo = getLogoForTextColor(textColor);
     
-    // Determine if we should use light or dark logo based on contrast
-    const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
-    const blackContrast = getContrastRatio(backgroundColor, '#000000');
-    const shouldUseDarkLogo = whiteContrast > blackContrast;
+    // Determine if we should use light or dark logo based on text color luminance
+    const textLuminance = getLuminance(textColor);
+    const shouldUseDarkLogo = textLuminance > 0.5; // Light text -> white logo
     
     // Use custom logo if available, otherwise use default
     if (shouldUseDarkLogo && logoContext.darkLogo) {
@@ -1115,16 +1106,17 @@ export const RealTimePreview: React.FC = () => {
     return defaultLogo;
   };
   
-  // Nav logo always uses default Rippling logo (left corner)
-  const navLogo = getLogoForBackground(theme.colorPrimary);
+  // Get text colors for different sections
+  const navTextColor = theme.colorOnNav || theme.colorOnPrimary;
   
-  // Company logo uses user's uploaded logo if available (before avatar)
-  const companyLogo = getEffectiveLogo(theme.colorPrimary);
+  // Nav logo uses text color to match the nav text
+  const navLogo = getLogoForTextColor(navTextColor);
   
-  // Login header logo always uses default Rippling logo
-  const loginLogo = getLogoForBackground(theme.colorPrimary);
+  // Company logo uses nav text color for consistency
+  const companyLogo = getEffectiveLogo(navTextColor);
   
-  const documentLogo = getEffectiveLogo(theme.colorSurfaceBright);
+  // Document logo uses surface text color
+  const documentLogo = getEffectiveLogo(theme.colorOnSurface);
   
   return (
     <PreviewContainer>

@@ -10,7 +10,8 @@ import Modal from '@rippling/pebble/Modal';
 import Input from '@rippling/pebble/Inputs';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
-import { PreviewThemeProvider } from './components/PreviewThemeContext';
+import { PreviewThemeProvider, resolveInputs, colorToHex, generatePaletteForToken } from './components/PreviewThemeContext';
+import Color from 'colorjs.io';
 import { RealTimePreview } from './components/RealTimePreview';
 import { ThemeMode } from './company-theme-demo';
 
@@ -1034,8 +1035,13 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                     <Button
                       size={Button.SIZES.M}
                       appearance={Button.APPEARANCES.OUTLINE}
+                      onClick={() => {
+                        const colors = resolveInputs(primaryColor);
+                        setSecondaryColor(colorToHex(colors.secondary));
+                        setTertiaryColor(colorToHex(colors.tertiary));
+                      }}
                     >
-                      Auto select from logo
+                      Auto generate secondary and tertiary
                     </Button>
                   </ColorColumn>
 
@@ -1094,6 +1100,23 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                     <Button
                       size={Button.SIZES.M}
                       appearance={Button.APPEARANCES.OUTLINE}
+                      onClick={() => {
+                        try {
+                          const pColor = new Color(primaryColor).to('oklch');
+                          const sColor = new Color(secondaryColor).to('oklch');
+                          const tColor = new Color(tertiaryColor).to('oklch');
+                          
+                          const pPalette = generatePaletteForToken(pColor);
+                          const sPalette = generatePaletteForToken(sColor);
+                          const tPalette = generatePaletteForToken(tColor);
+                          
+                          setDarkPrimaryColor(pPalette.Dark_Main);
+                          setDarkSecondaryColor(sPalette.Dark_Main);
+                          setDarkTertiaryColor(tPalette.Dark_Main);
+                        } catch (e) {
+                          console.error("Error generating dark mode colors", e);
+                        }
+                      }}
                     >
                       Auto generate dark mode
                     </Button>
