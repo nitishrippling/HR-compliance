@@ -120,14 +120,14 @@ interface PreviewThemeProviderProps {
 // 1. CONSTANTS (Reference Values from Material Design / Berry)
 const DEFAULTS = {
   LIGHT: {
-    PRIMARY:           { l: 0.3891, c: 0.1675 },
-    PRIMARY_CONTAINER: { l: 0.3891, c: 0.1675 }, 
-    PRIMARY_VARIANT:   { l: 0.8956, c: 0.0605 }
+    PRIMARY:           { l: 0.4767, c: 0.1675 },
+    PRIMARY_CONTAINER: { l: 0.4767, c: 0.1675 }, 
+    PRIMARY_VARIANT:   { l: 0.9086, c: 0.0605 }
   },
   DARK: {
-    PRIMARY:           { l: 0.7955, c: 0.1132 },
-    PRIMARY_CONTAINER: { l: 0.5650, c: 0.1773 },
-    PRIMARY_VARIANT:   { l: 0.3888, c: 0.1309 }
+    PRIMARY:           { l: 0.8210, c: 0.1132 },
+    PRIMARY_CONTAINER: { l: 0.8210, c: 0.1773 },
+    PRIMARY_VARIANT:   { l: 0.3917, c: 0.1309 }
   }
 };
 
