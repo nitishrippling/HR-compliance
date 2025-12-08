@@ -122,7 +122,7 @@ const DEFAULTS = {
   LIGHT: {
     PRIMARY:           { l: 0.4767, c: 0.1675 },
     PRIMARY_CONTAINER: { l: 0.4767, c: 0.1675 }, 
-    PRIMARY_VARIANT:   { l: 0.9086, c: 0.0605 }
+    PRIMARY_VARIANT:   { l: 0.8713, c: 0.0605 }
   },
   DARK: {
     PRIMARY:           { l: 0.8210, c: 0.1132 },
