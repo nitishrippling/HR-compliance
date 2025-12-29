@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 18 10.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Shape">
+<path d="M0 1.5H18V0H0V1.5Z" fill="var(--fill-0, #595555)"/>
+<path d="M18 6H0V4.5H18V6Z" fill="var(--fill-0, #595555)"/>
+<path d="M18 10.5H0V9H18V10.5Z" fill="var(--fill-0, #595555)"/>
+</g>
+</svg>

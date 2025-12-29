@@ -19,6 +19,7 @@ export enum ThemeMode {
   LOGO_PRIMARY = 'logo-primary',
   FULL_PALETTE = 'full-palette',
   MULTI_THEME = 'multi-theme',
+  CUSTOM = 'custom',
 }
 
 export interface ThemeModeOption {
@@ -52,6 +53,11 @@ export const THEME_MODES: ThemeModeOption[] = [
     mode: ThemeMode.MULTI_THEME,
     label: 'Mode E — Multi-theme',
     description: 'Multiple themes with assignments',
+  },
+  {
+    mode: ThemeMode.CUSTOM,
+    label: 'Mode Custom',
+    description: 'Custom theme with advanced color processing',
   },
 ];
 
@@ -327,7 +333,7 @@ const CompanyThemeDemo: React.FC = () => {
   const [themeName, setThemeName] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [editingThemeId, setEditingThemeId] = useState<string | null>(null);
-  const [currentMode, setCurrentMode] = useState<ThemeMode>(ThemeMode.MULTI_THEME);
+  const [currentMode, setCurrentMode] = useState<ThemeMode>(ThemeMode.CUSTOM);
   
   // Store list of themes - start with empty array
   const [themes, setThemes] = useState<Theme[]>([]);
@@ -485,7 +491,8 @@ const CompanyThemeDemo: React.FC = () => {
     const editingTheme = editingThemeId ? themes.find(t => t.id === editingThemeId) : null;
     
     // For Modes A-D, use simple editor
-    if (currentMode !== ThemeMode.MULTI_THEME) {
+    // Modes E and Custom use the complex multi-theme editor
+    if (currentMode !== ThemeMode.MULTI_THEME && currentMode !== ThemeMode.CUSTOM) {
       // Create a single theme if it doesn't exist
       const singleTheme = themes.length > 0 ? themes[0] : {
         id: 'default-theme',
@@ -516,7 +523,7 @@ const CompanyThemeDemo: React.FC = () => {
       );
     }
 
-    // For Mode E, use complex multi-theme editor
+    // For Mode E and Custom, use complex multi-theme editor
     return (
       <ThemeEditorPage 
         themeName={themeName} 
@@ -557,7 +564,8 @@ const CompanyThemeDemo: React.FC = () => {
         </CardHeader>
 
         {/* For Modes A-D: Show simple branding UI */}
-        {currentMode !== ThemeMode.MULTI_THEME ? (
+        {/* Modes E and Custom: Show multi-theme UI */}
+        {currentMode !== ThemeMode.MULTI_THEME && currentMode !== ThemeMode.CUSTOM ? (
           <>
             {themes.length === 0 ? (
               // Empty state for simple modes
@@ -600,7 +608,7 @@ const CompanyThemeDemo: React.FC = () => {
             )}
           </>
         ) : (
-          // Mode E: Multi-theme mode
+          // Mode E and Custom: Multi-theme mode
           <>
             {themes.length === 0 ? (
               // Empty state for multi-theme mode

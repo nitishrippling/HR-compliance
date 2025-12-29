@@ -11,19 +11,21 @@ import Input from '@rippling/pebble/Inputs';
 import { VStack, HStack } from '@rippling/pebble/Layout/Stack';
 import { ColorInput } from './components/ColorInput';
 import { PreviewThemeProvider, resolveInputs, colorToHex, generatePaletteForToken } from './components/PreviewThemeContext';
+import { CustomPreviewThemeProvider, convertToDarkMode } from './components/CustomPreviewThemeContext';
 import Color from 'colorjs.io';
 import { RealTimePreview } from './components/RealTimePreview';
+import { CustomRealTimePreview } from './components/CustomRealTimePreview';
 import { ThemeMode } from './company-theme-demo';
 
 /**
  * Theme Editor Page
  *
  * Full-screen theme editor with bento grid layout:
- * - Theme selector with color chips (Mode E only)
+ * - Theme selector with color chips (Mode E and Custom only)
  * - Brand assets upload (light/dark logos) (All modes)
  * - Nav color customization (Mode B only)
- * - Primary color customization (Mode C, D, E)
- * - Full color palette (Mode D, E)
+ * - Primary color customization (Mode C, D, E, Custom)
+ * - Full color palette (Mode D, E, Custom)
  * - Real-time preview panel (All modes)
  */
 
@@ -34,6 +36,8 @@ interface Theme {
   secondaryColor: string;
   tertiaryColor: string;
   navColor?: string; // Navigation bar color for Mode B
+  topbarColor?: string; // Topbar color for Mode Custom
+  darkTopbarColor?: string; // Dark mode topbar color for Mode Custom
   lightLogo?: string; // Data URL or file path for light background logo
   darkLogo?: string; // Data URL or file path for dark background logo
   lightLogoBackground?: string; // Background color for light logo
@@ -442,6 +446,8 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
   const [darkPrimaryColor, setDarkPrimaryColor] = useState('#B39DDB');
   const [darkSecondaryColor, setDarkSecondaryColor] = useState('#4DD0E1');
   const [darkTertiaryColor, setDarkTertiaryColor] = useState('#8B5A00');
+  const [topbarColor, setTopbarColor] = useState(initialThemeToUse?.topbarColor || initialThemeToUse?.primaryColor || '#6B2C91');
+  const [darkTopbarColor, setDarkTopbarColor] = useState(initialThemeToUse?.darkTopbarColor || '#B39DDB');
   
   // Logo state - store original and wrapped versions
   const [originalLightLogo, setOriginalLightLogo] = useState<string | undefined>(initialThemeToUse?.lightLogo);
@@ -464,6 +470,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(initialTheme.primaryColor);
       setSecondaryColor(initialTheme.secondaryColor);
       setTertiaryColor(initialTheme.tertiaryColor);
+      if (currentMode === ThemeMode.CUSTOM) {
+        setTopbarColor(initialTheme.topbarColor || initialTheme.primaryColor);
+        setDarkTopbarColor(initialTheme.darkTopbarColor || darkPrimaryColor);
+      }
       // Store both original and wrapped logos
       setOriginalLightLogo(initialTheme.lightLogo);
       setOriginalDarkLogo(initialTheme.darkLogo);
@@ -472,7 +482,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setLightLogoBackground(initialTheme.lightLogoBackground || 'transparent');
       setDarkLogoBackground(initialTheme.darkLogoBackground || 'transparent');
     }
-  }, [initialTheme]);
+  }, [initialTheme, currentMode]);
 
   // Update colors and logos when allThemes or selectedThemeId changes
   useEffect(() => {
@@ -481,6 +491,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(currentTheme.primaryColor);
       setSecondaryColor(currentTheme.secondaryColor);
       setTertiaryColor(currentTheme.tertiaryColor);
+      if (currentMode === ThemeMode.CUSTOM) {
+        setTopbarColor(currentTheme.topbarColor || currentTheme.primaryColor);
+        setDarkTopbarColor(currentTheme.darkTopbarColor || darkPrimaryColor);
+      }
       // Store both original and wrapped logos
       setOriginalLightLogo(currentTheme.lightLogo);
       setOriginalDarkLogo(currentTheme.darkLogo);
@@ -489,7 +503,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setLightLogoBackground(currentTheme.lightLogoBackground || 'transparent');
       setDarkLogoBackground(currentTheme.darkLogoBackground || 'transparent');
     }
-  }, [allThemes, selectedThemeId]);
+  }, [allThemes, selectedThemeId, currentMode]);
 
   const handleBack = () => {
     if (onBack) {
@@ -516,6 +530,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
         primaryColor,
         secondaryColor,
         tertiaryColor,
+        ...(currentMode === ThemeMode.CUSTOM && {
+          topbarColor,
+          darkTopbarColor,
+        }),
         lightLogo,
         darkLogo,
         lightLogoBackground,
@@ -531,6 +549,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       setPrimaryColor(selectedTheme.primaryColor);
       setSecondaryColor(selectedTheme.secondaryColor);
       setTertiaryColor(selectedTheme.tertiaryColor);
+      if (currentMode === ThemeMode.CUSTOM) {
+        setTopbarColor(selectedTheme.topbarColor || selectedTheme.primaryColor);
+        setDarkTopbarColor(selectedTheme.darkTopbarColor || darkPrimaryColor);
+      }
       // Store both original and wrapped logos
       setOriginalLightLogo(selectedTheme.lightLogo);
       setOriginalDarkLogo(selectedTheme.darkLogo);
@@ -565,6 +587,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
         primaryColor,
         secondaryColor,
         tertiaryColor,
+        ...(currentMode === ThemeMode.CUSTOM && {
+          topbarColor,
+          darkTopbarColor,
+        }),
         lightLogo,
         darkLogo,
         lightLogoBackground,
@@ -729,6 +755,10 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       primaryColor,
       secondaryColor,
       tertiaryColor,
+      ...(currentMode === ThemeMode.CUSTOM && {
+        topbarColor,
+        darkTopbarColor,
+      }),
       lightLogo,
       darkLogo,
       lightLogoBackground,
@@ -760,8 +790,8 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
       <BentoGrid theme={theme}>
         {/* Left Column - Configuration */}
         <LeftColumn theme={theme}>
-          {/* Theme Selector Card - Only show in MULTI_THEME mode */}
-          {currentMode === ThemeMode.MULTI_THEME && (
+          {/* Theme Selector Card - Only show in MULTI_THEME and CUSTOM modes */}
+          {(currentMode === ThemeMode.MULTI_THEME || currentMode === ThemeMode.CUSTOM) && (
             <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
               <VStack gap="1.5rem">
                 <HStack>
@@ -1008,9 +1038,17 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                       </>
                     )}
 
-                    {/* Mode D & E: Full Palette */}
-                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME) && (
+                    {/* Mode D, E, and Custom: Full Palette */}
+                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME || currentMode === ThemeMode.CUSTOM) && (
                       <>
+                        {currentMode === ThemeMode.CUSTOM && (
+                          <ColorInput
+                            id="topbar-color"
+                            label="Topbar Color"
+                            value={topbarColor}
+                            onChange={setTopbarColor}
+                          />
+                        )}
                         <ColorInput
                           id="primary-color"
                           label="Primary Color"
@@ -1029,6 +1067,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                           value={tertiaryColor}
                           onChange={setTertiaryColor}
                         />
+
                       </>
                     )}
 
@@ -1073,9 +1112,17 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                       </>
                     )}
 
-                    {/* Mode D & E: Full Palette */}
-                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME) && (
+                    {/* Mode D, E, and Custom: Full Palette */}
+                    {(currentMode === ThemeMode.FULL_PALETTE || currentMode === ThemeMode.MULTI_THEME || currentMode === ThemeMode.CUSTOM) && (
                       <>
+                        {currentMode === ThemeMode.CUSTOM && (
+                          <ColorInput
+                            id="dark-topbar-color"
+                            label="Topbar Color"
+                            value={darkTopbarColor}
+                            onChange={setDarkTopbarColor}
+                          />
+                        )}
                         <ColorInput
                           id="dark-primary-color"
                           label="Primary Color"
@@ -1094,6 +1141,7 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                           value={darkTertiaryColor}
                           onChange={setDarkTertiaryColor}
                         />
+
                       </>
                     )}
 
@@ -1102,17 +1150,13 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
                       appearance={Button.APPEARANCES.OUTLINE}
                       onClick={() => {
                         try {
-                          const pColor = new Color(primaryColor).to('oklch');
-                          const sColor = new Color(secondaryColor).to('oklch');
-                          const tColor = new Color(tertiaryColor).to('oklch');
-                          
-                          const pPalette = generatePaletteForToken(pColor);
-                          const sPalette = generatePaletteForToken(sColor);
-                          const tPalette = generatePaletteForToken(tColor);
-                          
-                          setDarkPrimaryColor(pPalette.Dark_Main);
-                          setDarkSecondaryColor(sPalette.Dark_Main);
-                          setDarkTertiaryColor(tPalette.Dark_Main);
+                          // Use Universal OKLCH Dark Mode Equation
+                          setDarkPrimaryColor(convertToDarkMode(primaryColor));
+                          setDarkSecondaryColor(convertToDarkMode(secondaryColor));
+                          setDarkTertiaryColor(convertToDarkMode(tertiaryColor));
+                          if (currentMode === ThemeMode.CUSTOM) {
+                            setDarkTopbarColor(convertToDarkMode(topbarColor));
+                          }
                         } catch (e) {
                           console.error("Error generating dark mode colors", e);
                         }
@@ -1126,8 +1170,8 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
             </Card.Layout>
           )}
 
-          {/* Theme Assignments Card - Only show in MULTI_THEME mode */}
-          {currentMode === ThemeMode.MULTI_THEME && (
+          {/* Theme Assignments Card - Only show in MULTI_THEME and CUSTOM modes */}
+          {(currentMode === ThemeMode.MULTI_THEME || currentMode === ThemeMode.CUSTOM) && (
             <Card.Layout padding={Card.Layout.PADDINGS.PX_24}>
               <VStack gap="1rem">
                 <SectionTitle theme={theme}>Theme Assignments</SectionTitle>
@@ -1185,21 +1229,41 @@ const ThemeEditorPage: React.FC<ThemeEditorPageProps> = ({
               <PreviewTitle theme={theme}>Real-time Preview</PreviewTitle>
               
               <PreviewFrame theme={theme}>
-                <PreviewThemeProvider
-                  primaryColor={primaryColor}
-                  secondaryColor={secondaryColor}
-                  tertiaryColor={tertiaryColor}
-                  darkPrimaryColor={darkPrimaryColor}
-                  darkSecondaryColor={darkSecondaryColor}
-                  darkTertiaryColor={darkTertiaryColor}
-                  lightLogo={lightLogo}
-                  darkLogo={darkLogo}
-                  lightLogoBackground={lightLogoBackground}
-                  darkLogoBackground={darkLogoBackground}
-                  mode={previewMode}
-                >
-                  <RealTimePreview />
-                </PreviewThemeProvider>
+                {currentMode === ThemeMode.CUSTOM ? (
+                  <CustomPreviewThemeProvider
+                    primaryColor={primaryColor}
+                    secondaryColor={secondaryColor}
+                    tertiaryColor={tertiaryColor}
+                    darkPrimaryColor={darkPrimaryColor}
+                    darkSecondaryColor={darkSecondaryColor}
+                    darkTertiaryColor={darkTertiaryColor}
+                    topbarColor={topbarColor}
+                    darkTopbarColor={darkTopbarColor}
+                    lightLogo={lightLogo}
+                    darkLogo={darkLogo}
+                    lightLogoBackground={lightLogoBackground}
+                    darkLogoBackground={darkLogoBackground}
+                    mode={previewMode}
+                  >
+                    <CustomRealTimePreview />
+                  </CustomPreviewThemeProvider>
+                ) : (
+                  <PreviewThemeProvider
+                    primaryColor={primaryColor}
+                    secondaryColor={secondaryColor}
+                    tertiaryColor={tertiaryColor}
+                    darkPrimaryColor={darkPrimaryColor}
+                    darkSecondaryColor={darkSecondaryColor}
+                    darkTertiaryColor={darkTertiaryColor}
+                    lightLogo={lightLogo}
+                    darkLogo={darkLogo}
+                    lightLogoBackground={lightLogoBackground}
+                    darkLogoBackground={darkLogoBackground}
+                    mode={previewMode}
+                  >
+                    <RealTimePreview />
+                  </PreviewThemeProvider>
+                )}
               </PreviewFrame>
             </VStack>
           </Card.Layout>
