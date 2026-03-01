@@ -40,8 +40,4 @@ lerna-debug.log*
 # Private demos (never committed)
 src/demos/private/
 
-
-# Credentials
-.npmrc
-
 yarn.lock
