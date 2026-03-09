@@ -21,6 +21,7 @@ import CompanyThemeDemo from './demos/@rahul/company-theme-demo';
 import CompositionManagerDemo from './demos/@dvora/CompositionManager/composition-manager-demo';
 import { CompositionDetail } from './demos/@dvora/CompositionManager/compositions/CompositionDetail';
 import ComplianceDemo from './demos/@nitish/compliance-demo';
+import BandDiscrepancyDemo from './demos/@nitish/band-discrepancy-demo';
 import IndexPage from './demos/index-page';
 import GettingStartedPage from './demos/getting-started-page';
 import DocViewerPage from './demos/doc-viewer-page';
@@ -79,6 +80,8 @@ enum EditorType {
   COMPANY_THEME = 'company-theme',
   COMPOSITION_MANAGER = 'composition-manager',
   COMPLIANCE = 'compliance',
+  COMPLIANCE_360 = 'compliance-360',
+  BAND_DISCREPANCY = 'band-discrepancy',
 }
 
 // Map demo types to URL paths
@@ -92,6 +95,8 @@ const DEMO_ROUTES: Record<EditorType, string> = {
   [EditorType.COMPANY_THEME]: '/company-theme-demo',
   [EditorType.COMPOSITION_MANAGER]: '/app-studio/composition-manager',
   [EditorType.COMPLIANCE]: '/compliance-demo',
+  [EditorType.COMPLIANCE_360]: '/compliance-360',
+  [EditorType.BAND_DISCREPANCY]: '/band-discrepancy',
 };
 
 // Reverse map for path to demo type
@@ -218,6 +223,8 @@ const Playground = (props: { className?: string }) => {
     { type: EditorType.COMPANY_THEME, label: 'Company Theme' },
     { type: EditorType.COMPOSITION_MANAGER, label: 'Composition Manager' },
     { type: EditorType.COMPLIANCE, label: 'Compliance' },
+    { type: EditorType.COMPLIANCE_360, label: 'Compliance 360' },
+    { type: EditorType.BAND_DISCREPANCY, label: 'Band Discrepancy' },
   ];
 
   const SETTINGS_OPTIONS = [
@@ -372,13 +379,13 @@ const Playground = (props: { className?: string }) => {
 
   return (
     <>
-      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && buttons}
+      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.BAND_DISCREPANCY && buttons}
       <div
         role="main"
         style={{
           backgroundColor: theme.colorSurface,
           minHeight: '100vh',
-          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE ? '60px' : '0',
+          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.BAND_DISCREPANCY ? '60px' : '0',
           transition: 'padding-top 0.2s ease',
         }}
         className={className}
@@ -456,6 +463,10 @@ const Playground = (props: { className?: string }) => {
 
         {editorType === EditorType.COMPLIANCE && <ComplianceDemo />}
 
+        {editorType === EditorType.COMPLIANCE_360 && <ComplianceDemo initialView="compliance-360" />}
+
+        {editorType === EditorType.BAND_DISCREPANCY && <BandDiscrepancyDemo />}
+
         {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
         {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
         {!logTypingPerf && showEditorBasedPreview && (
@@ -526,6 +537,8 @@ init().then(() => {
             <Route path="/company-theme-demo" element={<Playground />} />
             <Route path="/app-studio/composition-manager" element={<Playground />} />
             <Route path="/compliance-demo" element={<Playground />} />
+            <Route path="/compliance-360" element={<Playground />} />
+            <Route path="/band-discrepancy" element={<Playground />} />
             <Route path="/app-studio/composition-manager/compositions/:id" element={<CompositionDetail />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

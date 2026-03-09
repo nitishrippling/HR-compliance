@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detailed Compliance Master Table</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f6f9;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .table-container {
+    overflow-x: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1800px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    vertical-align: top;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  th {
+    background-color: #1f4e79;
+    color: white;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .small {
+    font-size: 12px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<h1>Enterprise Compliance Master Matrix</h1>
+
+<div class="table-container">
+<table>
+  <thead>
+    <tr>
+      <th>Compliance Area</th>
+      <th>Sub-Components / Scope</th>
+      <th>Organization-Level Objective</th>
+      <th>Individual Responsibilities</th>
+      <th>Detailed Process Flow</th>
+      <th>Key Controls</th>
+      <th>Primary Systems</th>
+      <th>Typical Owners</th>
+      <th>Evidence / Artifacts</th>
+      <th>Risk if Non-Compliant</th>
+    </tr>
+  </thead>
+  <tbody>
+
+<tr>
+<td><strong>Payroll Compliance</strong></td>
+<td>
+<ul>
+<li>Federal taxes (941, 940)</li>
+<li>State withholding & SUI</li>
+<li>Local/city taxes</li>
+<li>Payroll deposits</li>
+<li>W-2/W-3 & 1099 reporting</li>
+<li>Garnishments & levies</li>
+<li>New hire reporting</li>
+<li>Multi-state nexus</li>
+<li>GL reconciliation</li>
+</ul>
+</td>
+<td>Ensure accurate calculation, withholding, remittance, reporting and reconciliation of all payroll tax liabilities across jurisdictions.</td>
+<td>
+Employees: Submit time & W-4 info.<br>
+Managers: Approve pay changes.<br>
+Payroll: Process runs & file returns.
+</td>
+<td>
+1. Collect time & earnings data<br>
+2. Validate payroll register<br>
+3. Calculate taxes<br>
+4. Approve payroll<br>
+5. Remit deposits<br>
+6. File returns<br>
+7. Reconcile to GL
+</td>
+<td>
+<ul>
+<li>Dual approvals</li>
+<li>Filing Factory queue</li>
+<li>Tax table validation</li>
+<li>Reconciliation reports</li>
+<li>Audit metadata retention</li>
+</ul>
+</td>
+<td>Payroll Engine, Filing Factory, GL</td>
+<td>Payroll Compliance, Tax Ops</td>
+<td>941/940, W-2, deposit confirmations, GL rec reports</td>
+<td>IRS penalties, state fines, employee wage disputes</td>
+</tr>
+
+<tr>
+<td><strong>Workforce / HRIS Compliance</strong></td>
+<td>
+<ul>
+<li>I-9 verification</li>
+<li>EEO reporting</li>
+<li>Employee classification</li>
+<li>Data accuracy (SSN, address)</li>
+<li>Pay stub compliance</li>
+<li>Records retention</li>
+</ul>
+</td>
+<td>Maintain lawful employment records and ensure compliant workforce administration.</td>
+<td>
+Employees: Provide documents.<br>
+HR: Verify & maintain records.<br>
+Managers: Update employment changes.
+</td>
+<td>
+1. Capture employee master data<br>
+2. Verify identity documents<br>
+3. Configure HRIS compliance rules<br>
+4. Maintain audit logs<br>
+5. Generate EEO reports
+</td>
+<td>
+<ul>
+<li>RBAC</li>
+<li>Document retention policies</li>
+<li>Audit trails</li>
+<li>Periodic internal audits</li>
+</ul>
+</td>
+<td>HRIS, Document Management</td>
+<td>HR Services, Compliance Ops</td>
+<td>I-9 forms, EEO reports, audit logs</td>
+<td>Labor law violations, audit failures, legal exposure</td>
+</tr>
+
+<tr>
+<td><strong>Statutory Leave & Labor Law</strong></td>
+<td>
+<ul>
+<li>FMLA / Paid leave</li>
+<li>Overtime rules</li>
+<li>Minimum wage</li>
+<li>Meal/rest break laws</li>
+<li>Final pay rules</li>
+</ul>
+</td>
+<td>Ensure lawful leave entitlements, wage compliance, and accurate accrual tracking.</td>
+<td>
+Employees: Request leave.<br>
+Managers: Approve.<br>
+HR: Determine eligibility.
+</td>
+<td>
+1. Configure jurisdiction rules<br>
+2. Track accruals<br>
+3. Validate eligibility<br>
+4. Sync with payroll<br>
+5. Retain statutory reports
+</td>
+<td>
+<ul>
+<li>Rules engine</li>
+<li>Accrual ledger validation</li>
+<li>Payroll sync controls</li>
+<li>Audit logs</li>
+</ul>
+</td>
+<td>Time & Attendance, HRIS, Payroll</td>
+<td>Leave Product, HR</td>
+<td>Accrual reports, leave approvals, statutory filings</td>
+<td>Back pay liability, labor investigations</td>
+</tr>
+
+<tr>
+<td><strong>Filings — Government & Regulatory</strong></td>
+<td>
+<ul>
+<li>Tax returns</li>
+<li>Amendments (941-X)</li>
+<li>E-file submissions</li>
+<li>Confirmation retention</li>
+<li>GL reconciliations</li>
+</ul>
+</td>
+<td>Accurate, timely submission of all required payroll-centric regulatory filings.</td>
+<td>Payroll staff prepare filings; Legal approves corrections.</td>
+<td>
+1. Assemble filing data<br>
+2. Run validation checks<br>
+3. Submit electronically<br>
+4. Store confirmations<br>
+5. Reconcile amounts
+</td>
+<td>
+<ul>
+<li>Central filing queue</li>
+<li>SLA tracking</li>
+<li>Submission logs</li>
+</ul>
+</td>
+<td>Filing Factory</td>
+<td>Payroll Ops, Legal</td>
+<td>E-file confirmations, reconciliation ledgers</td>
+<td>Government penalties, escalations</td>
+</tr>
+
+<tr>
+<td><strong>Entity / Corporate Compliance</strong></td>
+<td>
+<ul>
+<li>Annual reports</li>
+<li>Franchise taxes</li>
+<li>Foreign qualification</li>
+<li>Registered agent</li>
+<li>Beneficial ownership filings</li>
+</ul>
+</td>
+<td>Maintain corporate entities in good standing across jurisdictions.</td>
+<td>Legal: Approvals; Entity services: File reports.</td>
+<td>
+1. Maintain entity calendar<br>
+2. Prepare filings<br>
+3. Submit to state portals<br>
+4. Retain confirmations
+</td>
+<td>
+<ul>
+<li>Entity calendar tracking</li>
+<li>Delegated authority controls</li>
+<li>Retention policy</li>
+</ul>
+</td>
+<td>Entity Management System</td>
+<td>Legal, Entity Services</td>
+<td>Annual report confirmations, franchise filings</td>
+<td>Loss of good standing, business shutdown risk</td>
+</tr>
+
+<tr>
+<td><strong>ACA Compliance</strong></td>
+<td>
+<ul>
+<li>ALE determination</li>
+<li>1094-C / 1095-C</li>
+<li>Affordability calculations</li>
+<li>IRS AIR submission</li>
+</ul>
+</td>
+<td>Comply with employer shared responsibility and ACA reporting mandates.</td>
+<td>HR: Coverage data; Payroll: Affordability calcs.</td>
+<td>
+1. Collect coverage offers<br>
+2. Calculate affordability<br>
+3. Generate forms<br>
+4. E-file to IRS<br>
+5. Store acknowledgements
+</td>
+<td>
+<ul>
+<li>Data validation rules</li>
+<li>E-file confirmation retention</li>
+<li>Cross-team review</li>
+</ul>
+</td>
+<td>Benefits System, Payroll, Filing Factory</td>
+<td>Benefits Compliance</td>
+<td>1094-C/1095-C, IRS acknowledgements</td>
+<td>ACA penalties (4980H), IRS audits</td>
+</tr>
+
+  </tbody>
+</table>
+</div>
+
+</body>
+</html>

@@ -84,6 +84,20 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     icon: Icon.TYPES.CUSTOM_APPS_OUTLINE,
     folder: '@dvora',
   },
+  {
+    title: 'Compliance 360',
+    description: 'Enterprise compliance hub with 6 compliance categories, action items, Rippling updates, and reference documentation.',
+    path: '/compliance-360',
+    icon: Icon.TYPES.APPROVE_REJECT_SHIELD_OUTLINE,
+    folder: '@nitish',
+  },
+  {
+    title: 'Band Discrepancy',
+    description: 'Benefits admin tool for managing benefit enrollment discrepancies with error reports, issue tracking, and EDI/Census previews.',
+    path: '/band-discrepancy',
+    icon: Icon.TYPES.WARNING_TRIANGLE_OUTLINE,
+    folder: '@nitish',
+  },
 ];
 
 // Get demos that user has access to based on VITE_SHOW_DEMOS environment variable
