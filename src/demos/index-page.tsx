@@ -98,6 +98,20 @@ const ALL_DEMO_CARDS: DemoCard[] = [
     icon: Icon.TYPES.WARNING_TRIANGLE_OUTLINE,
     folder: '@nitish',
   },
+  {
+    title: 'Benefits Integration',
+    description: 'Redesigned Benefits Overview and Integrations tab with transmission types, responsibility matrix, attestation, and OE sign-off.',
+    path: '/benefits-integration',
+    icon: Icon.TYPES.HEART_OUTLINE,
+    folder: '@nitish',
+  },
+  {
+    title: 'Parsing Row',
+    description: 'UI exploration for data table rows that are still being parsed from Salesforce, with muted styling, tooltips, and loading indicators.',
+    path: '/parsing-row-demo',
+    icon: Icon.TYPES.REFRESH_OUTLINE,
+    folder: '@nitish',
+  },
 ];
 
 // Get demos that user has access to based on VITE_SHOW_DEMOS environment variable

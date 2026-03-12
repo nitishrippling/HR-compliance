@@ -7,12 +7,11 @@ import { CommandCenterTab, TabId } from './CommandCenterTab';
 import { StateTaxAccountsTab } from './StateTaxAccountsTab';
 import { LocalTaxAccountsTab } from './LocalTaxAccountsTab';
 import { ForeignQualificationTab } from './ForeignQualificationTab';
-import { AdditionalFilingsTab } from './AdditionalFilingsTab';
-import { WorkplacePostersTab } from './WorkplacePostersTab';
 
 interface ComplianceHubContentProps {
   activeTab: number;
   onTabChange: (index: number) => void;
+  onBack?: () => void;
 }
 
 /* ─────────────────── Layout (mirrors AppShellLayout internals) ─────────────────── */
@@ -55,6 +54,33 @@ const TabsWrapper = styled.div`
   }
 `;
 
+const Breadcrumb = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  padding: ${({ theme }) => (theme as StyledTheme).space400} ${({ theme }) => (theme as StyledTheme).space1400} 0;
+`;
+
+const BreadcrumbLink = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+  color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
+  &:hover { text-decoration: underline; }
+`;
+
+const BreadcrumbSep = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+`;
+
+const BreadcrumbCurrent = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
+`;
+
 const PageContent = styled.div`
   background-color: ${({ theme }) => (theme as StyledTheme).colorSurface};
   padding: ${({ theme }) =>
@@ -72,8 +98,6 @@ const TABS = [
   'State Tax Accounts',
   'Local Tax Accounts',
   'Foreign Qualification',
-  'Additional Filings',
-  'Workplace Posters',
 ];
 
 const TAB_ID_MAP: TabId[] = [
@@ -81,8 +105,6 @@ const TAB_ID_MAP: TabId[] = [
   'state-tax',
   'local-tax',
   'foreign-qual',
-  'additional-filings',
-  'workplace-posters',
 ];
 
 /* ─────────────────── Component ─────────────────── */
@@ -90,6 +112,7 @@ const TAB_ID_MAP: TabId[] = [
 export const ComplianceHubContent: React.FC<ComplianceHubContentProps> = ({
   activeTab,
   onTabChange,
+  onBack,
 }) => {
   const { theme } = usePebbleTheme();
 
@@ -104,9 +127,16 @@ export const ComplianceHubContent: React.FC<ComplianceHubContentProps> = ({
     <ContentContainer theme={theme}>
       {/* Page header with tabs */}
       <PageHeaderArea theme={theme}>
+        {onBack && (
+          <Breadcrumb theme={theme}>
+            <BreadcrumbLink theme={theme} onClick={onBack}>Compliance 360</BreadcrumbLink>
+            <BreadcrumbSep theme={theme}>/</BreadcrumbSep>
+            <BreadcrumbCurrent theme={theme}>Entity</BreadcrumbCurrent>
+          </Breadcrumb>
+        )}
         <PageHeaderWrapper theme={theme}>
           <Page.Header
-            title="HR Services Compliance Hub"
+            title="Entity"
             shouldBeUnderlined={false}
             size={Page.Header.SIZES.FLUID}
           />
@@ -130,8 +160,6 @@ export const ComplianceHubContent: React.FC<ComplianceHubContentProps> = ({
         {activeTab === 1 && <StateTaxAccountsTab />}
         {activeTab === 2 && <LocalTaxAccountsTab />}
         {activeTab === 3 && <ForeignQualificationTab />}
-        {activeTab === 4 && <AdditionalFilingsTab />}
-        {activeTab === 5 && <WorkplacePostersTab />}
       </PageContent>
     </ContentContainer>
   );
