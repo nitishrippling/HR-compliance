@@ -16,9 +16,7 @@ import {
   CreatedByBadge,
   StatusDot,
   StatusCell,
-  StatusRow,
   StatusLabel,
-  StatusDetail,
   DueDate,
   CellText,
   CellTextBold,
@@ -62,7 +60,7 @@ const typeVariant: Record<string, 'primary' | 'amber'> = {
 
 const statusMap: Record<string, { dotStatus: 'success' | 'warning' | 'error'; label: string }> = {
   blocked: { dotStatus: 'error', label: 'Blocked' },
-  'in-progress': { dotStatus: 'warning', label: 'In Progress' },
+  'in-progress': { dotStatus: 'warning', label: 'In progress' },
   completed: { dotStatus: 'success', label: 'Completed' },
 };
 
@@ -89,7 +87,7 @@ export const StateTaxAccountsTab: React.FC = () => {
   return (
     <div>
       <SearchRow>
-        <SectionTitle>All State Tax Accounts</SectionTitle>
+        <SectionTitle>All state tax accounts</SectionTitle>
         <div style={{ width: 256 }}>
           <Input.Text
             id="search-state-tax"
@@ -109,10 +107,11 @@ export const StateTaxAccountsTab: React.FC = () => {
               <tr>
                 <StyledTh>Type</StyledTh>
                 <StyledTh>State</StyledTh>
-                <StyledTh>Agency Name</StyledTh>
+                <StyledTh>Agency name</StyledTh>
                 <StyledTh>Account #</StyledTh>
-                <StyledTh>Created By</StyledTh>
+                <StyledTh>Created by</StyledTh>
                 <StyledTh>Status</StyledTh>
+                <StyledTh>Details</StyledTh>
                 <StyledTh style={{ width: 40 }}>&nbsp;</StyledTh>
               </tr>
             </StyledTHead>
@@ -127,13 +126,11 @@ export const StateTaxAccountsTab: React.FC = () => {
                     <StyledTd>
                       <CellTextBold>{account.state}</CellTextBold>
                     </StyledTd>
-                    <StyledTd>
-                      <CellText>{account.agencyName}</CellText>
-                      {account.suiRate && (
-                        <CellTextMuted style={{ marginLeft: 8 }}>
-                          SUI Rate: <span style={{ fontWeight: 500 }}>{account.suiRate}</span>
-                        </CellTextMuted>
-                      )}
+                    <StyledTd style={{ whiteSpace: 'nowrap' }}>
+                      <CellText>
+                        {account.agencyName}
+                        {account.suiRate && <CellTextMuted> · SUI {account.suiRate}</CellTextMuted>}
+                      </CellText>
                     </StyledTd>
                     <StyledTd>
                       <CellTextMono>{account.accountNumber}</CellTextMono>
@@ -145,19 +142,19 @@ export const StateTaxAccountsTab: React.FC = () => {
                     </StyledTd>
                     <StyledTd>
                       <StatusCell>
-                        <StatusRow>
-                          <StatusDot status={sc.dotStatus} />
-                          <StatusLabel>{sc.label}</StatusLabel>
-                        </StatusRow>
-                        <StatusDetail>{account.statusDetail}</StatusDetail>
-                        {account.dueDate && <DueDate>{account.dueDate}</DueDate>}
+                        <StatusDot status={sc.dotStatus} />
+                        <StatusLabel>{sc.label}</StatusLabel>
                       </StatusCell>
+                    </StyledTd>
+                    <StyledTd style={{ whiteSpace: 'nowrap' }}>
+                      <CellTextMuted>{account.statusDetail}</CellTextMuted>
+                      {account.dueDate && <> · <DueDate>{account.dueDate}</DueDate></>}
                     </StyledTd>
                     <StyledTd>
                       {account.actionRequired && (
                         <ActionButtonWrapper>
                           <Button size={Button.SIZES.XS} appearance={Button.APPEARANCES.GHOST}>
-                            Take Action
+                            Take action
                           </Button>
                         </ActionButtonWrapper>
                       )}
@@ -167,7 +164,7 @@ export const StateTaxAccountsTab: React.FC = () => {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <EmptyRow colSpan={7}>No accounts match your search.</EmptyRow>
+                  <EmptyRow colSpan={8}>No accounts match your search.</EmptyRow>
                 </tr>
               )}
             </tbody>

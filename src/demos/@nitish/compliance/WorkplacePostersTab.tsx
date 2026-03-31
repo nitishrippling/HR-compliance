@@ -70,7 +70,7 @@ export const WorkplacePostersTab: React.FC = () => {
     <div>
       <SearchRow>
         <TitleBlock>
-          <SectionTitle>All Workplace Posters</SectionTitle>
+          <SectionTitle>All workplace posters</SectionTitle>
           <SectionDescription style={{ marginTop: 2 }}>
             {totalDistributed} posters distributed across {posters.length} states
           </SectionDescription>

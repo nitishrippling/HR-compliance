@@ -1,5 +1,101 @@
+import React from 'react';
 import styled from '@emotion/styled';
-import { StyledTheme } from '@/utils/theme';
+import { usePebbleTheme, StyledTheme } from '@/utils/theme';
+
+/* ─── Sub-tab nav (level 2 pill style) ─── */
+
+const SubTabNav = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0;
+`;
+
+const SubTabBtn = styled.button<{ isActive: boolean }>`
+  background: ${({ isActive, theme }) =>
+    isActive ? (theme as StyledTheme).colorSurfaceContainerHigh : 'transparent'};
+  border: none;
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerLg};
+  cursor: pointer;
+  padding: ${({ theme }) => (theme as StyledTheme).space200} ${({ theme }) => (theme as StyledTheme).space400};
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
+  font-weight: ${({ isActive }) => (isActive ? 600 : 400)};
+  color: ${({ isActive, theme }) =>
+    isActive
+      ? (theme as StyledTheme).colorOnSurface
+      : (theme as StyledTheme).colorOnSurfaceVariant};
+  transition: background 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: ${({ isActive, theme }) =>
+      isActive
+        ? (theme as StyledTheme).colorSurfaceContainerHigh
+        : (theme as StyledTheme).colorSurfaceContainerLow};
+    color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  }
+`;
+
+const SubTabDivider = styled.span`
+  width: 1px;
+  height: 16px;
+  background-color: ${({ theme }) => (theme as StyledTheme).colorOutlineVariant};
+  flex-shrink: 0;
+`;
+
+const SubTabBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerFull};
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  background-color: ${({ theme }) => (theme as StyledTheme).colorPrimary};
+  color: ${({ theme }) => (theme as StyledTheme).colorOnPrimary};
+  margin-left: 4px;
+`;
+
+interface SubTabsProps {
+  tabs: string[];
+  activeIndex: number;
+  onChange: (index: number) => void;
+  badges?: (number | undefined)[];
+}
+
+export const SubTabs: React.FC<SubTabsProps> = ({ tabs, activeIndex, onChange, badges }) => {
+  const { theme } = usePebbleTheme();
+  const [visitedSubTabs, setVisitedSubTabs] = React.useState<Set<number>>(() => new Set([activeIndex]));
+
+  const handleClick = React.useCallback((i: number) => {
+    setVisitedSubTabs(prev => new Set(prev).add(i));
+    onChange(i);
+  }, [onChange]);
+
+  return (
+    <SubTabNav theme={theme}>
+      {tabs.map((tab, i) => {
+        const showDivider = i > 0 && activeIndex !== i && activeIndex !== i - 1;
+        const badge = badges?.[i];
+        const showBadge = badge != null && badge > 0 && !visitedSubTabs.has(i);
+        return (
+          <React.Fragment key={tab}>
+            {showDivider && <SubTabDivider theme={theme} />}
+            <SubTabBtn
+              theme={theme}
+              isActive={activeIndex === i}
+              onClick={() => handleClick(i)}
+            >
+              {tab}
+              {showBadge && <SubTabBadge theme={theme}>{badge}</SubTabBadge>}
+            </SubTabBtn>
+          </React.Fragment>
+        );
+      })}
+    </SubTabNav>
+  );
+};
 
 export const SectionContainer = styled.div`
   display: flex;
@@ -69,11 +165,9 @@ export const StyledTHead = styled.thead`
 export const StyledTh = styled.th`
   padding: ${({ theme }) => (theme as StyledTheme).space300} ${({ theme }) => (theme as StyledTheme).space600};
   text-align: left;
-  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelSmall};
+  ${({ theme }) => (theme as StyledTheme).typestyleV2LabelMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
+  white-space: nowrap;
 `;
 
 export const StyledTr = styled.tr`
@@ -91,8 +185,8 @@ export const StyledTr = styled.tr`
 `;
 
 export const StyledTd = styled.td`
-  padding: ${({ theme }) => (theme as StyledTheme).space400} ${({ theme }) => (theme as StyledTheme).space600};
-  vertical-align: top;
+  padding: ${({ theme }) => (theme as StyledTheme).space300} ${({ theme }) => (theme as StyledTheme).space600};
+  vertical-align: middle;
 `;
 
 export const TypeBadge = styled.span<{ variant?: 'primary' | 'amber' | 'sky' | 'orange' }>`
@@ -102,6 +196,7 @@ export const TypeBadge = styled.span<{ variant?: 'primary' | 'amber' | 'sky' | '
   border-radius: ${({ theme }) => (theme as StyledTheme).shapeCornerSm};
   ${({ theme }) => (theme as StyledTheme).typestyleV2LabelSmall};
   font-weight: 500;
+  white-space: nowrap;
   border: 1px solid;
 
   ${({ variant, theme }) => {
@@ -161,8 +256,9 @@ export const StatusDot = styled.span<{ status: 'success' | 'warning' | 'error' |
 
 export const StatusCell = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: ${({ theme }) => (theme as StyledTheme).space200};
+  white-space: nowrap;
 `;
 
 export const StatusRow = styled.div`
@@ -174,22 +270,18 @@ export const StatusRow = styled.div`
 export const StatusLabel = styled.span`
   ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
-  font-weight: 600;
+  font-weight: 500;
 `;
 
-export const StatusDetail = styled.p`
+export const StatusDetail = styled.span`
   ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
-  margin: 0;
-  padding-left: 18px;
 `;
 
-export const DueDate = styled.p`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+export const DueDate = styled.span`
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorError};
   font-weight: 500;
-  margin: 0;
-  padding-left: 18px;
 `;
 
 export const CellText = styled.span`
@@ -200,16 +292,17 @@ export const CellText = styled.span`
 export const CellTextBold = styled.span`
   ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
-  font-weight: 700;
+  font-weight: 600;
 `;
 
 export const CellTextMono = styled.span`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2CodeMedium};
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurface};
+  white-space: nowrap;
 `;
 
 export const CellTextMuted = styled.span`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ theme }) => (theme as StyledTheme).colorOnSurfaceVariant};
 `;
 

@@ -4,14 +4,11 @@ import { usePebbleTheme, StyledTheme } from '@/utils/theme';
 import Page from '@rippling/pebble/Page';
 import Tabs from '@rippling/pebble/Tabs';
 import { SubTabs } from './shared-styles';
+import { OverviewV4Tab } from './OverviewV4Tab';
 import { WorkforceTab } from './WorkforceTab';
-import { EntityTab } from './EntityTab';
-import { FilingsTab } from './FilingsTab';
-import { PostersMailsTab } from './PostersMailsTab';
-
-/* ═══════════════════════════════════════════════════════
-   STYLED COMPONENTS
-   ═══════════════════════════════════════════════════════ */
+import { RegistrationsTab } from './RegistrationsTab';
+import { FilingsV3Tab } from './FilingsV3Tab';
+import { OthersV3Tab } from './OthersV3Tab';
 
 const PageWrapper = styled.div`
   display: flex;
@@ -68,31 +65,32 @@ const ContentArea = styled.div`
   flex: 1;
 `;
 
-/* ═══════════════════════════════════════════════════════
-   TAB DATA
-   ═══════════════════════════════════════════════════════ */
-
-const TAB_NAMES = ['Workforce', 'Entity', 'Filings', 'Posters & mails'];
+const TAB_NAMES = ['Overview', 'Workforce', 'Registrations', 'Filings', 'Others'];
 
 const SUB_TABS: Record<number, string[]> = {
-  0: ['Overview', 'Historical'],
-  1: ['Command center', 'State tax accounts', 'Local tax accounts', 'Foreign qualification'],
+  1: ['Current', 'Historical'],
+  2: ['State tax accounts', 'Local tax accounts', 'Foreign qualification'],
+  3: ['Current', 'Historical'],
 };
 
-/* ═══════════════════════════════════════════════════════
-   COMPONENT
-   ═══════════════════════════════════════════════════════ */
 
-export const Compliance360Page: React.FC = () => {
+export const Compliance360V4Page: React.FC = () => {
   const { theme } = usePebbleTheme();
   const [activeTab, setActiveTab] = useState(0);
-  const [subTabIndices, setSubTabIndices] = useState<Record<number, number>>({ 0: 0, 1: 0 });
+  const [subTabIndices, setSubTabIndices] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0 });
 
   const currentSubTabs = SUB_TABS[activeTab];
   const activeSubTab = subTabIndices[activeTab] ?? 0;
 
   function handleSubTabChange(idx: number) {
     setSubTabIndices(prev => ({ ...prev, [activeTab]: idx }));
+  }
+
+  function handleNavigateToModule(tabIndex: number, subTabIndex?: number) {
+    setActiveTab(tabIndex);
+    if (subTabIndex !== undefined) {
+      setSubTabIndices(prev => ({ ...prev, [tabIndex]: subTabIndex }));
+    }
   }
 
   return (
@@ -109,10 +107,10 @@ export const Compliance360Page: React.FC = () => {
         <TabsWrapper theme={theme}>
           <Tabs.LINK
             activeIndex={activeTab}
-            onChange={idx => { setActiveTab(Number(idx)); }}
+            onChange={idx => setActiveTab(Number(idx))}
           >
             {TAB_NAMES.map((name, i) => (
-              <Tabs.Tab key={`c360-tab-${i}`} title={name} />
+              <Tabs.Tab key={`c360v4-tab-${i}`} title={name} />
             ))}
           </Tabs.LINK>
         </TabsWrapper>
@@ -129,10 +127,11 @@ export const Compliance360Page: React.FC = () => {
       )}
 
       <ContentArea theme={theme}>
-        {activeTab === 0 && <WorkforceTab activeSubTab={activeSubTab} />}
-        {activeTab === 1 && <EntityTab activeSubTab={activeSubTab} onNavigateSubTab={handleSubTabChange} />}
-        {activeTab === 2 && <FilingsTab />}
-        {activeTab === 3 && <PostersMailsTab />}
+        {activeTab === 0 && <OverviewV4Tab onNavigateToModule={handleNavigateToModule} />}
+        {activeTab === 1 && <WorkforceTab activeSubTab={activeSubTab} />}
+        {activeTab === 2 && <RegistrationsTab activeSubTab={activeSubTab} />}
+        {activeTab === 3 && <FilingsV3Tab activeSubTab={activeSubTab} />}
+        {activeTab === 4 && <OthersV3Tab />}
       </ContentArea>
     </PageWrapper>
   );

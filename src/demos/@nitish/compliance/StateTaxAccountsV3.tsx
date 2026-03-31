@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme } from '@/utils/theme';
 import Icon from '@rippling/pebble/Icon';
@@ -26,40 +26,42 @@ import {
   ActionButtonWrapper,
 } from './shared-styles';
 
-interface LocalTaxAccount {
-  type: 'Municipal' | 'County' | 'School District';
-  locality: string;
+interface TaxAccount {
+  type: 'Withholding' | 'SUI' | 'Unemployment';
   state: string;
   agencyName: string;
   accountNumber: string;
   createdBy: 'Rippling' | 'Client';
-  taxRate?: string;
+  suiRate?: string;
   status: 'completed' | 'in-progress' | 'blocked';
   statusDetail: string;
   dueDate?: string;
   actionRequired?: boolean;
 }
 
-const accounts: LocalTaxAccount[] = [
-  { type: 'Municipal', locality: 'Philadelphia', state: 'PA', agencyName: 'Philadelphia Revenue Dept', accountNumber: 'Pending', createdBy: 'Rippling', status: 'blocked', statusDetail: 'Your action required', dueDate: 'Due Mar 1, 2026', actionRequired: true },
-  { type: 'School District', locality: 'Lakota', state: 'OH', agencyName: 'Lakota School District Tax Office', accountNumber: 'Pending', createdBy: 'Rippling', status: 'in-progress', statusDetail: 'Submitted Feb 15, 2026' },
-  { type: 'Municipal', locality: 'Westerville', state: 'OH', agencyName: 'Westerville Income Tax Dept', accountNumber: 'WV-001234', createdBy: 'Rippling', taxRate: '2.0%', status: 'completed', statusDetail: 'Account active' },
-  { type: 'Municipal', locality: 'Columbus', state: 'OH', agencyName: 'Columbus Income Tax Division', accountNumber: 'COL-998877', createdBy: 'Rippling', taxRate: '2.5%', status: 'completed', statusDetail: 'Account active' },
-  { type: 'County', locality: 'Marion County', state: 'IN', agencyName: 'Marion County Tax Office', accountNumber: 'MC-554433', createdBy: 'Client', taxRate: '1.77%', status: 'completed', statusDetail: 'Account active' },
+const accounts: TaxAccount[] = [
+  { type: 'Withholding', state: 'TX', agencyName: 'Texas Workforce Commission', accountNumber: 'Pending', createdBy: 'Rippling', status: 'blocked', statusDetail: 'EIN verification needed', dueDate: 'Due Feb 28, 2026', actionRequired: true },
+  { type: 'SUI', state: 'NJ', agencyName: 'NJ Department of Labor', accountNumber: 'Pending', createdBy: 'Rippling', status: 'blocked', statusDetail: 'Power of attorney signature needed' },
+  { type: 'Withholding', state: 'OH', agencyName: 'Ohio Dept of Taxation', accountNumber: 'Pending', createdBy: 'Rippling', status: 'in-progress', statusDetail: 'Submitted Feb 12, 2026' },
+  { type: 'Withholding', state: 'CA', agencyName: 'California EDD', accountNumber: 'CA-998877', createdBy: 'Rippling', status: 'completed', statusDetail: 'Account active' },
+  { type: 'Withholding', state: 'NC', agencyName: 'NC Dept of Revenue', accountNumber: 'NC-88776655', createdBy: 'Rippling', status: 'completed', statusDetail: 'Account active' },
+  { type: 'SUI', state: 'FL', agencyName: 'Florida Dept of Revenue', accountNumber: '1234567', createdBy: 'Rippling', suiRate: '2.7%', status: 'completed', statusDetail: 'Account active' },
+  { type: 'Withholding', state: 'NY', agencyName: 'NY Dept of Taxation', accountNumber: 'NY-44332211', createdBy: 'Client', status: 'completed', statusDetail: 'Account active' },
+  { type: 'SUI', state: 'TX', agencyName: 'Texas Workforce Commission', accountNumber: 'TX-9988776', createdBy: 'Rippling', suiRate: '1.82%', status: 'completed', statusDetail: 'Account active' },
 ];
 
 const statusOrder = { blocked: 0, 'in-progress': 1, completed: 2 };
 
-const typeVariant: Record<string, 'primary' | 'sky' | 'amber'> = {
-  Municipal: 'primary',
-  County: 'sky',
-  'School District': 'amber',
+const typeVariant: Record<string, 'primary' | 'amber'> = {
+  Withholding: 'primary',
+  SUI: 'amber',
+  Unemployment: 'amber',
 };
 
 const statusMap: Record<string, { dotStatus: 'success' | 'warning' | 'error'; label: string }> = {
-  blocked: { dotStatus: 'error', label: 'Blocked' },
+  blocked: { dotStatus: 'error', label: 'Blocked on you' },
   'in-progress': { dotStatus: 'warning', label: 'In progress' },
-  completed: { dotStatus: 'success', label: 'Completed' },
+  completed: { dotStatus: 'success', label: 'Active' },
 };
 
 const SearchRow = styled.div`
@@ -70,25 +72,26 @@ const SearchRow = styled.div`
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
 `;
 
-export const LocalTaxAccountsTab: React.FC = () => {
+export const StateTaxAccountsV3: React.FC = () => {
   const [search, setSearch] = useState('');
 
-  const filtered = accounts
-    .filter(
-      a =>
+  const filtered = useMemo(() => {
+    return accounts
+      .filter(a =>
         a.agencyName.toLowerCase().includes(search.toLowerCase()) ||
-        a.locality.toLowerCase().includes(search.toLowerCase()) ||
-        a.state.toLowerCase().includes(search.toLowerCase()),
-    )
-    .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+        a.state.toLowerCase().includes(search.toLowerCase()) ||
+        a.type.toLowerCase().includes(search.toLowerCase()),
+      )
+      .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+  }, [search]);
 
   return (
     <div>
       <SearchRow>
-        <SectionTitle>All local tax accounts</SectionTitle>
-        <div style={{ width: 256 }}>
+        <SectionTitle>All state tax accounts</SectionTitle>
+        <div style={{ width: 220 }}>
           <Input.Text
-            id="search-local-tax"
+            id="search-state-tax-v3"
             size={Input.Text.SIZES.S}
             placeholder="Search accounts..."
             value={search}
@@ -104,7 +107,7 @@ export const LocalTaxAccountsTab: React.FC = () => {
             <StyledTHead>
               <tr>
                 <StyledTh>Type</StyledTh>
-                <StyledTh>Locality</StyledTh>
+                <StyledTh>State</StyledTh>
                 <StyledTh>Agency name</StyledTh>
                 <StyledTh>Account #</StyledTh>
                 <StyledTh>Created by</StyledTh>
@@ -121,14 +124,13 @@ export const LocalTaxAccountsTab: React.FC = () => {
                     <StyledTd>
                       <TypeBadge variant={typeVariant[account.type]}>{account.type}</TypeBadge>
                     </StyledTd>
-                    <StyledTd style={{ whiteSpace: 'nowrap' }}>
-                      <CellTextBold>{account.locality}</CellTextBold>
-                      <CellTextMuted>, {account.state}</CellTextMuted>
+                    <StyledTd>
+                      <CellTextBold>{account.state}</CellTextBold>
                     </StyledTd>
                     <StyledTd style={{ whiteSpace: 'nowrap' }}>
                       <CellText>
                         {account.agencyName}
-                        {account.taxRate && <CellTextMuted> · {account.taxRate}</CellTextMuted>}
+                        {account.suiRate && <CellTextMuted> · SUI {account.suiRate}</CellTextMuted>}
                       </CellText>
                     </StyledTd>
                     <StyledTd>
@@ -163,7 +165,7 @@ export const LocalTaxAccountsTab: React.FC = () => {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <EmptyRow colSpan={8}>No accounts match your search.</EmptyRow>
+                  <EmptyRow colSpan={8}>No accounts match your filters.</EmptyRow>
                 </tr>
               )}
             </tbody>

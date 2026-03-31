@@ -255,7 +255,7 @@ const RIPPLING_APPS: AppIconDef[] = [
   },
   {
     id: 'hr',
-    label: 'HR Services',
+    label: 'HR services',
     icon: Icon.TYPES.SHIELD_OUTLINE,
     isHR: true,
   },

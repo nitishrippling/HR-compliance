@@ -21,9 +21,16 @@ import CompanyThemeDemo from './demos/@rahul/company-theme-demo';
 import CompositionManagerDemo from './demos/@dvora/CompositionManager/composition-manager-demo';
 import { CompositionDetail } from './demos/@dvora/CompositionManager/compositions/CompositionDetail';
 import ComplianceDemo from './demos/@nitish/compliance-demo';
+import { ComplianceAgentSplitPage } from './demos/@nitish/compliance/ComplianceAgentSplitPage';
 import BandDiscrepancyDemo from './demos/@nitish/band-discrepancy-demo';
 import BenefitsIntegrationDemo from './demos/@nitish/benefits-integration-demo';
+import BenefitsLifecycleDemo from './demos/@nitish/benefits-lifecycle-demo';
 import ParsingRowDemo from './demos/@nitish/parsing-row-demo';
+import ErrorReportV2Demo from './demos/@nitish/error-report-v2-demo';
+import ErrorReportV2TabbedDemo from './demos/@nitish/error-report-v2-tabbed-demo';
+import TransmissionFailuresDemo from './demos/@nitish/transmission-failures-demo';
+import OverviewExplorationsDemo from './demos/@nitish/overview-explorations-demo';
+import ReconciliationFlowV1Demo from './demos/@nitish/reconciliation-flow-v1-demo';
 import IndexPage from './demos/index-page';
 import GettingStartedPage from './demos/getting-started-page';
 import DocViewerPage from './demos/doc-viewer-page';
@@ -83,9 +90,21 @@ enum EditorType {
   COMPOSITION_MANAGER = 'composition-manager',
   COMPLIANCE = 'compliance',
   COMPLIANCE_360 = 'compliance-360',
+  COMPLIANCE_360_V2 = 'compliance-360-v2',
+  COMPLIANCE_360_V3 = 'compliance-360-v3',
+  COMPLIANCE_360_V4 = 'compliance-360-v4',
   BAND_DISCREPANCY = 'band-discrepancy',
   BENEFITS_INTEGRATION = 'benefits-integration',
+  BENEFITS_LIFECYCLE = 'benefits-lifecycle',
   PARSING_ROW = 'parsing-row',
+  ERROR_REPORT_V2 = 'error-report-v2',
+  ERROR_REPORT_V2_TABBED = 'error-report-v2-tabbed',
+  TRANSMISSION_FAILURES = 'transmission-failures',
+  OVERVIEW_EXPLORATIONS = 'overview-explorations',
+  COMPLIANCE_SCENARIOS = 'compliance-scenarios',
+  COMPLIANCE_360_V5 = 'compliance-360-v5',
+  COMPLIANCE_AGENT = 'compliance-agent',
+  RECONCILIATION_FLOW_V1 = 'reconciliation-flow-v1',
 }
 
 // Map demo types to URL paths
@@ -100,9 +119,21 @@ const DEMO_ROUTES: Record<EditorType, string> = {
   [EditorType.COMPOSITION_MANAGER]: '/app-studio/composition-manager',
   [EditorType.COMPLIANCE]: '/compliance-demo',
   [EditorType.COMPLIANCE_360]: '/compliance-360',
+  [EditorType.COMPLIANCE_360_V2]: '/compliance-360-v2',
+  [EditorType.COMPLIANCE_360_V3]: '/compliance-360-v3',
+  [EditorType.COMPLIANCE_360_V4]: '/compliance-360-v4',
   [EditorType.BAND_DISCREPANCY]: '/band-discrepancy',
   [EditorType.BENEFITS_INTEGRATION]: '/benefits-integration',
+  [EditorType.BENEFITS_LIFECYCLE]: '/benefits-lifecycle',
   [EditorType.PARSING_ROW]: '/parsing-row-demo',
+  [EditorType.ERROR_REPORT_V2]: '/error-report-v2',
+  [EditorType.ERROR_REPORT_V2_TABBED]: '/error-report-v2-tabbed',
+  [EditorType.TRANSMISSION_FAILURES]: '/transmission-failures',
+  [EditorType.OVERVIEW_EXPLORATIONS]: '/overview-explorations',
+  [EditorType.COMPLIANCE_SCENARIOS]: '/compliance-scenarios',
+  [EditorType.COMPLIANCE_360_V5]: '/compliance-360-v5',
+  [EditorType.COMPLIANCE_AGENT]: '/compliance-agent',
+  [EditorType.RECONCILIATION_FLOW_V1]: '/reconciliation-flow-v1',
 };
 
 // Reverse map for path to demo type
@@ -230,9 +261,21 @@ const Playground = (props: { className?: string }) => {
     { type: EditorType.COMPOSITION_MANAGER, label: 'Composition Manager' },
     { type: EditorType.COMPLIANCE, label: 'Compliance' },
     { type: EditorType.COMPLIANCE_360, label: 'Compliance 360' },
+    { type: EditorType.COMPLIANCE_360_V2, label: 'Compliance 360 V2' },
+    { type: EditorType.COMPLIANCE_360_V3, label: 'Compliance 360 V3' },
+    { type: EditorType.COMPLIANCE_360_V4, label: 'Compliance 360 V4' },
     { type: EditorType.BAND_DISCREPANCY, label: 'Band Discrepancy' },
     { type: EditorType.BENEFITS_INTEGRATION, label: 'Benefits Integration' },
+    { type: EditorType.BENEFITS_LIFECYCLE, label: 'Benefits Lifecycle' },
     { type: EditorType.PARSING_ROW, label: 'Parsing Row' },
+    { type: EditorType.ERROR_REPORT_V2, label: 'Error Report V2' },
+    { type: EditorType.ERROR_REPORT_V2_TABBED, label: 'Error Report V2 (Tabbed)' },
+    { type: EditorType.TRANSMISSION_FAILURES, label: 'Transmission Failures' },
+    { type: EditorType.OVERVIEW_EXPLORATIONS, label: 'Overview Explorations' },
+    { type: EditorType.COMPLIANCE_SCENARIOS, label: 'Compliance Scenarios' },
+    { type: EditorType.COMPLIANCE_360_V5, label: 'Compliance 360 V5' },
+    { type: EditorType.COMPLIANCE_AGENT, label: 'Compliance Agent' },
+    { type: EditorType.RECONCILIATION_FLOW_V1, label: 'Reconciliation Flow V1' },
   ];
 
   const SETTINGS_OPTIONS = [
@@ -387,13 +430,13 @@ const Playground = (props: { className?: string }) => {
 
   return (
     <>
-      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.BAND_DISCREPANCY && editorType !== EditorType.BENEFITS_INTEGRATION && editorType !== EditorType.PARSING_ROW && buttons}
+      {editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.COMPLIANCE_360_V2 && editorType !== EditorType.COMPLIANCE_360_V3 && editorType !== EditorType.COMPLIANCE_360_V4 && editorType !== EditorType.BAND_DISCREPANCY && editorType !== EditorType.BENEFITS_INTEGRATION && editorType !== EditorType.BENEFITS_LIFECYCLE && editorType !== EditorType.PARSING_ROW && editorType !== EditorType.ERROR_REPORT_V2 && editorType !== EditorType.ERROR_REPORT_V2_TABBED && editorType !== EditorType.TRANSMISSION_FAILURES && editorType !== EditorType.OVERVIEW_EXPLORATIONS && editorType !== EditorType.COMPLIANCE_SCENARIOS && editorType !== EditorType.COMPLIANCE_360_V5 && editorType !== EditorType.COMPLIANCE_AGENT && editorType !== EditorType.RECONCILIATION_FLOW_V1 && buttons}
       <div
         role="main"
         style={{
           backgroundColor: theme.colorSurface,
           minHeight: '100vh',
-          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.BAND_DISCREPANCY && editorType !== EditorType.BENEFITS_INTEGRATION && editorType !== EditorType.PARSING_ROW ? '60px' : '0',
+          paddingTop: isTopBarVisible && editorType !== EditorType.APP_SHELL && editorType !== EditorType.MY_FEATURE && editorType !== EditorType.COMPOSITION_MANAGER && editorType !== EditorType.COMPLIANCE && editorType !== EditorType.COMPLIANCE_360 && editorType !== EditorType.COMPLIANCE_360_V2 && editorType !== EditorType.COMPLIANCE_360_V3 && editorType !== EditorType.COMPLIANCE_360_V4 && editorType !== EditorType.BAND_DISCREPANCY && editorType !== EditorType.BENEFITS_INTEGRATION && editorType !== EditorType.BENEFITS_LIFECYCLE && editorType !== EditorType.PARSING_ROW && editorType !== EditorType.ERROR_REPORT_V2 && editorType !== EditorType.ERROR_REPORT_V2_TABBED && editorType !== EditorType.TRANSMISSION_FAILURES && editorType !== EditorType.OVERVIEW_EXPLORATIONS && editorType !== EditorType.COMPLIANCE_SCENARIOS && editorType !== EditorType.COMPLIANCE_360_V5 && editorType !== EditorType.COMPLIANCE_AGENT && editorType !== EditorType.RECONCILIATION_FLOW_V1 ? '60px' : '0',
           transition: 'padding-top 0.2s ease',
         }}
         className={className}
@@ -473,11 +516,29 @@ const Playground = (props: { className?: string }) => {
 
         {editorType === EditorType.COMPLIANCE_360 && <ComplianceDemo initialView="compliance-360" />}
 
+        {editorType === EditorType.COMPLIANCE_360_V2 && <ComplianceDemo initialView="compliance-360-v2" />}
+
+        {editorType === EditorType.COMPLIANCE_360_V3 && <ComplianceDemo initialView="compliance-360-v3" />}
+
+        {editorType === EditorType.COMPLIANCE_360_V4 && <ComplianceDemo initialView="compliance-360-v4" />}
+
         {editorType === EditorType.BAND_DISCREPANCY && <BandDiscrepancyDemo />}
 
         {editorType === EditorType.BENEFITS_INTEGRATION && <BenefitsIntegrationDemo />}
 
+        {editorType === EditorType.BENEFITS_LIFECYCLE && <BenefitsLifecycleDemo />}
+
         {editorType === EditorType.PARSING_ROW && <ParsingRowDemo />}
+
+        {editorType === EditorType.ERROR_REPORT_V2 && <ErrorReportV2Demo />}
+        {editorType === EditorType.ERROR_REPORT_V2_TABBED && <ErrorReportV2TabbedDemo />}
+        {editorType === EditorType.TRANSMISSION_FAILURES && <TransmissionFailuresDemo />}
+        {editorType === EditorType.OVERVIEW_EXPLORATIONS && <OverviewExplorationsDemo />}
+        {editorType === EditorType.COMPLIANCE_SCENARIOS && <ComplianceDemo initialView="compliance-scenarios" />}
+        {editorType === EditorType.COMPLIANCE_360_V5 && <ComplianceDemo initialView="compliance-360-v5" />}
+        {editorType === EditorType.COMPLIANCE_AGENT && <ComplianceAgentSplitPage />}
+
+        {editorType === EditorType.RECONCILIATION_FLOW_V1 && <ReconciliationFlowV1Demo />}
 
         {/* EDITOR PREVIEW DISABLED - See EDITOR_ISSUE_ANALYSIS.md */}
         {/* <div style={{ maxWidth: '900px', margin: '32px auto 0' }}>
@@ -550,9 +611,21 @@ init().then(() => {
             <Route path="/app-studio/composition-manager" element={<Playground />} />
             <Route path="/compliance-demo" element={<Playground />} />
             <Route path="/compliance-360" element={<Playground />} />
+            <Route path="/compliance-360-v2" element={<Playground />} />
+            <Route path="/compliance-360-v3" element={<Playground />} />
+            <Route path="/compliance-360-v4" element={<Playground />} />
             <Route path="/band-discrepancy" element={<Playground />} />
             <Route path="/benefits-integration" element={<Playground />} />
+            <Route path="/benefits-lifecycle" element={<Playground />} />
             <Route path="/parsing-row-demo" element={<Playground />} />
+            <Route path="/error-report-v2" element={<Playground />} />
+            <Route path="/error-report-v2-tabbed" element={<Playground />} />
+            <Route path="/transmission-failures" element={<Playground />} />
+            <Route path="/overview-explorations" element={<Playground />} />
+            <Route path="/compliance-scenarios" element={<Playground />} />
+            <Route path="/compliance-360-v5" element={<Playground />} />
+            <Route path="/compliance-agent" element={<Playground />} />
+            <Route path="/reconciliation-flow-v1" element={<Playground />} />
             <Route path="/app-studio/composition-manager/compositions/:id" element={<CompositionDetail />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

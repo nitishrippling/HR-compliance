@@ -6,10 +6,16 @@ import Icon from '@rippling/pebble/Icon';
 import { HomePage } from './HomePage';
 import { ComplianceHubContent } from './ComplianceHubContent';
 import { Compliance360Page } from './Compliance360Page';
+import { Compliance360V2Page } from './Compliance360V2Page';
+import { Compliance360V3Page } from './Compliance360V3Page';
+import { Compliance360V4Page } from './Compliance360V4Page';
+import { ComplianceScenariosPage } from './scenarios/ComplianceScenariosPage';
+import { Compliance360V5Page } from './Compliance360V5Page';
+import { ComplianceAgentSplitPage } from './ComplianceAgentSplitPage';
 import RipplingLogoBlack from '@/assets/rippling-logo-black.svg';
 import RipplingLogoWhite from '@/assets/rippling-logo-white.svg';
 
-export type ViewType = 'home' | 'hr-services' | 'workforce' | 'compliance-360';
+export type ViewType = 'home' | 'hr-services' | 'workforce' | 'compliance-360' | 'compliance-360-v2' | 'compliance-360-v3' | 'compliance-360-v4' | 'compliance-scenarios' | 'compliance-360-v5' | 'compliance-agent';
 
 /* ─────────────────── Layout shell ─────────────────── */
 
@@ -435,7 +441,7 @@ const PLATFORM_NAV: NavItemDef[] = [
 ];
 
 const HR_SUBMENU_ITEMS: HRSubmenuItemDef[] = [
-  { id: 'hr-overview', label: 'HR Overview', icon: Icon.TYPES.TALENT_OUTLINE },
+  { id: 'hr-overview', label: 'HR overview', icon: Icon.TYPES.TALENT_OUTLINE },
   { id: 'people', label: 'People', icon: Icon.TYPES.USERS_OUTLINE },
   { id: 'anniversaries', label: 'Anniversaries', icon: Icon.TYPES.CALENDAR_OUTLINE },
   { id: 'divider-1', label: '', icon: '', isDivider: true },
@@ -445,15 +451,15 @@ const HR_SUBMENU_ITEMS: HRSubmenuItemDef[] = [
     icon: Icon.TYPES.APPROVE_REJECT_SHIELD_OUTLINE,
     isCompliance360: true,
   },
-  { id: 'eeo-reporting', label: 'EEO Reporting', icon: Icon.TYPES.BAR_CHART_OUTLINE },
+  { id: 'eeo-reporting', label: 'EEO reporting', icon: Icon.TYPES.BAR_CHART_OUTLINE },
   {
     id: 'employment-verifications',
-    label: 'Employment Verifications',
+    label: 'Employment verifications',
     icon: Icon.TYPES.FILE_USER_CHECK_OUTLINE,
   },
   {
     id: 'work-authorization',
-    label: 'Work Authorization',
+    label: 'Work authorization',
     icon: Icon.TYPES.FINGERPRINT,
   },
   { id: 'divider-2', label: '', icon: '', isDivider: true },
@@ -672,7 +678,7 @@ export const NavigationShell: React.FC<NavigationShellProps> = ({ initialView = 
       {/* ── HR Services Submenu Panel ── */}
       <SubmenuPanel theme={theme} open={hrSubmenuOpen}>
         <SubmenuHeader theme={theme}>
-          <SubmenuTitle theme={theme}>HR Services</SubmenuTitle>
+          <SubmenuTitle theme={theme}>HR services</SubmenuTitle>
         </SubmenuHeader>
         <SubmenuScrollArea theme={theme}>
           {HR_SUBMENU_ITEMS.map(item => {
@@ -729,7 +735,7 @@ export const NavigationShell: React.FC<NavigationShellProps> = ({ initialView = 
               size={16}
               color={theme.colorOnSurface}
             />
-            HR Services
+            HR services
           </HoverSubMenuItem>
           <HoverSubMenuItem theme={theme} onClick={handleNavigateToWorkforce}>
             <Icon
@@ -763,6 +769,12 @@ export const NavigationShell: React.FC<NavigationShellProps> = ({ initialView = 
         )}
         {view === 'workforce' && <Compliance360Page />}
         {view === 'compliance-360' && <Compliance360Page />}
+        {view === 'compliance-360-v2' && <Compliance360V2Page />}
+        {view === 'compliance-360-v3' && <Compliance360V3Page />}
+        {view === 'compliance-360-v4' && <Compliance360V4Page />}
+        {view === 'compliance-scenarios' && <ComplianceScenariosPage />}
+        {view === 'compliance-360-v5' && <Compliance360V5Page />}
+        {view === 'compliance-agent' && <ComplianceAgentSplitPage />}
       </MainContent>
     </ShellContainer>
   );

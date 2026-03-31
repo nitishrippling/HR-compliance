@@ -12,14 +12,12 @@ import {
   StyledTd,
   CellText,
   CellTextBold,
+  CellTextMuted,
   TypeBadge,
   CreatedByBadge,
   StatusDot,
   StatusCell,
-  StatusRow,
   StatusLabel,
-  StatusDetail,
-  DueDate,
   ActionButtonWrapper,
 } from './shared-styles';
 
@@ -279,9 +277,9 @@ function statusDotVariant(s: FilingStatus): 'error' | 'success' | 'warning' | 'n
 
 function statusLabelText(s: FilingStatus) {
   switch (s) {
-    case 'action-needed': return 'Action Needed';
+    case 'action-needed': return 'Action needed';
     case 'filed': return 'Filed';
-    case 'in-progress': return 'In Progress';
+    case 'in-progress': return 'In progress';
     default: return 'Upcoming';
   }
 }
@@ -339,11 +337,11 @@ export const FilingsModulePage: React.FC<FilingsModulePageProps> = ({ onBack }) 
           </SummaryPill>
           <SummaryPill theme={theme} variant="action" onClick={() => setFilter('action-needed')}>
             <PillDot variant="action" />
-            {SUMMARY.actionNeeded} Action Needed
+            {SUMMARY.actionNeeded} Action needed
           </SummaryPill>
           <SummaryPill theme={theme} variant="progress" onClick={() => setFilter('in-progress')}>
             <PillDot variant="progress" />
-            {SUMMARY.inProgress} In Progress
+            {SUMMARY.inProgress} In progress
           </SummaryPill>
           <SummaryPill theme={theme} variant="upcoming" onClick={() => setFilter('upcoming')}>
             <PillDot variant="upcoming" />
@@ -360,7 +358,7 @@ export const FilingsModulePage: React.FC<FilingsModulePageProps> = ({ onBack }) 
       <BodyArea theme={theme}>
         <TableCard theme={theme}>
           <TableToolbar theme={theme}>
-            <TableTitle theme={theme}>All Compliance Filings — 2026</TableTitle>
+            <TableTitle theme={theme}>All compliance filings — 2026</TableTitle>
             <TableActionsRow theme={theme}>
               <SearchBox theme={theme}>
                 <Icon type={Icon.TYPES.SEARCH_OUTLINE} size={14} color={(theme as StyledTheme).colorOnSurfaceVariant} />
@@ -374,10 +372,11 @@ export const FilingsModulePage: React.FC<FilingsModulePageProps> = ({ onBack }) 
               <tr>
                 <StyledTh theme={theme}>Type</StyledTh>
                 <StyledTh theme={theme}>Jurisdiction</StyledTh>
-                <StyledTh theme={theme}>Filing Name</StyledTh>
-                <StyledTh theme={theme}>Due Date</StyledTh>
-                <StyledTh theme={theme}>Created By</StyledTh>
+                <StyledTh theme={theme}>Filing name</StyledTh>
+                <StyledTh theme={theme}>Due date</StyledTh>
+                <StyledTh theme={theme}>Created by</StyledTh>
                 <StyledTh theme={theme}>Status</StyledTh>
+                <StyledTh theme={theme}>Details</StyledTh>
                 <StyledTh theme={theme} style={{ width: 100 }}>Actions</StyledTh>
               </tr>
             </StyledTHead>
@@ -397,9 +396,6 @@ export const FilingsModulePage: React.FC<FilingsModulePageProps> = ({ onBack }) 
                   </StyledTd>
                   <StyledTd theme={theme}>
                     <CellText theme={theme}>{f.dueDate}</CellText>
-                    {f.dueDateIsUrgent && (
-                      <DueDate theme={theme}>Action required</DueDate>
-                    )}
                   </StyledTd>
                   <StyledTd theme={theme}>
                     <CreatedByBadge theme={theme} isRippling={f.createdBy === 'Rippling'}>
@@ -408,14 +404,12 @@ export const FilingsModulePage: React.FC<FilingsModulePageProps> = ({ onBack }) 
                   </StyledTd>
                   <StyledTd theme={theme}>
                     <StatusCell>
-                      <StatusRow theme={theme}>
-                        <StatusDot theme={theme} status={statusDotVariant(f.status)} />
-                        <StatusLabel theme={theme}>{statusLabelText(f.status)}</StatusLabel>
-                      </StatusRow>
-                      {f.statusDetail && (
-                        <StatusDetail theme={theme}>{f.statusDetail}</StatusDetail>
-                      )}
+                      <StatusDot theme={theme} status={statusDotVariant(f.status)} />
+                      <StatusLabel theme={theme}>{statusLabelText(f.status)}</StatusLabel>
                     </StatusCell>
+                  </StyledTd>
+                  <StyledTd theme={theme}>
+                    {f.statusDetail && <CellTextMuted theme={theme}>{f.statusDetail}</CellTextMuted>}
                   </StyledTd>
                   <StyledTd theme={theme}>
                     {f.status === 'filed' ? (

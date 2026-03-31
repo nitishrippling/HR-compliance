@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme } from '@/utils/theme';
 import Icon from '@rippling/pebble/Icon';
@@ -41,7 +41,7 @@ interface LocalTaxAccount {
 }
 
 const accounts: LocalTaxAccount[] = [
-  { type: 'Municipal', locality: 'Philadelphia', state: 'PA', agencyName: 'Philadelphia Revenue Dept', accountNumber: 'Pending', createdBy: 'Rippling', status: 'blocked', statusDetail: 'Your action required', dueDate: 'Due Mar 1, 2026', actionRequired: true },
+  { type: 'Municipal', locality: 'Philadelphia', state: 'PA', agencyName: 'Philadelphia Revenue Dept', accountNumber: 'Pending', createdBy: 'Rippling', status: 'blocked', statusDetail: 'Employer signature needed', dueDate: 'Due Mar 7, 2026', actionRequired: true },
   { type: 'School District', locality: 'Lakota', state: 'OH', agencyName: 'Lakota School District Tax Office', accountNumber: 'Pending', createdBy: 'Rippling', status: 'in-progress', statusDetail: 'Submitted Feb 15, 2026' },
   { type: 'Municipal', locality: 'Westerville', state: 'OH', agencyName: 'Westerville Income Tax Dept', accountNumber: 'WV-001234', createdBy: 'Rippling', taxRate: '2.0%', status: 'completed', statusDetail: 'Account active' },
   { type: 'Municipal', locality: 'Columbus', state: 'OH', agencyName: 'Columbus Income Tax Division', accountNumber: 'COL-998877', createdBy: 'Rippling', taxRate: '2.5%', status: 'completed', statusDetail: 'Account active' },
@@ -57,9 +57,9 @@ const typeVariant: Record<string, 'primary' | 'sky' | 'amber'> = {
 };
 
 const statusMap: Record<string, { dotStatus: 'success' | 'warning' | 'error'; label: string }> = {
-  blocked: { dotStatus: 'error', label: 'Blocked' },
+  blocked: { dotStatus: 'error', label: 'Blocked on you' },
   'in-progress': { dotStatus: 'warning', label: 'In progress' },
-  completed: { dotStatus: 'success', label: 'Completed' },
+  completed: { dotStatus: 'success', label: 'Active' },
 };
 
 const SearchRow = styled.div`
@@ -70,25 +70,26 @@ const SearchRow = styled.div`
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
 `;
 
-export const LocalTaxAccountsTab: React.FC = () => {
+export const LocalTaxAccountsV3: React.FC = () => {
   const [search, setSearch] = useState('');
 
-  const filtered = accounts
-    .filter(
-      a =>
+  const filtered = useMemo(() => {
+    return accounts
+      .filter(a =>
         a.agencyName.toLowerCase().includes(search.toLowerCase()) ||
         a.locality.toLowerCase().includes(search.toLowerCase()) ||
         a.state.toLowerCase().includes(search.toLowerCase()),
-    )
-    .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+      )
+      .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+  }, [search]);
 
   return (
     <div>
       <SearchRow>
         <SectionTitle>All local tax accounts</SectionTitle>
-        <div style={{ width: 256 }}>
+        <div style={{ width: 220 }}>
           <Input.Text
-            id="search-local-tax"
+            id="search-local-tax-v3"
             size={Input.Text.SIZES.S}
             placeholder="Search accounts..."
             value={search}
@@ -163,7 +164,7 @@ export const LocalTaxAccountsTab: React.FC = () => {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <EmptyRow colSpan={8}>No accounts match your search.</EmptyRow>
+                  <EmptyRow colSpan={8}>No accounts match your filters.</EmptyRow>
                 </tr>
               )}
             </tbody>

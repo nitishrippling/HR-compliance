@@ -94,10 +94,10 @@ const PageContent = styled.div`
 /* ─────────────────── Tab data ─────────────────── */
 
 const TABS = [
-  'Command Center',
-  'State Tax Accounts',
-  'Local Tax Accounts',
-  'Foreign Qualification',
+  'Command center',
+  'State tax accounts',
+  'Local tax accounts',
+  'Foreign qualification',
 ];
 
 const TAB_ID_MAP: TabId[] = [

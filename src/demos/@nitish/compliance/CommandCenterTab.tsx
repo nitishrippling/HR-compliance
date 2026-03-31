@@ -25,11 +25,11 @@ export type TabId = 'command-center' | 'state-tax' | 'local-tax' | 'foreign-qual
 // --- YourImpact KPI Data ---
 
 const kpis = [
-  { icon: Icon.TYPES.TIME_OUTLINE, value: '62+', label: 'Estimated Hours Saved' },
-  { icon: Icon.TYPES.OFFICE_OUTLINE, value: '18', label: 'State Registrations Completed' },
-  { icon: Icon.TYPES.LOCATION_OUTLINE, value: '5', label: 'Local Registrations Completed' },
-  { icon: Icon.TYPES.BANK_OUTLINE, value: '6', label: 'Foreign Qualifications Completed' },
-  { icon: Icon.TYPES.DOCUMENT_OUTLINE, value: '14', label: 'Additional Filings Done' },
+  { icon: Icon.TYPES.TIME_OUTLINE, value: '62+', label: 'Estimated hours saved' },
+  { icon: Icon.TYPES.OFFICE_OUTLINE, value: '18', label: 'State registrations completed' },
+  { icon: Icon.TYPES.LOCATION_OUTLINE, value: '5', label: 'Local registrations completed' },
+  { icon: Icon.TYPES.BANK_OUTLINE, value: '6', label: 'Foreign qualifications completed' },
+  { icon: Icon.TYPES.DOCUMENT_OUTLINE, value: '14', label: 'Additional filings done' },
 ];
 
 // --- YourActions Data ---
@@ -37,35 +37,35 @@ const kpis = [
 const tasks = [
   {
     task: 'Texas Withholding Registration',
-    category: 'State Tax',
+    category: 'State tax',
     dueDate: 'Feb 28, 2026',
     daysLeft: -2,
     risk: 'Payroll blocked if unresolved',
   },
   {
     task: 'Ohio Municipal Tax Setup',
-    category: 'Local Tax',
+    category: 'Local tax',
     dueDate: 'Mar 1, 2026',
     daysLeft: 2,
     risk: 'Withholding non-compliant',
   },
   {
     task: 'Upload Certificate of Incorporation',
-    category: 'Foreign Qualification',
+    category: 'Foreign qualification',
     dueDate: 'Mar 5, 2026',
     daysLeft: 6,
     risk: 'Registration delayed',
   },
   {
     task: 'California SUI Rate Verification',
-    category: 'State Tax',
+    category: 'State tax',
     dueDate: 'Mar 10, 2026',
     daysLeft: 11,
     risk: 'Rate mismatch possible',
   },
   {
     task: 'Confirm ACA Headcount',
-    category: 'Federal Filing',
+    category: 'Federal filing',
     dueDate: 'Mar 31, 2026',
     daysLeft: 32,
     risk: 'Annual compliance confirmation',
@@ -93,55 +93,34 @@ const services: ServiceSummary[] = [
   {
     tabId: 'state-tax',
     icon: Icon.TYPES.DOCUMENT_OUTLINE,
-    title: 'State Tax Accounts',
+    title: 'State tax accounts',
     description: 'Withholding & SUI account registrations across all states.',
     counts: [
       { label: 'Completed', count: 5, status: 'success' },
-      { label: 'In Progress', count: 1, status: 'warning' },
+      { label: 'In progress', count: 1, status: 'warning' },
       { label: 'Blocked', count: 2, status: 'error' },
     ],
   },
   {
     tabId: 'local-tax',
     icon: Icon.TYPES.OFFICE_OUTLINE,
-    title: 'Local Tax Accounts',
+    title: 'Local tax accounts',
     description: 'Municipal, county, and school district tax accounts.',
     counts: [
       { label: 'Completed', count: 3, status: 'success' },
-      { label: 'In Progress', count: 1, status: 'warning' },
+      { label: 'In progress', count: 1, status: 'warning' },
       { label: 'Blocked', count: 1, status: 'error' },
     ],
   },
   {
     tabId: 'foreign-qual',
     icon: Icon.TYPES.BANK_OUTLINE,
-    title: 'Foreign Qualification',
+    title: 'Foreign qualification',
     description: 'Entity qualification & registered agent management.',
     counts: [
       { label: 'Qualified', count: 4, status: 'success' },
       { label: 'Pending', count: 1, status: 'warning' },
-      { label: 'Action Required', count: 1, status: 'error' },
-    ],
-  },
-  {
-    tabId: 'additional-filings',
-    icon: Icon.TYPES.DOCUMENT_OUTLINE,
-    title: 'Additional Filings',
-    description: 'Federal, state, and local compliance filings.',
-    counts: [
-      { label: 'Filed', count: 4, status: 'success' },
-      { label: 'In Progress', count: 1, status: 'warning' },
-      { label: 'Upcoming', count: 1, status: 'neutral' },
-    ],
-  },
-  {
-    tabId: 'workplace-posters',
-    icon: Icon.TYPES.CHECKLIST,
-    title: 'Workplace Posters',
-    description: 'Labor law poster distribution & compliance tracking.',
-    counts: [
-      { label: 'Current', count: 6, status: 'success' },
-      { label: 'Update Available', count: 2, status: 'warning' },
+      { label: 'Action required', count: 1, status: 'error' },
     ],
   },
 ];
@@ -216,7 +195,7 @@ const OverdueTag = styled.span`
 `;
 
 const PenaltyText = styled.span<{ isOverdue: boolean }>`
-  ${({ theme }) => (theme as StyledTheme).typestyleV2BodySmall};
+  ${({ theme }) => (theme as StyledTheme).typestyleV2BodyMedium};
   color: ${({ isOverdue, theme }) =>
     isOverdue ? (theme as StyledTheme).colorError : (theme as StyledTheme).colorOnSurfaceVariant};
   font-weight: 500;
@@ -372,7 +351,7 @@ export const CommandCenterTab: React.FC<CommandCenterTabProps> = ({ onNavigate }
       {/* Your Actions */}
       <section>
         <SectionHeader>
-          <SectionTitle>Your Actions</SectionTitle>
+          <SectionTitle>Your actions</SectionTitle>
           <SectionDescription>Items requiring your input to keep compliance on track.</SectionDescription>
         </SectionHeader>
 
@@ -382,8 +361,8 @@ export const CommandCenterTab: React.FC<CommandCenterTabProps> = ({ onNavigate }
               <tr>
                 <StyledTh>Task</StyledTh>
                 <StyledTh>Category</StyledTh>
-                <StyledTh>Due Date</StyledTh>
-                <StyledTh>Penalty Status</StyledTh>
+                <StyledTh>Due date</StyledTh>
+                <StyledTh>Penalty status</StyledTh>
                 <StyledTh style={{ width: 80 }}>&nbsp;</StyledTh>
               </tr>
             </StyledTHead>
@@ -395,10 +374,8 @@ export const CommandCenterTab: React.FC<CommandCenterTabProps> = ({ onNavigate }
                     <StyledTd>
                       <TaskName>
                         <StatusDot status={penalty.isOverdue ? 'error' : 'warning'} style={{ width: 8, height: 8 }} />
-                        <div>
-                          <TaskText>{task.task}</TaskText>
-                          {penalty.isOverdue && <OverdueTag>Overdue</OverdueTag>}
-                        </div>
+                        <TaskText>{task.task}</TaskText>
+                        {penalty.isOverdue && <OverdueTag>Overdue</OverdueTag>}
                       </TaskName>
                     </StyledTd>
                     <StyledTd>
@@ -420,7 +397,7 @@ export const CommandCenterTab: React.FC<CommandCenterTabProps> = ({ onNavigate }
                               e.stopPropagation();
                             }}
                           >
-                            Take Action
+                            Take action
                           </Button>
                           <HelpIconButton
                             onClick={(e: React.MouseEvent) => {
@@ -444,7 +421,7 @@ export const CommandCenterTab: React.FC<CommandCenterTabProps> = ({ onNavigate }
       {/* Service Overview */}
       <section>
         <SectionHeader>
-          <SectionTitle>Service Overview</SectionTitle>
+          <SectionTitle>Service overview</SectionTitle>
           <SectionDescription>Click any card to view full details and manage items.</SectionDescription>
         </SectionHeader>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { StyledTheme } from '@/utils/theme';
 import Icon from '@rippling/pebble/Icon';
@@ -18,8 +18,8 @@ import {
   StatusLabel,
   DueDate,
   CellTextBold,
-  CellTextMuted,
   CellTextMono,
+  CellTextMuted,
   EmptyRow,
   ActionButtonWrapper,
 } from './shared-styles';
@@ -35,20 +35,20 @@ interface Qualification {
 }
 
 const qualifications: Qualification[] = [
-  { state: 'WA', sosRegistrationNumber: 'Pending', createdBy: 'Rippling', status: 'action-required', statusDetail: 'Certificate of Good Standing expired', dueDate: 'Due Mar 5, 2026', actionRequired: true },
+  { state: 'WA', sosRegistrationNumber: 'Pending', createdBy: 'Rippling', status: 'action-required', statusDetail: 'Certificate of Good Standing needed', dueDate: 'Due Mar 5, 2026', actionRequired: true },
   { state: 'TX', sosRegistrationNumber: 'Pending', createdBy: 'Rippling', status: 'pending', statusDetail: 'Filed Feb 3, 2026' },
-  { state: 'CA', sosRegistrationNumber: 'C4821456', createdBy: 'Rippling', status: 'complete', statusDetail: 'Registration active' },
-  { state: 'NY', sosRegistrationNumber: 'NY-6789012', createdBy: 'Client', status: 'complete', statusDetail: 'Registration active' },
-  { state: 'IL', sosRegistrationNumber: 'LLC-00123456', createdBy: 'Rippling', status: 'complete', statusDetail: 'Registration active' },
-  { state: 'FL', sosRegistrationNumber: 'L26000012345', createdBy: 'Rippling', status: 'complete', statusDetail: 'Registration active' },
+  { state: 'CA', sosRegistrationNumber: 'C4821456', createdBy: 'Rippling', status: 'complete', statusDetail: 'Qualified and active' },
+  { state: 'NY', sosRegistrationNumber: 'NY-6789012', createdBy: 'Client', status: 'complete', statusDetail: 'Qualified and active' },
+  { state: 'IL', sosRegistrationNumber: 'LLC-00123456', createdBy: 'Rippling', status: 'complete', statusDetail: 'Qualified and active' },
+  { state: 'FL', sosRegistrationNumber: 'L26000012345', createdBy: 'Rippling', status: 'complete', statusDetail: 'Qualified and active' },
 ];
 
 const statusOrder = { 'action-required': 0, pending: 1, complete: 2 };
 
 const statusMap: Record<string, { dotStatus: 'success' | 'warning' | 'error'; label: string }> = {
-  'action-required': { dotStatus: 'error', label: 'Action required' },
-  pending: { dotStatus: 'warning', label: 'Pending' },
-  complete: { dotStatus: 'success', label: 'Complete' },
+  'action-required': { dotStatus: 'error', label: 'Blocked on you' },
+  pending: { dotStatus: 'warning', label: 'In progress' },
+  complete: { dotStatus: 'success', label: 'Active' },
 };
 
 const SearchRow = styled.div`
@@ -59,24 +59,25 @@ const SearchRow = styled.div`
   margin-bottom: ${({ theme }) => (theme as StyledTheme).space400};
 `;
 
-export const ForeignQualificationTab: React.FC = () => {
+export const ForeignQualificationV3: React.FC = () => {
   const [search, setSearch] = useState('');
 
-  const filtered = qualifications
-    .filter(
-      q =>
+  const filtered = useMemo(() => {
+    return qualifications
+      .filter(q =>
         q.state.toLowerCase().includes(search.toLowerCase()) ||
         q.sosRegistrationNumber.toLowerCase().includes(search.toLowerCase()),
-    )
-    .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+      )
+      .sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+  }, [search]);
 
   return (
     <div>
       <SearchRow>
         <SectionTitle>All foreign qualifications</SectionTitle>
-        <div style={{ width: 256 }}>
+        <div style={{ width: 220 }}>
           <Input.Text
-            id="search-foreign-qual"
+            id="search-foreign-qual-v3"
             size={Input.Text.SIZES.S}
             placeholder="Search qualifications..."
             value={search}
@@ -137,7 +138,7 @@ export const ForeignQualificationTab: React.FC = () => {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <EmptyRow colSpan={6}>No qualifications match your search.</EmptyRow>
+                  <EmptyRow colSpan={6}>No qualifications match your filters.</EmptyRow>
                 </tr>
               )}
             </tbody>

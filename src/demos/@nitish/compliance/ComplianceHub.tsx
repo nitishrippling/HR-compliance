@@ -62,7 +62,7 @@ const MODULES: ModuleSummary[] = [
   {
     id: 'posters',
     icon: Icon.TYPES.CHECKLIST,
-    name: 'Workplace Posters',
+    name: 'Workplace posters',
     description: 'Labor law poster creation, distribution, and renewal tracking',
     totalTasks: 3,
     overdue: 0,
@@ -73,7 +73,7 @@ const MODULES: ModuleSummary[] = [
   {
     id: 'email',
     icon: Icon.TYPES.EMAIL_OUTLINE,
-    name: 'Mail Processing',
+    name: 'Mail processing',
     description: 'Garnishments, levies, verifications, and inbound mail triage',
     totalTasks: 5,
     overdue: 1,

@@ -17,9 +17,7 @@ import {
   CreatedByBadge,
   StatusDot,
   StatusCell,
-  StatusRow,
   StatusLabel,
-  StatusDetail,
   CellText,
   CellTextBold,
   EmptyRow,
@@ -57,7 +55,7 @@ const typeVariant: Record<string, 'primary' | 'amber' | 'sky'> = {
 
 const statusMap: Record<string, { dotStatus: 'success' | 'warning' | 'neutral'; label: string }> = {
   filed: { dotStatus: 'success', label: 'Filed' },
-  'in-progress': { dotStatus: 'warning', label: 'In Progress' },
+  'in-progress': { dotStatus: 'warning', label: 'In progress' },
   upcoming: { dotStatus: 'neutral', label: 'Upcoming' },
 };
 
@@ -105,7 +103,7 @@ export const AdditionalFilingsTab: React.FC = () => {
   return (
     <div>
       <SearchRow>
-        <SectionTitle>All Compliance Filings</SectionTitle>
+        <SectionTitle>All compliance filings</SectionTitle>
         <FiltersRow>
           <Dropdown
             list={availableYears}
@@ -137,10 +135,11 @@ export const AdditionalFilingsTab: React.FC = () => {
               <tr>
                 <StyledTh>Type</StyledTh>
                 <StyledTh>Jurisdiction</StyledTh>
-                <StyledTh>Filing Name</StyledTh>
-                <StyledTh>Due Date</StyledTh>
-                <StyledTh>Created By</StyledTh>
+                <StyledTh>Filing name</StyledTh>
+                <StyledTh>Due date</StyledTh>
+                <StyledTh>Created by</StyledTh>
                 <StyledTh>Status</StyledTh>
+                <StyledTh>Details</StyledTh>
                 <StyledTh style={{ width: 100, textAlign: 'right' }}>Actions</StyledTh>
               </tr>
             </StyledTHead>
@@ -168,12 +167,12 @@ export const AdditionalFilingsTab: React.FC = () => {
                     </StyledTd>
                     <StyledTd>
                       <StatusCell>
-                        <StatusRow>
-                          <StatusDot status={sc.dotStatus} />
-                          <StatusLabel>{sc.label}</StatusLabel>
-                        </StatusRow>
-                        <StatusDetail>{filing.statusDetail}</StatusDetail>
+                        <StatusDot status={sc.dotStatus} />
+                        <StatusLabel>{sc.label}</StatusLabel>
                       </StatusCell>
+                    </StyledTd>
+                    <StyledTd style={{ whiteSpace: 'nowrap' }}>
+                      <CellTextMuted>{filing.statusDetail}</CellTextMuted>
                     </StyledTd>
                     <StyledTd>
                       {filing.status === 'filed' && (
